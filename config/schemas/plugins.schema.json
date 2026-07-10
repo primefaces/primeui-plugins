@@ -244,7 +244,7 @@
               }
             },
             "skillSourcePath": {
-              "const": "packages/skills/primeng"
+              "const": "skills/primeng"
             },
             "variants": {
               "const": []
@@ -290,7 +290,7 @@
               }
             },
             "skillSourcePath": {
-              "const": "packages/skills/primereact"
+              "const": "skills/primereact"
             },
             "variants": {
               "const": [
@@ -341,7 +341,7 @@
               }
             },
             "skillSourcePath": {
-              "const": "packages/skills/primevue"
+              "const": "skills/primevue"
             },
             "variants": {
               "const": []

@@ -4,7 +4,7 @@ Both configuration files are authored inputs. Unknown properties are rejected so
 
 ## `plugins.json`
 
-Defines the `primeui` marketplace, publisher identity, default Codex availability policy, and the exact three logical plugin entries. Each entry records its display metadata, authored install-surface copy, supported hosts, canonical skill source path, MCP package/binary/server identity, future output roots, and variant capabilities.
+Defines the `primeui` marketplace, publisher identity, default Codex availability policy, and the exact three logical plugin entries. Each entry records its display metadata, authored install-surface copy, supported hosts, canonical repository-local skill source path, MCP package/binary/server identity, future output roots, and variant capabilities.
 
 The install-surface block is host-neutral authored product input. The generator maps it to client metadata instead of inventing short/long descriptions, capability labels, or starter prompts. PrimeReact variants remain a separate framework capability contract.
 
@@ -16,16 +16,15 @@ Defines the release tuple for each plugin:
 
 - `pluginVersion`: independent exact plugin SemVer
 - `mcp.package` and `mcp.version`: exact MCP package target
-- `source.repository`: canonical HTTPS Git repository
-- `source.commit`: accepted full source SHA or `null`
+- `source.repository`: this repository's canonical HTTPS URL
 - `source.skillPath`: canonical relative skill path
 - `source.skillHash`: deterministic `sha256:` value or `null`
-- `lockState`: `locked` only when commit and hash are complete; otherwise `unresolved`
+- `lockState`: `locked` only when the skill hash is complete; otherwise `unresolved`
 
-The base validator accepts an honest unresolved development state. The release validator rejects it. Empty strings, placeholder SHAs, guessed hashes, tags, and moving refs are never valid substitutes.
+The base validator accepts an honest unresolved development state. The release validator rejects it. Empty strings and guessed hashes are never valid substitutes.
 
 The repository generator defines and tests the deterministic skill-tree hashing algorithm used to fill `source.skillHash`.
 
-The accepted `source.commit` is authored before locking. `npm run lock:sources` requires exactly one canonical absolute checkout path per configured library, verifies every checkout is clean and at that accepted commit, rejects physical files not represented by regular Git blobs, computes `source.skillHash`, sets `lockState` to `locked`, and removes `unresolvedReason`. Repository URLs, skill paths, plugin versions, MCP packages, and MCP versions are preserved.
+`npm run lock:sources` inspects each physical tree under `skills/`, computes `source.skillHash`, sets `lockState` to `locked`, and removes `unresolvedReason`. Repository URLs, skill paths, plugin versions, MCP packages, and MCP versions are preserved.
 
 The hash input is a compact JSON array sorted by UTF-8 path bytes. Each record has `path`, byte `size`, and the lowercase hexadecimal SHA-256 of the exact file bytes. The outer digest is stored with the `sha256:` prefix. See [the release rules](../RELEASE.md#deterministic-skill-tree-hash) for the full rejection and normalization contract.

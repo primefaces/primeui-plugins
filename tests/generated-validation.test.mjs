@@ -45,7 +45,8 @@ test('committed generated payload has exact structure, provenance, pins, and iso
     const provenance = JSON.parse(
       await readFile(path.join(repositoryRoot, 'plugins', lock.name, 'provenance.json'), 'utf8')
     );
-    assert.equal(provenance.source.commit, lock.source.commit);
+    assert.equal(Object.hasOwn(provenance.source, 'commit'), false);
+    assert.equal(provenance.source.repository, 'https://github.com/primefaces/primeui-plugins');
     assert.equal(provenance.source.skillHash, lock.source.skillHash);
     assert.equal(provenance.mcp.package, lock.mcp.package);
     assert.equal(provenance.mcp.version, lock.mcp.version);

@@ -8,34 +8,33 @@ export const libraryContracts = {
     binary: 'primevue-mcp',
     displayName: 'PrimeVue',
     mcpPackage: '@primevue/mcp',
-    repository: 'https://github.com/primefaces/primevue-nextchapter.git',
+    repository: 'https://github.com/primefaces/primeui-plugins',
     serverName: 'primevue',
-    skillPath: 'packages/skills/primevue',
+    skillPath: 'skills/primevue',
     variants: []
   },
   primeng: {
     binary: 'primeng-mcp',
     displayName: 'PrimeNG',
     mcpPackage: '@primeng/mcp',
-    repository: 'https://github.com/primefaces/primeng-nextchapter.git',
+    repository: 'https://github.com/primefaces/primeui-plugins',
     serverName: 'primeng',
-    skillPath: 'packages/skills/primeng',
+    skillPath: 'skills/primeng',
     variants: []
   },
   primereact: {
     binary: 'primereact-mcp',
     displayName: 'PrimeReact',
     mcpPackage: '@primereact/mcp',
-    repository: 'https://github.com/primefaces/primereact-nextchapter.git',
+    repository: 'https://github.com/primefaces/primeui-plugins',
     serverName: 'primereact',
-    skillPath: 'packages/skills/primereact',
+    skillPath: 'skills/primereact',
     variants: ['styled', 'tailwind', 'primitive', 'headless']
   }
 };
 
 const exactSemverPattern =
   /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
-const commitPattern = /^[0-9a-f]{40}$/;
 const skillHashPattern = /^sha256:[0-9a-f]{64}$/;
 const sensitiveKeyPattern = /^(?:api[_-]?key|access[_-]?token|client[_-]?secret|credentials?|password|private[_-]?key|secret|token)$/i;
 
@@ -400,8 +399,8 @@ export function validateSourcesLock(lockConfig, pluginsConfig, { release = false
   if (lockConfig.$schema !== './schemas/sources-lock.schema.json') {
     errors.push('sourcesLock.$schema must equal ./schemas/sources-lock.schema.json.');
   }
-  if (lockConfig.schemaVersion !== 1) {
-    errors.push('sourcesLock.schemaVersion must equal 1.');
+  if (lockConfig.schemaVersion !== 2) {
+    errors.push('sourcesLock.schemaVersion must equal 2.');
   }
   if (!validateKnownLibraryOrder(lockConfig.sources, 'sourcesLock.sources', errors)) {
     return errors;
@@ -450,7 +449,7 @@ export function validateSourcesLock(lockConfig, pluginsConfig, { release = false
     }
 
     let missingReleaseFields = [];
-    if (validateObject(lock.source, `${location}.source`, ['commit', 'repository', 'skillHash', 'skillPath'], errors)) {
+    if (validateObject(lock.source, `${location}.source`, ['repository', 'skillHash', 'skillPath'], errors)) {
       validateSafeHttpsUrl(lock.source.repository, `${location}.source.repository`, errors, expected.repository);
       if (!isSafeRelativePath(lock.source.skillPath)) {
         errors.push(`${location}.source.skillPath must be a safe normalized relative POSIX path.`);
@@ -460,12 +459,6 @@ export function validateSourcesLock(lockConfig, pluginsConfig, { release = false
       }
       if (plugin && lock.source.skillPath !== plugin.skillSourcePath) {
         errors.push(`${location}.source.skillPath must match config/plugins.json.`);
-      }
-
-      if (lock.source.commit === null) {
-        missingReleaseFields.push('source.commit');
-      } else if (typeof lock.source.commit !== 'string' || !commitPattern.test(lock.source.commit)) {
-        errors.push(`${location}.source.commit must be null or a full lowercase 40-character Git SHA.`);
       }
 
       if (lock.source.skillHash === null) {

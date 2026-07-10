@@ -1,5 +1,4 @@
 import assert from 'node:assert/strict';
-import { spawnSync } from 'node:child_process';
 import {
   access,
   appendFile,
@@ -22,41 +21,20 @@ import { syncDistribution } from '../scripts/lib/generator.mjs';
 import { repositoryRoot } from '../scripts/lib/repository.mjs';
 import { inspectSkillTree } from '../scripts/lib/skill-tree.mjs';
 
-function git(repositoryPath, argumentsList) {
-  const result = spawnSync('git', argumentsList, {
-    cwd: repositoryPath,
-    encoding: 'utf8',
-    env: {
-      ...process.env,
-      GIT_AUTHOR_EMAIL: 'tests@example.invalid',
-      GIT_AUTHOR_NAME: 'PrimeUI Tests',
-      GIT_COMMITTER_EMAIL: 'tests@example.invalid',
-      GIT_COMMITTER_NAME: 'PrimeUI Tests'
-    }
-  });
-  assert.equal(result.status, 0, result.stderr);
-  return result.stdout.trim();
-}
-
 async function readJson(relativePath) {
   return JSON.parse(await readFile(path.join(repositoryRoot, relativePath), 'utf8'));
 }
 
-async function createFrameworkSource(parentRoot, plugin) {
-  const repositoryPath = path.join(parentRoot, `source-${plugin.name}`);
-  const skillRoot = path.join(repositoryPath, ...plugin.skillSourcePath.split('/'));
+async function createCanonicalSkill(distributionRoot, plugin) {
+  const skillRoot = path.join(distributionRoot, ...plugin.skillSourcePath.split('/'));
   await mkdir(path.join(skillRoot, 'references'), { recursive: true });
   await writeFile(
     path.join(skillRoot, 'SKILL.md'),
     `---\nname: ${plugin.name}\n---\n\n# ${plugin.displayName}\n\nRead [setup](references/setup.md).\n`
   );
   await writeFile(path.join(skillRoot, 'references', 'setup.md'), `# ${plugin.displayName} Setup\n`);
-  git(repositoryPath, ['init', '--quiet']);
-  git(repositoryPath, ['add', '.']);
-  git(repositoryPath, ['commit', '--quiet', '-m', `${plugin.name} fixture`]);
-  const commit = git(repositoryPath, ['rev-parse', 'HEAD']);
   const inspection = await inspectSkillTree(skillRoot);
-  return { commit, inspection, repositoryPath, skillRoot };
+  return { inspection, skillRoot };
 }
 
 async function listSnapshotFiles(rootPath, prefix = '') {
@@ -110,13 +88,9 @@ async function createGeneratorFixture(context) {
 
   const pluginsConfig = await readJson('config/plugins.json');
   const lockConfig = await readJson('config/sources.lock.json');
-  const sourcePaths = new Map();
-
   for (const plugin of pluginsConfig.plugins) {
-    const fixture = await createFrameworkSource(root, plugin);
-    sourcePaths.set(plugin.name, fixture.repositoryPath);
+    const fixture = await createCanonicalSkill(distributionRoot, plugin);
     const lock = lockConfig.sources.find((candidate) => candidate.name === plugin.name);
-    lock.source.commit = fixture.commit;
     lock.source.skillHash = fixture.inspection.hash;
   }
 
@@ -129,7 +103,7 @@ async function createGeneratorFixture(context) {
     stableStringify(lockConfig)
   );
 
-  return { distributionRoot, pluginsConfig, sourcePaths };
+  return { distributionRoot, pluginsConfig };
 }
 
 test('generation is deterministic, atomic before replacement, and cleans stale output', async (context) => {
@@ -139,8 +113,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
     syncDistribution({
       check: false,
       replacementOptions: { renameEntry: failRenameAt(2) },
-      repositoryRoot: fixture.distributionRoot,
-      sourcePaths: fixture.sourcePaths
+      repositoryRoot: fixture.distributionRoot
     }),
     /Injected rename failure/
   );
@@ -153,8 +126,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
 
   const first = await syncDistribution({
     check: false,
-    repositoryRoot: fixture.distributionRoot,
-    sourcePaths: fixture.sourcePaths
+    repositoryRoot: fixture.distributionRoot
   });
   assert.equal(first.stale, true);
   assert.equal(first.added.length, 32);
@@ -162,8 +134,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
   const afterFirst = await listSnapshotFiles(fixture.distributionRoot);
   const second = await syncDistribution({
     check: false,
-    repositoryRoot: fixture.distributionRoot,
-    sourcePaths: fixture.sourcePaths
+    repositoryRoot: fixture.distributionRoot
   });
   assert.deepEqual(second, { added: [], changed: [], removed: [], stale: false });
   const afterSecond = await listSnapshotFiles(fixture.distributionRoot);
@@ -172,8 +143,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
   const checkBefore = await listSnapshotFiles(fixture.distributionRoot);
   const freshCheck = await syncDistribution({
     check: true,
-    repositoryRoot: fixture.distributionRoot,
-    sourcePaths: fixture.sourcePaths
+    repositoryRoot: fixture.distributionRoot
   });
   assert.equal(freshCheck.stale, false);
   assertSnapshotsEqual(checkBefore, await listSnapshotFiles(fixture.distributionRoot));
@@ -186,13 +156,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
   await writeFile(stalePath, 'stale\n');
 
   const staleBefore = await listSnapshotFiles(fixture.distributionRoot);
-  const sourceSkillPath = path.join(
-    fixture.sourcePaths.get('primevue'),
-    'packages',
-    'skills',
-    'primevue',
-    'SKILL.md'
-  );
+  const sourceSkillPath = path.join(fixture.distributionRoot, 'skills', 'primevue', 'SKILL.md');
   const sourceSkillBeforePreflightMutation = await readFile(sourceSkillPath);
   await assert.rejects(
     syncDistribution({
@@ -200,21 +164,19 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
       replacementOptions: {
         beforeMutation: () => appendFile(sourceSkillPath, 'changed during preflight\n')
       },
-      repositoryRoot: fixture.distributionRoot,
-      sourcePaths: fixture.sourcePaths
+      repositoryRoot: fixture.distributionRoot
     }),
-    /repository for primevue is dirty/
+    /Canonical skill source changed during generation/
   );
+  await writeFile(sourceSkillPath, sourceSkillBeforePreflightMutation);
   assertSnapshotsEqual(staleBefore, await listSnapshotFiles(fixture.distributionRoot));
   await assertNoStagingDirectories(fixture.distributionRoot);
-  await writeFile(sourceSkillPath, sourceSkillBeforePreflightMutation);
 
   await assert.rejects(
     syncDistribution({
       check: false,
       replacementOptions: { renameEntry: failRenameAt(2) },
-      repositoryRoot: fixture.distributionRoot,
-      sourcePaths: fixture.sourcePaths
+      repositoryRoot: fixture.distributionRoot
     }),
     /Injected rename failure/
   );
@@ -225,8 +187,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
     syncDistribution({
       check: false,
       replacementOptions: { renameEntry: failRenameAt(6) },
-      repositoryRoot: fixture.distributionRoot,
-      sourcePaths: fixture.sourcePaths
+      repositoryRoot: fixture.distributionRoot
     }),
     /Injected rename failure/
   );
@@ -235,8 +196,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
 
   const staleCheck = await syncDistribution({
     check: true,
-    repositoryRoot: fixture.distributionRoot,
-    sourcePaths: fixture.sourcePaths
+    repositoryRoot: fixture.distributionRoot
   });
   assert.deepEqual(staleCheck.added, ['plugins/primeng/provenance.json']);
   assert.deepEqual(staleCheck.changed, ['plugins/primevue/.mcp.json']);
@@ -245,8 +205,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
 
   const repaired = await syncDistribution({
     check: false,
-    repositoryRoot: fixture.distributionRoot,
-    sourcePaths: fixture.sourcePaths
+    repositoryRoot: fixture.distributionRoot
   });
   assert.equal(repaired.stale, true);
   await assert.rejects(access(stalePath));
@@ -263,19 +222,14 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
   assert.equal(provenance.mcp.package, '@primevue/mcp');
   assert.equal(provenance.pluginVersion, '0.1.0-alpha.0');
 
-  const primeVueSource = fixture.sourcePaths.get('primevue');
-  await appendFile(
-    path.join(primeVueSource, 'packages', 'skills', 'primevue', 'SKILL.md'),
-    'dirty\n'
-  );
+  await appendFile(sourceSkillPath, 'dirty\n');
   const beforeRejectedGeneration = await listSnapshotFiles(fixture.distributionRoot);
   await assert.rejects(
     syncDistribution({
       check: false,
-      repositoryRoot: fixture.distributionRoot,
-      sourcePaths: fixture.sourcePaths
+      repositoryRoot: fixture.distributionRoot
     }),
-    /repository for primevue is dirty/
+    /Skill hash mismatch for primevue/
   );
   assertSnapshotsEqual(beforeRejectedGeneration, await listSnapshotFiles(fixture.distributionRoot));
 });

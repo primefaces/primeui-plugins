@@ -1,6 +1,6 @@
-import { readDistributionConfiguration, syncDistribution } from './lib/generator.mjs';
+import { syncDistribution } from './lib/generator.mjs';
 import { repositoryRoot } from './lib/repository.mjs';
-import { parseSourceArguments } from './lib/sources.mjs';
+import { parseSyncArguments } from './lib/sources.mjs';
 
 function printDiagnostics(diagnostics) {
   for (const [label, marker, files] of [
@@ -19,12 +19,10 @@ function printDiagnostics(diagnostics) {
 }
 
 async function main() {
-  const { pluginsConfig } = await readDistributionConfiguration(repositoryRoot, { release: true });
-  const names = pluginsConfig.plugins.map((plugin) => plugin.name);
-  const { check, sources } = parseSourceArguments(process.argv.slice(2), names, {
+  const { check } = parseSyncArguments(process.argv.slice(2), {
     allowCheck: true
   });
-  const result = await syncDistribution({ check, repositoryRoot, sourcePaths: sources });
+  const result = await syncDistribution({ check, repositoryRoot });
 
   if (check && result.stale) {
     console.error('Generated payloads are stale.');

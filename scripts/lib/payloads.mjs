@@ -23,7 +23,6 @@ export function provenanceDocument(plugin, lock) {
     pluginVersion: lock.pluginVersion,
     schemaVersion: 1,
     source: {
-      commit: lock.source.commit,
       repository: lock.source.repository,
       skillHash: lock.source.skillHash,
       skillPath: lock.source.skillPath

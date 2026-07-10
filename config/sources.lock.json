@@ -1,6 +1,6 @@
 {
   "$schema": "./schemas/sources-lock.schema.json",
-  "schemaVersion": 1,
+  "schemaVersion": 2,
   "sources": [
     {
       "lockState": "locked",
@@ -11,10 +11,9 @@
       "name": "primevue",
       "pluginVersion": "0.1.0-alpha.0",
       "source": {
-        "commit": "1a0eb625b0c4d3c62e5e778d771b420c3ba2a6e4",
-        "repository": "https://github.com/primefaces/primevue-nextchapter.git",
+        "repository": "https://github.com/primefaces/primeui-plugins",
         "skillHash": "sha256:326e1e3893497861fed21a37d83063ce326a72f82ca01e2b3b3a0d5a383ae6d6",
-        "skillPath": "packages/skills/primevue"
+        "skillPath": "skills/primevue"
       }
     },
     {
@@ -26,10 +25,9 @@
       "name": "primeng",
       "pluginVersion": "0.1.0-alpha.0",
       "source": {
-        "commit": "9e785c42825d523446523f15f577b66500660591",
-        "repository": "https://github.com/primefaces/primeng-nextchapter.git",
+        "repository": "https://github.com/primefaces/primeui-plugins",
         "skillHash": "sha256:4b1ce8cf7cac365014267c16afbb1f167981025ae21248f5d4874c2cf6629feb",
-        "skillPath": "packages/skills/primeng"
+        "skillPath": "skills/primeng"
       }
     },
     {
@@ -41,10 +39,9 @@
       "name": "primereact",
       "pluginVersion": "0.1.0-alpha.0",
       "source": {
-        "commit": "1f7faedeb36b4ea2da5deeaa1a60b19e9b794fa7",
-        "repository": "https://github.com/primefaces/primereact-nextchapter.git",
+        "repository": "https://github.com/primefaces/primeui-plugins",
         "skillHash": "sha256:8cd8a4e75d8a252faf33b40f826987641eb6a9213e103ddd5a71b674c2a2bf8b",
-        "skillPath": "packages/skills/primereact"
+        "skillPath": "skills/primereact"
       }
     }
   ]

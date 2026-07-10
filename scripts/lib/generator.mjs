@@ -19,7 +19,7 @@ import {
 import { generatedRoots, validateGeneratedPayload } from './generated-validation.mjs';
 import { buildPayloadDocuments } from './payloads.mjs';
 import { copySkillTree } from './skill-tree.mjs';
-import { inspectSourceRepositories, verifySourceSnapshots } from './sources.mjs';
+import { inspectCanonicalSkills, verifyCanonicalSkillSnapshots } from './sources.mjs';
 
 function comparePaths(left, right) {
   return Buffer.compare(Buffer.from(left), Buffer.from(right));
@@ -320,13 +320,12 @@ export async function replaceGeneratedRoots(
 export async function syncDistribution({
   check,
   replacementOptions,
-  repositoryRoot,
-  sourcePaths
+  repositoryRoot
 }) {
   const { lockConfig, pluginsConfig } = await readDistributionConfiguration(repositoryRoot, {
     release: true
   });
-  const sourceSnapshots = await inspectSourceRepositories(pluginsConfig, lockConfig, sourcePaths, {
+  const sourceSnapshots = await inspectCanonicalSkills(repositoryRoot, pluginsConfig, lockConfig, {
     requireLocked: true,
     verifyHash: true
   });
@@ -339,10 +338,10 @@ export async function syncDistribution({
   );
 
   try {
-    await verifySourceSnapshots(pluginsConfig, lockConfig, sourcePaths, sourceSnapshots);
+    await verifyCanonicalSkillSnapshots(repositoryRoot, pluginsConfig, lockConfig, sourceSnapshots);
     const diagnostics = await compareGeneratedPayloads(payloadRoot, repositoryRoot);
     const stale = hasDifferences(diagnostics);
-    await verifySourceSnapshots(pluginsConfig, lockConfig, sourcePaths, sourceSnapshots);
+    await verifyCanonicalSkillSnapshots(repositoryRoot, pluginsConfig, lockConfig, sourceSnapshots);
     if (!check && stale) {
       const configuredBeforeMutation = replacementOptions?.beforeMutation;
       await replaceGeneratedRoots(
@@ -355,10 +354,10 @@ export async function syncDistribution({
             if (configuredBeforeMutation !== undefined) {
               await configuredBeforeMutation();
             }
-            await verifySourceSnapshots(
+            await verifyCanonicalSkillSnapshots(
+              repositoryRoot,
               pluginsConfig,
               lockConfig,
-              sourcePaths,
               sourceSnapshots
             );
           }

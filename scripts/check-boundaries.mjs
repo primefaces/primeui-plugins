@@ -2,6 +2,7 @@ import { validateGeneratedPayload } from './lib/generated-validation.mjs';
 import { readDistributionConfiguration } from './lib/generator.mjs';
 import { listRepositoryFiles } from './lib/repository.mjs';
 import { repositoryRoot } from './lib/repository.mjs';
+import { inspectCanonicalSkills } from './lib/sources.mjs';
 
 const files = await listRepositoryFiles();
 const errors = [];
@@ -16,6 +17,7 @@ const allowedTopLevel = new Set([
   'package.json',
   'plugins',
   'scripts',
+  'skills',
   'tests'
 ]);
 
@@ -32,6 +34,10 @@ for (const relativePath of files) {
 const { lockConfig, pluginsConfig } = await readDistributionConfiguration(repositoryRoot, {
   release: true
 });
+await inspectCanonicalSkills(repositoryRoot, pluginsConfig, lockConfig, {
+  requireLocked: true,
+  verifyHash: true
+});
 errors.push(...(await validateGeneratedPayload(repositoryRoot, pluginsConfig, lockConfig)));
 
 if (errors.length > 0) {
@@ -40,4 +46,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log('Repository boundary checks passed with strict generated-root validation.');
+console.log('Repository boundary checks passed with canonical-skill and generated-root validation.');

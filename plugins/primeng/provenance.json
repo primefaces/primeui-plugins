@@ -7,9 +7,8 @@
   "pluginVersion": "0.1.0-alpha.0",
   "schemaVersion": 1,
   "source": {
-    "commit": "9e785c42825d523446523f15f577b66500660591",
-    "repository": "https://github.com/primefaces/primeng-nextchapter.git",
+    "repository": "https://github.com/primefaces/primeui-plugins",
     "skillHash": "sha256:4b1ce8cf7cac365014267c16afbb1f167981025ae21248f5d4874c2cf6629feb",
-    "skillPath": "packages/skills/primeng"
+    "skillPath": "skills/primeng"
   }
 }

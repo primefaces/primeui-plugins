@@ -46,7 +46,7 @@
         "gemini": "gemini/primevue",
         "plugin": "plugins/primevue"
       },
-      "skillSourcePath": "packages/skills/primevue",
+      "skillSourcePath": "skills/primevue",
       "variants": []
     },
     {
@@ -81,7 +81,7 @@
         "gemini": "gemini/primeng",
         "plugin": "plugins/primeng"
       },
-      "skillSourcePath": "packages/skills/primeng",
+      "skillSourcePath": "skills/primeng",
       "variants": []
     },
     {
@@ -116,7 +116,7 @@
         "gemini": "gemini/primereact",
         "plugin": "plugins/primereact"
       },
-      "skillSourcePath": "packages/skills/primereact",
+      "skillSourcePath": "skills/primereact",
       "variants": [
         "styled",
         "tailwind",

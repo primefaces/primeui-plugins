@@ -44,14 +44,11 @@ test('release validation rejects every unresolved source lock', () => {
     lock.source.skillHash = null;
     lock.unresolvedReason = 'Hash pending.';
   }
-  unresolved.sources[1].source.commit = null;
-  unresolved.sources[2].source.commit = null;
-
   const errors = validateSourcesLock(unresolved, pluginsConfig, { release: true });
   assert.equal(errors.filter((error) => error.includes('is not release-ready')).length, 3);
   assert.match(errors.join('\n'), /primevue.*source\.skillHash/);
-  assert.match(errors.join('\n'), /primeng.*source\.commit, source\.skillHash/);
-  assert.match(errors.join('\n'), /primereact.*source\.commit, source\.skillHash/);
+  assert.match(errors.join('\n'), /primeng.*source\.skillHash/);
+  assert.match(errors.join('\n'), /primereact.*source\.skillHash/);
 });
 
 test('exact SemVer accepts releases and prereleases but rejects moving selectors', () => {
@@ -79,7 +76,7 @@ test('exact SemVer accepts releases and prereleases but rejects moving selectors
 });
 
 test('relative path validation rejects traversal and platform escapes', () => {
-  for (const value of ['packages/skills/primevue', 'plugins/primevue', 'gemini/primevue']) {
+  for (const value of ['skills/primevue', 'plugins/primevue', 'gemini/primevue']) {
     assert.equal(isSafeRelativePath(value), true, value);
   }
 
@@ -145,12 +142,12 @@ test('source locks reject non-exact versions, malformed provenance, and unsafe r
   invalid.sources[0].mcp.version = 'rc';
   invalid.sources[0].source.commit = 'F'.repeat(40);
   invalid.sources[0].source.skillHash = `sha256:${'G'.repeat(64)}`;
-  invalid.sources[0].source.repository = 'https://user:pass@github.com/primefaces/primevue-nextchapter.git';
+  invalid.sources[0].source.repository = 'https://user:pass@github.com/primefaces/primeui-plugins';
 
   const errors = validateSourcesLock(invalid, pluginsConfig).join('\n');
   assert.match(errors, /pluginVersion must be an exact SemVer/);
   assert.match(errors, /mcp\.version must be an exact SemVer/);
-  assert.match(errors, /full lowercase 40-character Git SHA/);
+  assert.match(errors, /source\.commit is not allowed/);
   assert.match(errors, /sha256:<64 lowercase hex>/);
   assert.match(errors, /without credentials/);
 });
@@ -158,12 +155,12 @@ test('source locks reject non-exact versions, malformed provenance, and unsafe r
 test('cross-file contract rejects MCP and skill path drift', () => {
   const drifted = structuredClone(sourcesLock);
   drifted.sources[0].mcp.package = '@primeng/mcp';
-  drifted.sources[0].source.skillPath = 'packages/skills/other';
+  drifted.sources[0].source.skillPath = 'skills/other';
 
   const errors = validateSourcesLock(drifted, pluginsConfig).join('\n');
   assert.match(errors, /mcp\.package must equal @primevue\/mcp/);
   assert.match(errors, /mcp\.package must match config\/plugins\.json/);
-  assert.match(errors, /source\.skillPath must equal packages\/skills\/primevue/);
+  assert.match(errors, /source\.skillPath must equal skills\/primevue/);
   assert.match(errors, /source\.skillPath must match config\/plugins\.json/);
 });
 
@@ -240,24 +237,24 @@ test('schema library definitions pin the same package, repository, and path mapp
       mcpPackage: '@primevue/mcp',
       name: 'primevue',
       pluginDefinition: 'primevuePlugin',
-      repository: 'https://github.com/primefaces/primevue-nextchapter.git',
-      skillPath: 'packages/skills/primevue'
+      repository: 'https://github.com/primefaces/primeui-plugins',
+      skillPath: 'skills/primevue'
     },
     {
       lockDefinition: 'primengLock',
       mcpPackage: '@primeng/mcp',
       name: 'primeng',
       pluginDefinition: 'primengPlugin',
-      repository: 'https://github.com/primefaces/primeng-nextchapter.git',
-      skillPath: 'packages/skills/primeng'
+      repository: 'https://github.com/primefaces/primeui-plugins',
+      skillPath: 'skills/primeng'
     },
     {
       lockDefinition: 'primereactLock',
       mcpPackage: '@primereact/mcp',
       name: 'primereact',
       pluginDefinition: 'primereactPlugin',
-      repository: 'https://github.com/primefaces/primereact-nextchapter.git',
-      skillPath: 'packages/skills/primereact'
+      repository: 'https://github.com/primefaces/primeui-plugins',
+      skillPath: 'skills/primereact'
     }
   ];
 

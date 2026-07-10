@@ -6,18 +6,17 @@ import { readDistributionConfiguration } from './lib/generator.mjs';
 import { completeSourceLock } from './lib/locking.mjs';
 import { repositoryRoot } from './lib/repository.mjs';
 import {
-  inspectSourceRepositories,
-  parseSourceArguments,
-  verifySourceSnapshots
+  inspectCanonicalSkills,
+  parseSyncArguments,
+  verifyCanonicalSkillSnapshots
 } from './lib/sources.mjs';
 
 async function main() {
   const { lockConfig, pluginsConfig } = await readDistributionConfiguration(repositoryRoot, {
     release: false
   });
-  const names = pluginsConfig.plugins.map((plugin) => plugin.name);
-  const { sources } = parseSourceArguments(process.argv.slice(2), names);
-  const snapshots = await inspectSourceRepositories(pluginsConfig, lockConfig, sources, {
+  parseSyncArguments(process.argv.slice(2));
+  const snapshots = await inspectCanonicalSkills(repositoryRoot, pluginsConfig, lockConfig, {
     requireLocked: false,
     verifyHash: false
   });
@@ -31,7 +30,7 @@ async function main() {
     );
   }
 
-  await verifySourceSnapshots(pluginsConfig, lockConfig, sources, snapshots);
+  await verifyCanonicalSkillSnapshots(repositoryRoot, pluginsConfig, lockConfig, snapshots);
 
   const lockPath = path.join(repositoryRoot, 'config', 'sources.lock.json');
   const temporaryPath = path.join(
@@ -41,7 +40,7 @@ async function main() {
   );
   try {
     await writeFile(temporaryPath, stableStringify(updatedLock), { flag: 'wx' });
-    await verifySourceSnapshots(pluginsConfig, lockConfig, sources, snapshots);
+    await verifyCanonicalSkillSnapshots(repositoryRoot, pluginsConfig, lockConfig, snapshots);
     await rename(temporaryPath, lockPath);
   } finally {
     await rm(temporaryPath, { force: true });
@@ -49,7 +48,7 @@ async function main() {
 
   console.log('Source locks recorded:');
   for (const lock of updatedLock.sources) {
-    console.log(`- ${lock.name}: ${lock.source.commit} ${lock.source.skillHash}`);
+    console.log(`- ${lock.name}: ${lock.source.skillPath} ${lock.source.skillHash}`);
   }
 }
 

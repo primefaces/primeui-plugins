@@ -100,10 +100,6 @@
     "lockedSource": {
       "additionalProperties": false,
       "properties": {
-        "commit": {
-          "pattern": "^[0-9a-f]{40}$",
-          "type": "string"
-        },
         "repository": {
           "$ref": "#/$defs/repository"
         },
@@ -116,7 +112,6 @@
         }
       },
       "required": [
-        "commit",
         "repository",
         "skillHash",
         "skillPath"
@@ -160,10 +155,10 @@
             "source": {
               "properties": {
                 "repository": {
-                  "const": "https://github.com/primefaces/primeng-nextchapter.git"
+                  "const": "https://github.com/primefaces/primeui-plugins"
                 },
                 "skillPath": {
-                  "const": "packages/skills/primeng"
+                  "const": "skills/primeng"
                 }
               }
             }
@@ -191,10 +186,10 @@
             "source": {
               "properties": {
                 "repository": {
-                  "const": "https://github.com/primefaces/primereact-nextchapter.git"
+                  "const": "https://github.com/primefaces/primeui-plugins"
                 },
                 "skillPath": {
-                  "const": "packages/skills/primereact"
+                  "const": "skills/primereact"
                 }
               }
             }
@@ -222,10 +217,10 @@
             "source": {
               "properties": {
                 "repository": {
-                  "const": "https://github.com/primefaces/primevue-nextchapter.git"
+                  "const": "https://github.com/primefaces/primeui-plugins"
                 },
                 "skillPath": {
-                  "const": "packages/skills/primevue"
+                  "const": "skills/primevue"
                 }
               }
             }
@@ -239,29 +234,17 @@
       "type": "string"
     },
     "repository": {
-      "format": "uri",
-      "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\\.git$",
+      "const": "https://github.com/primefaces/primeui-plugins",
       "type": "string"
     },
     "source": {
       "additionalProperties": false,
       "properties": {
-        "commit": {
-          "oneOf": [
-            {
-              "pattern": "^[0-9a-f]{40}$",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
         "repository": {
           "$ref": "#/$defs/repository"
         },
         "skillHash": {
-          "oneOf": [
+          "anyOf": [
             {
               "pattern": "^sha256:[0-9a-f]{64}$",
               "type": "string"
@@ -276,7 +259,6 @@
         }
       },
       "required": [
-        "commit",
         "repository",
         "skillHash",
         "skillPath"
@@ -285,60 +267,18 @@
     },
     "unresolvedSource": {
       "additionalProperties": false,
-      "anyOf": [
-        {
-          "properties": {
-            "commit": {
-              "type": "null"
-            }
-          },
-          "required": [
-            "commit"
-          ]
-        },
-        {
-          "properties": {
-            "skillHash": {
-              "type": "null"
-            }
-          },
-          "required": [
-            "skillHash"
-          ]
-        }
-      ],
       "properties": {
-        "commit": {
-          "oneOf": [
-            {
-              "pattern": "^[0-9a-f]{40}$",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
-        },
         "repository": {
           "$ref": "#/$defs/repository"
         },
         "skillHash": {
-          "oneOf": [
-            {
-              "pattern": "^sha256:[0-9a-f]{64}$",
-              "type": "string"
-            },
-            {
-              "type": "null"
-            }
-          ]
+          "type": "null"
         },
         "skillPath": {
           "$ref": "#/$defs/relativePath"
         }
       },
       "required": [
-        "commit",
         "repository",
         "skillHash",
         "skillPath"
@@ -354,7 +294,7 @@
       "const": "./schemas/sources-lock.schema.json"
     },
     "schemaVersion": {
-      "const": 1
+      "const": 2
     },
     "sources": {
       "items": false,

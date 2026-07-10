@@ -22,12 +22,13 @@ Installation instructions are published with installable plugin releases.
 
 ## Repository model
 
-Framework repositories own the canonical skills and MCP packages. This repository locks accepted source commits and produces self-contained distribution snapshots.
+This repository owns the canonical skills and the generated client payloads. Framework repositories own only their MCP packages. Keeping the skill source beside its distribution tooling makes skill review, plugin generation, and release versioning one atomic repository change.
 
 Authored inputs include:
 
 - `config/plugins.json`: marketplace identity, plugin metadata, MCP identities, client support, and output declarations.
-- `config/sources.lock.json`: exact skill source commits, content hashes, plugin versions, and MCP versions.
+- `skills/<library>/`: canonical PrimeVue, PrimeNG, and PrimeReact workflow skills.
+- `config/sources.lock.json`: canonical skill hashes, plugin versions, and exact MCP versions.
 - JSON Schemas, validation tooling, tests, and release rules.
 
 Generated outputs include marketplace catalogs, client manifests, copied physical skill trees, MCP launch configurations, Gemini extensions, and provenance records. Generated payloads are never edited manually.
@@ -46,34 +47,21 @@ npm run check
 npm run check:clean
 ```
 
-`npm run validate:release` requires every source lock to contain complete, immutable release provenance.
+`npm run validate:release` requires every source lock to contain a complete canonical skill hash and exact release versions.
 
 `npm run check:clean` snapshots the exact Git state, runs the validation suite, and fails if a check modifies the worktree or index.
 
 ## Source locking and generation
 
-Set each variable to the canonical absolute path of a clean framework repository at the accepted commit:
-
 ```bash
-npm run lock:sources -- \
-  --source "primevue=$PRIMEVUE_SOURCE" \
-  --source "primeng=$PRIMENG_SOURCE" \
-  --source "primereact=$PRIMEREACT_SOURCE"
-
-npm run sync -- \
-  --source "primevue=$PRIMEVUE_SOURCE" \
-  --source "primeng=$PRIMENG_SOURCE" \
-  --source "primereact=$PRIMEREACT_SOURCE"
-
-npm run sync:check -- \
-  --source "primevue=$PRIMEVUE_SOURCE" \
-  --source "primeng=$PRIMENG_SOURCE" \
-  --source "primereact=$PRIMEREACT_SOURCE"
+npm run lock:sources
+npm run sync
+npm run sync:check
 ```
 
-`lock:sources` verifies the already-authored accepted commits and records their deterministic skill hashes. It never fetches or modifies a source repository. `sync` refuses to change the source lock, builds and validates a staged payload, and replaces only the generator-owned roots. `sync:check` generates outside the repository, reports added, removed, and changed files, and does not modify committed output.
+`lock:sources` records deterministic hashes for the canonical trees under `skills/`. `sync` refuses to change the source lock, builds and validates a staged payload, and replaces only the generator-owned roots. `sync:check` generates outside the repository, reports added, removed, and changed files, and does not modify committed output.
 
-Normal `npm run check` validates committed payload structure, hashes, provenance, MCP pins, security, links, and library isolation without requiring framework checkouts.
+Normal `npm run check` validates canonical skill trees, committed payload structure, hashes, provenance, MCP pins, security, links, and library isolation without requiring framework checkouts.
 
 ## Client contracts
 

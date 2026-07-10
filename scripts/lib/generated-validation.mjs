@@ -9,7 +9,6 @@ export const generatedRoots = [
   '.agents/plugins',
   '.claude-plugin',
   '.cursor-plugin',
-  'gemini',
   'plugins'
 ];
 
@@ -162,19 +161,6 @@ async function validateSkillContent(name, skillRoot, records, errors) {
   }
 }
 
-async function compareSkillCopies(name, leftRoot, rightRoot, records, errors) {
-  for (const record of records) {
-    const relativeSegments = record.path.split('/');
-    const [left, right] = await Promise.all([
-      readFile(path.join(leftRoot, ...relativeSegments)),
-      readFile(path.join(rightRoot, ...relativeSegments))
-    ]);
-    if (!left.equals(right)) {
-      errors.push(`${name}/${record.path}: plugin and Gemini skill copies differ.`);
-    }
-  }
-}
-
 function publicBoundaryErrors(relativePath, content) {
   const errors = [];
   const checks = [
@@ -211,14 +197,9 @@ export async function validateGeneratedPayload(payloadRoot, pluginsConfig, lockC
   for (const plugin of pluginsConfig.plugins) {
     const lock = locks.get(plugin.name);
     const pluginSkillRoot = path.join(payloadRoot, plugin.outputs.plugin, 'skills', plugin.name);
-    const geminiSkillRoot = path.join(payloadRoot, plugin.outputs.gemini, 'skills', plugin.name);
     let pluginInspection;
-    let geminiInspection;
     try {
-      [pluginInspection, geminiInspection] = await Promise.all([
-        inspectSkillTree(pluginSkillRoot),
-        inspectSkillTree(geminiSkillRoot)
-      ]);
+      pluginInspection = await inspectSkillTree(pluginSkillRoot);
     } catch (error) {
       errors.push(`${plugin.name}: unable to inspect copied skill trees (${error.message}).`);
       continue;
@@ -229,35 +210,11 @@ export async function validateGeneratedPayload(payloadRoot, pluginsConfig, lockC
         `${plugin.name}: plugin skill hash ${pluginInspection.hash} does not match ${lock.source.skillHash}.`
       );
     }
-    if (geminiInspection.hash !== lock.source.skillHash) {
-      errors.push(
-        `${plugin.name}: Gemini skill hash ${geminiInspection.hash} does not match ${lock.source.skillHash}.`
-      );
-    }
-
-    const pluginPaths = pluginInspection.records.map((record) => record.path);
-    const geminiPaths = geminiInspection.records.map((record) => record.path);
-    if (
-      pluginPaths.length !== geminiPaths.length ||
-      pluginPaths.some((recordPath, index) => recordPath !== geminiPaths[index])
-    ) {
-      errors.push(`${plugin.name}: plugin and Gemini skill file inventories differ.`);
-    } else {
-      await compareSkillCopies(
-        plugin.name,
-        pluginSkillRoot,
-        geminiSkillRoot,
-        pluginInspection.records,
-        errors
-      );
-    }
-
     validateSkillPathPolicy(plugin.name, pluginInspection.records, errors);
     await validateSkillContent(plugin.name, pluginSkillRoot, pluginInspection.records, errors);
 
     for (const record of pluginInspection.records) {
       expectedFiles.add(`${plugin.outputs.plugin}/skills/${plugin.name}/${record.path}`);
-      expectedFiles.add(`${plugin.outputs.gemini}/skills/${plugin.name}/${record.path}`);
     }
   }
 

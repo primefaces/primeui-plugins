@@ -1,0 +1,26 @@
+name: Public Client Smoke
+
+on:
+  schedule:
+    - cron: '17 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  clients:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - name: Install current client CLIs
+        run: npm install --global @anthropic-ai/claude-code @google/gemini-cli @openai/codex
+      - run: npm run validate:claude -- --source github
+      - run: npm run validate:codex -- --source github
+      - run: npm run validate:gemini -- --source all
+      - run: npm run validate:cursor -- --source all
+      - run: npm run check:clean

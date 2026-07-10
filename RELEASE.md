@@ -39,9 +39,11 @@ The repository generator must produce rather than hand-author:
 
 Identical configuration and canonical skill inputs must produce byte-identical JSON and files. Generation must reject symlinks, stale output, path escape, unpinned MCP versions, secrets, and incomplete locks.
 
-The generator owns only `.claude-plugin/`, `.agents/plugins/`, `.cursor-plugin/`, `plugins/`, and `gemini/`. It validates a complete same-filesystem staging tree before swapping those roots with rollback protection. Freshness checking uses temporary output outside the repository and never replaces committed files.
+The generator owns only `.claude-plugin/`, `.agents/plugins/`, `.cursor-plugin/`, and `plugins/`. It validates a complete same-filesystem staging tree before swapping those roots with rollback protection. Freshness checking uses temporary output outside the repository and never replaces committed files.
 
-Cursor reuses each existing `plugins/<library>` root. Its manifest points to the same physical `skills/` tree and `.mcp.json` used by the other plugin hosts, and the root `.cursor-plugin/marketplace.json` resolves the three library roots independently. No Cursor-only canonical skill or MCP copy is permitted.
+Claude, Codex, Cursor, and Gemini reuse each existing `plugins/<library>` root. Their manifests point to the same physical `skills/` tree, while Claude, Codex, and Cursor share `.mcp.json` and Gemini embeds the same exact MCP server configuration in `gemini-extension.json`. No host-specific canonical skill copy is permitted.
+
+`npm run export:gemini -- --out <path>` creates minimal extension roots for future dedicated Gemini distribution repositories. The export destination must be outside this repository and must not already exist. Exported repositories are release artifacts; canonical skills remain authored only here.
 
 ## Release sequence
 
@@ -51,7 +53,9 @@ Cursor reuses each existing `plugins/<library>` root. Its manifest points to the
 4. Require `npm run validate:release` to pass.
 5. Generate twice and require a clean diff.
 6. Run schema, security, path-safety, provenance, host-manifest, and isolation checks.
-7. Run clean Claude, Codex, Cursor payload, and Gemini installation smokes.
-8. Tag only after review approval. Do not publish this package to npm.
+7. Export Gemini distribution roots and verify byte-identical repeated output.
+8. Run clean Claude, Codex, Cursor payload, and Gemini installation smokes.
+9. Confirm an approved repository license and update public manifest metadata before Marketplace submission.
+10. Tag only after review approval. Do not publish this package to npm.
 
 Cursor Marketplace submission is a separate external release step. The publisher must host the plugins in the public repository, confirm an approved permissive licensing position, submit the repository at `cursor.com/marketplace/publish`, satisfy Cursor's manual code and publisher review, and request re-indexing for updates. Submission, approval, and authenticated client acceptance are not automated repository gates.

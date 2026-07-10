@@ -11,6 +11,7 @@
     "check:boundaries": "node scripts/check-boundaries.mjs",
     "check:clean": "node scripts/check-clean.mjs",
     "check:security": "node scripts/check-security.mjs",
+    "export:gemini": "node scripts/export-gemini.mjs",
     "format:check": "node scripts/check-format.mjs",
     "lock:sources": "node scripts/lock-sources.mjs",
     "prepublishOnly": "node scripts/deny-publish.mjs",

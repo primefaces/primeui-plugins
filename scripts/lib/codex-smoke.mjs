@@ -2,30 +2,9 @@ import { access, mkdtemp, mkdir, readFile, readdir, realpath, rm, writeFile } fr
 import os from 'node:os';
 import path from 'node:path';
 import { readDistributionConfiguration } from './generator.mjs';
-import { runCommand, smokeInstalledMcp } from './claude-smoke.mjs';
-
-const codexUsageContracts = {
-  primeng: {
-    validCode: '<p-button label="Save" severity="success" [disabled]="saving" />',
-    invalidCode: '<p-button label="Save" [madeUp]="true" />'
-  },
-  primereact: {
-    validCode: [
-      "import { Button } from 'primereact/button';",
-      '',
-      'export function SaveAction() {',
-      '  return <Button severity="success">Save</Button>;',
-      '}'
-    ].join('\n'),
-    invalidCode: '<Button severity="success" madeUp>Save</Button>'
-  },
-  primevue: {
-    validCode: '<Button label="Save" severity="success" :disabled="saving" />',
-    invalidCode: '<Button label="Save" madeUp />'
-  }
-};
-
-const libraryNames = ['primevue', 'primeng', 'primereact'];
+import { smokeInstalledMcp } from './mcp-smoke.mjs';
+import { runCommand } from './process.mjs';
+import { libraryNames, usageContracts } from './smoke-contracts.mjs';
 const safeEnvironmentKeys = new Set([
   'ALL_PROXY',
   'CI',
@@ -473,7 +452,7 @@ export async function runCodexInstallScenario({ keepTemp = false, library, repos
       return [
         plugin.name,
         {
-          ...codexUsageContracts[plugin.name],
+          ...usageContracts[plugin.name],
           mcpPackage: lock.mcp.package,
           mcpVersion: lock.mcp.version,
           pluginVersion: lock.pluginVersion,

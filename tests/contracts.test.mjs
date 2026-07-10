@@ -82,7 +82,7 @@ test('exact SemVer accepts releases and prereleases but rejects moving selectors
 });
 
 test('relative path validation rejects traversal and platform escapes', () => {
-  for (const value of ['skills/primevue', 'plugins/primevue', 'gemini/primevue']) {
+  for (const value of ['skills/primevue', 'plugins/primevue']) {
     assert.equal(isSafeRelativePath(value), true, value);
   }
 
@@ -253,6 +253,7 @@ test('schema library definitions pin the same package, repository, and path mapp
       mcpPackage: '@primevue/mcp',
       name: 'primevue',
       pluginDefinition: 'primevuePlugin',
+      pluginPath: 'plugins/primevue',
       repository: 'https://github.com/primefaces/primeui-plugins',
       skillPath: 'skills/primevue'
     },
@@ -261,6 +262,7 @@ test('schema library definitions pin the same package, repository, and path mapp
       mcpPackage: '@primeng/mcp',
       name: 'primeng',
       pluginDefinition: 'primengPlugin',
+      pluginPath: 'plugins/primeng',
       repository: 'https://github.com/primefaces/primeui-plugins',
       skillPath: 'skills/primeng'
     },
@@ -269,6 +271,7 @@ test('schema library definitions pin the same package, repository, and path mapp
       mcpPackage: '@primereact/mcp',
       name: 'primereact',
       pluginDefinition: 'primereactPlugin',
+      pluginPath: 'plugins/primereact',
       repository: 'https://github.com/primefaces/primeui-plugins',
       skillPath: 'skills/primereact'
     }
@@ -279,6 +282,7 @@ test('schema library definitions pin the same package, repository, and path mapp
     const lockProperties = sourcesLockSchema.$defs[expectation.lockDefinition].allOf[1].properties;
     assert.equal(pluginProperties.name.const, expectation.name);
     assert.equal(pluginProperties.mcp.properties.package.const, expectation.mcpPackage);
+    assert.equal(pluginProperties.outputs.properties.plugin.const, expectation.pluginPath);
     assert.equal(pluginProperties.skillSourcePath.const, expectation.skillPath);
     assert.equal(lockProperties.name.const, expectation.name);
     assert.equal(lockProperties.mcp.properties.package.const, expectation.mcpPackage);

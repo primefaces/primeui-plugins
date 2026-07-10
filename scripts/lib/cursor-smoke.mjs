@@ -15,34 +15,10 @@ import os from 'node:os';
 import path from 'node:path';
 import { isExactSemver } from './contracts.mjs';
 import { readDistributionConfiguration } from './generator.mjs';
-import {
-  hasProcessTreeInspection,
-  smokeInstalledMcp
-} from './claude-smoke.mjs';
+import { smokeInstalledMcp } from './mcp-smoke.mjs';
+import { hasProcessTreeInspection } from './process.mjs';
 import { inspectSkillTree } from './skill-tree.mjs';
-
-const cursorUsageContracts = {
-  primeng: {
-    validCode: '<p-button label="Save" severity="success" [disabled]="saving" />',
-    invalidCode: '<p-button label="Save" [madeUp]="true" />'
-  },
-  primereact: {
-    validCode: [
-      "import { Button } from 'primereact/button';",
-      '',
-      'export function SaveAction() {',
-      '  return <Button severity="success">Save</Button>;',
-      '}'
-    ].join('\n'),
-    invalidCode: '<Button severity="success" madeUp>Save</Button>'
-  },
-  primevue: {
-    validCode: '<Button label="Save" severity="success" :disabled="saving" />',
-    invalidCode: '<Button label="Save" madeUp />'
-  }
-};
-
-const libraryNames = ['primevue', 'primeng', 'primereact'];
+import { libraryNames, usageContracts } from './smoke-contracts.mjs';
 const sourceNames = ['payload', 'marketplace'];
 const pluginNamePattern = /^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/;
 const pluginManifestKeys = new Set([
@@ -491,7 +467,7 @@ export async function runCursorPayloadScenario({
   const plugin = pluginsConfig.plugins.find((candidate) => candidate.name === library);
   assert(lock !== undefined && plugin !== undefined, `${library}: release contract is missing.`);
   const contract = {
-    ...cursorUsageContracts[library],
+    ...usageContracts[library],
     description: plugin.description,
     displayName: plugin.displayName,
     mcpPackage: lock.mcp.package,

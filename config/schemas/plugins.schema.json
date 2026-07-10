@@ -130,15 +130,11 @@
     "outputs": {
       "additionalProperties": false,
       "properties": {
-        "gemini": {
-          "$ref": "#/$defs/relativePath"
-        },
         "plugin": {
           "$ref": "#/$defs/relativePath"
         }
       },
       "required": [
-        "gemini",
         "plugin"
       ],
       "type": "object"
@@ -244,9 +240,6 @@
             },
             "outputs": {
               "properties": {
-                "gemini": {
-                  "const": "gemini/primeng"
-                },
                 "plugin": {
                   "const": "plugins/primeng"
                 }
@@ -290,9 +283,6 @@
             },
             "outputs": {
               "properties": {
-                "gemini": {
-                  "const": "gemini/primereact"
-                },
                 "plugin": {
                   "const": "plugins/primereact"
                 }
@@ -341,9 +331,6 @@
             },
             "outputs": {
               "properties": {
-                "gemini": {
-                  "const": "gemini/primevue"
-                },
                 "plugin": {
                   "const": "plugins/primevue"
                 }

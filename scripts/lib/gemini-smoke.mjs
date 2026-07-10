@@ -1,31 +1,11 @@
 import { access, mkdtemp, mkdir, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
+import { exportGeminiDistributions } from './gemini-distribution.mjs';
 import { readDistributionConfiguration } from './generator.mjs';
-import { hasProcessTreeInspection, runCommand, smokeInstalledMcp } from './claude-smoke.mjs';
-
-const geminiUsageContracts = {
-  primeng: {
-    validCode: '<p-button label="Save" severity="success" [disabled]="saving" />',
-    invalidCode: '<p-button label="Save" [madeUp]="true" />'
-  },
-  primereact: {
-    validCode: [
-      "import { Button } from 'primereact/button';",
-      '',
-      'export function SaveAction() {',
-      '  return <Button severity="success">Save</Button>;',
-      '}'
-    ].join('\n'),
-    invalidCode: '<Button severity="success" madeUp>Save</Button>'
-  },
-  primevue: {
-    validCode: '<Button label="Save" severity="success" :disabled="saving" />',
-    invalidCode: '<Button label="Save" madeUp />'
-  }
-};
-
-const libraryNames = ['primevue', 'primeng', 'primereact'];
+import { smokeInstalledMcp } from './mcp-smoke.mjs';
+import { hasProcessTreeInspection, runCommand } from './process.mjs';
+import { libraryNames, usageContracts } from './smoke-contracts.mjs';
 const safeEnvironmentKeys = new Set([
   'CI',
   'COLORTERM',
@@ -94,11 +74,11 @@ export function parseGeminiSmokeArguments(argumentsList) {
     if (argument === '--source') {
       const value = argumentsList[++index];
       if (value === 'all') {
-        options.sources = ['local', 'github'];
-      } else if (value === 'local' || value === 'github') {
+        options.sources = ['local', 'export', 'github'];
+      } else if (value === 'local' || value === 'export' || value === 'github') {
         options.sources = [value];
       } else {
-        fail('--source must be all, local, or github.');
+        fail('--source must be all, local, export, or github.');
       }
       continue;
     }
@@ -504,7 +484,7 @@ export async function runGeminiInstallScenario({
   const plugin = pluginsConfig.plugins.find((candidate) => candidate.name === library);
   assert(lock !== undefined && plugin !== undefined, `${library}: release contract is missing.`);
   const contract = {
-    ...geminiUsageContracts[library],
+    ...usageContracts[library],
     mcpPackage: lock.mcp.package,
     mcpVersion: lock.mcp.version,
     pluginVersion: lock.pluginVersion,
@@ -514,10 +494,20 @@ export async function runGeminiInstallScenario({
 
   const scenario = await createScenarioRoot(`primeui-gemini-${source}-${library}-`);
   try {
-    const sourceRoot =
-      source === 'github'
-        ? path.join(await clonePersistentSource(scenario), 'gemini', library)
-        : path.join(repositoryRoot, 'gemini', library);
+    let sourceRoot;
+    if (source === 'github') {
+      sourceRoot = path.join(await clonePersistentSource(scenario), 'plugins', library);
+    } else if (source === 'export') {
+      const exportRoot = path.join(scenario.root, 'gemini-distributions');
+      await exportGeminiDistributions({
+        destinationRoot: exportRoot,
+        libraries: [library],
+        repositoryRoot
+      });
+      sourceRoot = path.join(exportRoot, library);
+    } else {
+      sourceRoot = path.join(repositoryRoot, 'plugins', library);
+    }
     const canonicalSourceRoot = await realpath(sourceRoot);
     await runGemini(scenario, ['extensions', 'validate', canonicalSourceRoot], {
       timeoutMs: 60_000
@@ -551,7 +541,7 @@ export async function runGeminiInstallScenario({
     await runGemini(scenario, ['extensions', 'enable', library]);
     extension = await assertOneExtension(scenario, contract, library, true);
 
-    let refreshMode = 'local source reported up to date';
+    let refreshMode = source === 'export' ? 'generated distribution reported up to date' : 'local source reported up to date';
     if (source === 'github') {
       const originalVersion = contract.pluginVersion;
       const updateVersion = refreshedVersion(originalVersion);

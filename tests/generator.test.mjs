@@ -129,7 +129,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
     repositoryRoot: fixture.distributionRoot
   });
   assert.equal(first.stale, true);
-  assert.equal(first.added.length, 36);
+  assert.equal(first.added.length, 27);
 
   const afterFirst = await listSnapshotFiles(fixture.distributionRoot);
   const second = await syncDistribution({
@@ -150,7 +150,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
 
   const changedPath = path.join(fixture.distributionRoot, 'plugins', 'primevue', '.mcp.json');
   const missingPath = path.join(fixture.distributionRoot, 'plugins', 'primeng', 'provenance.json');
-  const stalePath = path.join(fixture.distributionRoot, 'gemini', 'primereact', 'stale.txt');
+  const stalePath = path.join(fixture.distributionRoot, 'plugins', 'primereact', 'stale.txt');
   await appendFile(changedPath, 'stale\n');
   await unlink(missingPath);
   await writeFile(stalePath, 'stale\n');
@@ -200,7 +200,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
   });
   assert.deepEqual(staleCheck.added, ['plugins/primeng/provenance.json']);
   assert.deepEqual(staleCheck.changed, ['plugins/primevue/.mcp.json']);
-  assert.deepEqual(staleCheck.removed, ['gemini/primereact/stale.txt']);
+  assert.deepEqual(staleCheck.removed, ['plugins/primereact/stale.txt']);
   assertSnapshotsEqual(staleBefore, await listSnapshotFiles(fixture.distributionRoot));
 
   const repaired = await syncDistribution({

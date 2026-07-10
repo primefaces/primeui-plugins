@@ -84,8 +84,8 @@ Use `primeng` or `primereact` instead for the other libraries. The repository va
 Gemini installs one extension from one extension root. The public repository contains three extension roots, so install the selected library from an existing persistent checkout instead of the repository root:
 
 ```bash
-gemini extensions validate <persistent-checkout>/gemini/primevue
-gemini extensions install <persistent-checkout>/gemini/primevue --consent
+gemini extensions validate <persistent-checkout>/plugins/primevue
+gemini extensions install <persistent-checkout>/plugins/primevue --consent
 gemini extensions list --output-format json
 ```
 
@@ -101,10 +101,10 @@ Gemini 0.29.3 detects local updates by comparing the source and installed manife
 
 ```bash
 gemini extensions uninstall primevue
-gemini extensions install <persistent-checkout>/gemini/primevue --consent
+gemini extensions install <persistent-checkout>/plugins/primevue --consent
 ```
 
-Extension installation has no Git-subdirectory `--path` option. Persistent checkout management belongs to the PrimeUI CLI integration rather than this extension repository.
+Extension installation has no Git-subdirectory `--path` option. Until dedicated generated distribution repositories are available, Gemini installation therefore requires a persistent checkout of this source repository.
 
 ## Repository model
 
@@ -118,6 +118,8 @@ Authored inputs include:
 - JSON Schemas, validation tooling, tests, and release rules.
 
 Generated outputs include marketplace catalogs, client manifests, copied physical skill trees, MCP launch configurations, Gemini extensions, and provenance records. Generated payloads are never edited manually.
+
+All four clients share one generated payload under `plugins/<library>`. See [Repository architecture](docs/ARCHITECTURE.md) for the complete authored and generated ownership model.
 
 ## Validation
 
@@ -137,17 +139,7 @@ npm run check
 npm run check:clean
 ```
 
-`npm run validate:release` requires every source lock to contain a complete canonical skill hash and exact release versions.
-
-`npm run validate:claude` uses a fresh temporary home, Claude config, client cache, and npm cache for each library. It validates the marketplace and plugins with the detected client, then proves independent install, discovery, lifecycle, payload isolation, and MCP runtime behavior. Pass `--claude-version <exact-version>` to test a temporary published Claude Code version, or `--source github` to test the public marketplace source.
-
-`npm run validate:codex` verifies the installed Codex plugin command contract, then gives every library and source its own temporary `CODEX_HOME`, home, XDG config/cache, npm cache, and npm user configuration while stripping credential-bearing environment variables. It proves marketplace discovery, selected-only installation and cache isolation, manifest pointers, exact MCP pins, remove/reinstall behavior, the eight-tool MCP surface, Button documentation and validation, and PrimeReact styled/Tailwind routing. Pass `--source github` to test the public Git marketplace snapshot. Interactive enable/disable and desktop discovery remain manual client checks because Codex exposes no non-interactive plugin-state command.
-
-`npm run validate:cursor -- --source all` validates the direct library roots and the multi-plugin Cursor marketplace resolution independently. Each scenario uses a fresh temporary home, npm cache/configuration, Git configuration, and XDG directories with credential-bearing environment variables removed. It proves the current closed manifest shape, every referenced path, selected-only skill and MCP isolation, exact pins, temporary staging/refresh/remove/reinstall cleanup, the eight-tool MCP surface, Button documentation and validation, and PrimeReact styled/Tailwind routing. It does not execute Cursor or claim client discovery; those behaviors remain manual acceptance gates.
-
-`npm run validate:gemini` gives every library and source its own temporary home, Gemini settings and system files, XDG config/cache/data, npm cache and configuration, and Git global configuration while stripping credential-bearing environment variables. It validates each extension root with the installed client, proves selected-only install, native skill and MCP discovery, enable/disable, versioned local update, same-version reinstall, uninstall cleanup, exact MCP pins, the eight-tool MCP surface, Button documentation and validation, and PrimeReact styled/Tailwind routing. Pass `--source all` to repeat the matrix through temporary persistent checkouts of the public repository. External-auth mode bypasses model authentication only inside the isolated smoke; it does not import user credentials or exercise an authenticated model session. The validator fails closed when the platform cannot inspect process trees, because timeout cleanup must include descendants that create their own process groups.
-
-`npm run check:clean` snapshots the exact Git state, runs the validation suite, and fails if a check modifies the worktree or index.
+`npm run validate:release` requires every source lock to contain a complete canonical skill hash and exact release versions. See [Testing](docs/TESTING.md) for client-matrix behavior, isolation guarantees, CI, and Gemini distribution export.
 
 ## Source locking and generation
 
@@ -157,7 +149,7 @@ npm run sync
 npm run sync:check
 ```
 
-`lock:sources` records deterministic hashes for the canonical trees under `skills/`. `sync` refuses to change the source lock, builds and validates a staged payload, and replaces only the generator-owned roots. The root Cursor marketplace and library-local Cursor manifests reuse the same generated skill, MCP configuration, and provenance already present in each `plugins/<library>` root. `sync:check` generates outside the repository, reports added, removed, and changed files, and does not modify committed output.
+`lock:sources` records deterministic hashes for the canonical trees under `skills/`. `sync` refuses to change the source lock, builds and validates a staged payload, and replaces only the generator-owned roots. Claude, Codex, Cursor, and Gemini reuse the same generated skill and provenance in each `plugins/<library>` root. `sync:check` generates outside the repository, reports added, removed, and changed files, and does not modify committed output.
 
 Normal `npm run check` validates canonical skill trees, committed payload structure, hashes, provenance, MCP pins, security, links, and library isolation without requiring framework checkouts.
 

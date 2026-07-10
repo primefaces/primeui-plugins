@@ -5,7 +5,7 @@ import { listRepositoryFiles, repositoryRoot } from './lib/repository.mjs';
 
 const files = await listRepositoryFiles();
 const errors = [];
-const textExtensions = new Set(['.json', '.md', '.mjs']);
+const textExtensions = new Set(['.json', '.md', '.mjs', '.yml']);
 
 for (const relativePath of files) {
   const extension = path.extname(relativePath);

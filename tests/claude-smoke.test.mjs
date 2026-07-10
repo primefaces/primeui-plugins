@@ -6,9 +6,9 @@ import path from 'node:path';
 import test from 'node:test';
 import {
   assertInstalledPayload,
-  parseClaudeSmokeArguments,
-  runCommand
+  parseClaudeSmokeArguments
 } from '../scripts/lib/claude-smoke.mjs';
+import { runCommand } from '../scripts/lib/process.mjs';
 
 const processInspectionAvailable =
   process.platform !== 'win32' &&

@@ -3,7 +3,7 @@ import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { runCommand } from '../scripts/lib/claude-smoke.mjs';
+import { runCommand } from '../scripts/lib/process.mjs';
 import {
   assertInstalledGeminiPayload,
   geminiScenarioEnvironment,
@@ -28,11 +28,11 @@ test('Gemini smoke arguments use safe explicit matrix selectors', () => {
     {
       keepTemp: true,
       libraries: ['primereact'],
-      sources: ['local', 'github']
+      sources: ['local', 'export', 'github']
     }
   );
   assert.throws(() => parseGeminiSmokeArguments(['--library', 'primeui']), /must be all or one/);
-  assert.throws(() => parseGeminiSmokeArguments(['--source', 'url']), /all, local, or github/);
+  assert.throws(() => parseGeminiSmokeArguments(['--source', 'url']), /all, local, export, or github/);
   assert.throws(() => parseGeminiSmokeArguments(['--unknown']), /Unknown argument/);
 });
 
@@ -106,7 +106,7 @@ test('installed Gemini payload inspection enforces source, skill, MCP, and exten
   const root = await mkdtemp(path.join(os.tmpdir(), 'primeui-gemini-payload-test-'));
   context.after(() => rm(root, { force: true, recursive: true }));
   const geminiHome = path.join(root, 'home', '.gemini');
-  const sourcePath = path.join(root, 'persistent-source', 'gemini', 'primevue');
+  const sourcePath = path.join(root, 'persistent-source', 'plugins', 'primevue');
   const installPath = path.join(geminiHome, 'extensions', 'primevue');
   await mkdir(path.join(sourcePath, 'skills', 'primevue'), { recursive: true });
   await mkdir(path.join(installPath, 'skills', 'primevue'), { recursive: true });

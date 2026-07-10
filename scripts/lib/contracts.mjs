@@ -369,19 +369,13 @@ export function validatePluginsConfig(config) {
       errors.push(`${location}.skillSourcePath must equal ${expected.skillPath}.`);
     }
 
-    if (validateObject(plugin.outputs, `${location}.outputs`, ['gemini', 'plugin'], errors)) {
-      const expectedGeminiPath = `gemini/${plugin.name}`;
+    if (validateObject(plugin.outputs, `${location}.outputs`, ['plugin'], errors)) {
       const expectedPluginPath = `plugins/${plugin.name}`;
-      for (const [key, expectedPath] of [
-        ['gemini', expectedGeminiPath],
-        ['plugin', expectedPluginPath]
-      ]) {
-        if (!isSafeRelativePath(plugin.outputs[key])) {
-          errors.push(`${location}.outputs.${key} must be a safe normalized relative POSIX path.`);
-        }
-        if (plugin.outputs[key] !== expectedPath) {
-          errors.push(`${location}.outputs.${key} must equal ${expectedPath}.`);
-        }
+      if (!isSafeRelativePath(plugin.outputs.plugin)) {
+        errors.push(`${location}.outputs.plugin must be a safe normalized relative POSIX path.`);
+      }
+      if (plugin.outputs.plugin !== expectedPluginPath) {
+        errors.push(`${location}.outputs.plugin must equal ${expectedPluginPath}.`);
       }
     }
   });
@@ -536,6 +530,7 @@ export function validatePackageManifest(packageManifest) {
     'check:boundaries',
     'check:clean',
     'check:security',
+    'export:gemini',
     'format:check',
     'lock:sources',
     'prepublishOnly',

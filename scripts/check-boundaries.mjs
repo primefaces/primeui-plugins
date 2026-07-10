@@ -11,10 +11,11 @@ const allowedTopLevel = new Set([
   '.agents',
   '.claude-plugin',
   '.cursor-plugin',
+  '.github',
   'README.md',
   'RELEASE.md',
   'config',
-  'gemini',
+  'docs',
   'package.json',
   'plugins',
   'scripts',
@@ -29,6 +30,9 @@ for (const relativePath of files) {
   }
   if (relativePath.startsWith('.agents/') && !relativePath.startsWith('.agents/plugins/')) {
     errors.push(`${relativePath}: only .agents/plugins is generator-owned.`);
+  }
+  if (relativePath.startsWith('.github/') && !relativePath.startsWith('.github/workflows/')) {
+    errors.push(`${relativePath}: only .github/workflows is allowed under .github.`);
   }
 }
 

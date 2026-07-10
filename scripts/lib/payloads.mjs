@@ -35,6 +35,15 @@ export function provenanceDocument(plugin, lock) {
   return provenance;
 }
 
+export function geminiExtensionDocument(plugin, lock) {
+  return {
+    description: plugin.description,
+    mcpServers: mcpConfiguration(plugin, lock).mcpServers,
+    name: plugin.name,
+    version: lock.pluginVersion
+  };
+}
+
 export function buildPayloadDocuments(pluginsConfig, lockConfig) {
   const locks = lockByName(lockConfig);
   const publisher = pluginsConfig.marketplace.publisher;
@@ -96,7 +105,6 @@ export function buildPayloadDocuments(pluginsConfig, lockConfig) {
   for (const plugin of pluginsConfig.plugins) {
     const lock = locks.get(plugin.name);
     const pluginRoot = plugin.outputs.plugin;
-    const geminiRoot = plugin.outputs.gemini;
     const mcp = mcpConfiguration(plugin, lock);
     const provenance = provenanceDocument(plugin, lock);
 
@@ -151,13 +159,7 @@ export function buildPayloadDocuments(pluginsConfig, lockConfig) {
     documents.set(`${pluginRoot}/.mcp.json`, mcp);
     documents.set(`${pluginRoot}/provenance.json`, provenance);
 
-    documents.set(`${geminiRoot}/gemini-extension.json`, {
-      description: plugin.description,
-      mcpServers: mcp.mcpServers,
-      name: plugin.name,
-      version: lock.pluginVersion
-    });
-    documents.set(`${geminiRoot}/provenance.json`, provenance);
+    documents.set(`${pluginRoot}/gemini-extension.json`, geminiExtensionDocument(plugin, lock));
   }
 
   return documents;

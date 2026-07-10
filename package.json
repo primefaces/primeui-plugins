@@ -18,6 +18,7 @@
     "sync:check": "node scripts/sync.mjs --check",
     "test": "node --test",
     "validate:claude": "node scripts/validate-claude.mjs",
+    "validate:codex": "node scripts/validate-codex.mjs",
     "validate:config": "node scripts/validate-config.mjs",
     "validate:release": "node scripts/validate-config.mjs --release"
   },

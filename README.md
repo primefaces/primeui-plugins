@@ -40,6 +40,31 @@ claude plugin marketplace update primeui
 claude plugin update primevue@primeui
 ```
 
+## Codex
+
+Register the public marketplace, inspect its catalog, and install only the library plugin you need:
+
+```bash
+codex plugin marketplace add primefaces/primeui-plugins
+codex plugin list --available
+codex plugin add primevue@primeui
+codex plugin list
+```
+
+Use `primeng@primeui` or `primereact@primeui` instead for the other libraries. Codex installs the selected plugin into its versioned plugin cache with one library skill and one exact-version MCP server. Use the interactive `/plugins` browser or the ChatGPT desktop Plugins screen to enable or disable a plugin. The CLI's generic `--enable` and `--disable` options control Codex feature flags, not plugin state.
+
+Refresh a Git-backed marketplace, remove the installed plugin, and reinstall it to pick up a new plugin version:
+
+```bash
+codex plugin marketplace upgrade primeui
+codex plugin remove primevue@primeui
+codex plugin add primevue@primeui
+```
+
+To remove the marketplace completely, remove its installed plugins first, then run `codex plugin marketplace remove primeui`. Removing the marketplace first can leave installed plugin state and cache behind.
+
+For local development, pass the repository root to `codex plugin marketplace add`. Local marketplaces are live paths and do not support the Git-only `marketplace upgrade` command; remove and reinstall the selected plugin after changing generated payloads.
+
 ## Repository model
 
 This repository owns the canonical skills and the generated client payloads. Framework repositories own only their MCP packages. Keeping the skill source beside its distribution tooling makes skill review, plugin generation, and release versioning one atomic repository change.
@@ -60,6 +85,7 @@ The repository uses Node.js built-ins only. Do not install dependencies.
 ```bash
 npm run validate:config
 npm run validate:claude
+npm run validate:codex
 npm test
 npm run format:check
 npm run check:boundaries
@@ -71,6 +97,8 @@ npm run check:clean
 `npm run validate:release` requires every source lock to contain a complete canonical skill hash and exact release versions.
 
 `npm run validate:claude` uses a fresh temporary home, Claude config, client cache, and npm cache for each library. It validates the marketplace and plugins with the detected client, then proves independent install, discovery, lifecycle, payload isolation, and MCP runtime behavior. Pass `--claude-version <exact-version>` to test a temporary published Claude Code version, or `--source github` to test the public marketplace source.
+
+`npm run validate:codex` verifies the installed Codex plugin command contract, then gives every library and source its own temporary `CODEX_HOME`, home, XDG config/cache, npm cache, and npm user configuration while stripping credential-bearing environment variables. It proves marketplace discovery, selected-only installation and cache isolation, manifest pointers, exact MCP pins, remove/reinstall behavior, the eight-tool MCP surface, Button documentation and validation, and PrimeReact styled/Tailwind routing. Pass `--source github` to test the public Git marketplace snapshot. Interactive enable/disable and desktop discovery remain manual client checks because Codex exposes no non-interactive plugin-state command.
 
 `npm run check:clean` snapshots the exact Git state, runs the validation suite, and fails if a check modifies the worktree or index.
 

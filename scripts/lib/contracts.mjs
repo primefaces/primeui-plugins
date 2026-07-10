@@ -543,6 +543,7 @@ export function validatePackageManifest(packageManifest) {
     'sync:check',
     'test',
     'validate:claude',
+    'validate:codex',
     'validate:config',
     'validate:release'
   ];

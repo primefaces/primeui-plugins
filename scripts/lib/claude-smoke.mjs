@@ -1,4 +1,4 @@
-import { spawn } from 'node:child_process';
+import { spawn, spawnSync } from 'node:child_process';
 import { access, mkdtemp, mkdir, readFile, readdir, realpath, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -109,35 +109,108 @@ function commandError(command, argumentsList, result) {
   );
 }
 
-export function runCommand(command, argumentsList, { cwd, env, timeoutMs = 120_000 } = {}) {
+function terminateProcessTree(child, signal) {
+  if (child.pid === undefined) {
+    return false;
+  }
+  if (process.platform === 'win32') {
+    if (signal === 'SIGKILL') {
+      const result = spawnSync('taskkill', ['/pid', String(child.pid), '/t', '/f'], {
+        stdio: 'ignore',
+        windowsHide: true
+      });
+      if (result.status === 0) {
+        return true;
+      }
+    }
+    return child.kill(signal);
+  }
+  try {
+    process.kill(-child.pid, signal);
+    return true;
+  } catch (error) {
+    if (error.code === 'ESRCH') {
+      return false;
+    }
+    throw error;
+  }
+}
+
+export function runCommand(
+  command,
+  argumentsList,
+  {
+    cwd,
+    env,
+    forcedTerminationWaitMs = 1_000,
+    terminationGraceMs = 5_000,
+    timeoutMs = 120_000
+  } = {}
+) {
   return new Promise((resolve, reject) => {
     const child = spawn(command, argumentsList, {
       cwd,
+      detached: process.platform !== 'win32',
       env,
       stdio: ['ignore', 'pipe', 'pipe']
     });
     const stdout = [];
     const stderr = [];
     let settled = false;
+    let timedOut = false;
+    let forceTimer;
+    let hardTimer;
+    function timeoutError() {
+      const details = [
+        Buffer.concat(stdout).toString('utf8').trim(),
+        Buffer.concat(stderr).toString('utf8').trim()
+      ]
+        .filter(Boolean)
+        .join('\n');
+      return new Error(
+        `${command} ${argumentsList.join(' ')} timed out after ${timeoutMs}ms${
+          details === '' ? '.' : `:\n${details}`
+        }`
+      );
+    }
     const timer = setTimeout(() => {
-      child.kill('SIGTERM');
-      if (!settled) {
-        settled = true;
-        reject(new Error(`${command} ${argumentsList.join(' ')} timed out after ${timeoutMs}ms.`));
-      }
+      timedOut = true;
+      terminateProcessTree(child, 'SIGTERM');
+      forceTimer = setTimeout(() => {
+        if (!settled) {
+          terminateProcessTree(child, 'SIGKILL');
+          hardTimer = setTimeout(() => {
+            if (settled) {
+              return;
+            }
+            settled = true;
+            child.stdin?.destroy();
+            child.stdout?.destroy();
+            child.stderr?.destroy();
+            reject(timeoutError());
+          }, forcedTerminationWaitMs);
+        }
+      }, terminationGraceMs);
     }, timeoutMs);
 
     child.stdout.on('data', (chunk) => stdout.push(chunk));
     child.stderr.on('data', (chunk) => stderr.push(chunk));
     child.on('error', (error) => {
       clearTimeout(timer);
+      clearTimeout(forceTimer);
+      clearTimeout(hardTimer);
       if (!settled) {
         settled = true;
         reject(error);
       }
     });
     child.on('close', (code, signal) => {
+      if (timedOut) {
+        terminateProcessTree(child, 'SIGKILL');
+      }
       clearTimeout(timer);
+      clearTimeout(forceTimer);
+      clearTimeout(hardTimer);
       if (settled) {
         return;
       }
@@ -147,11 +220,25 @@ export function runCommand(command, argumentsList, { cwd, env, timeoutMs = 120_0
         stderr: Buffer.concat(stderr).toString('utf8').trim(),
         stdout: Buffer.concat(stdout).toString('utf8').trim()
       };
+      if (timedOut) {
+        reject(timeoutError());
+        return;
+      }
       if (result.code !== 0) {
         reject(commandError(command, argumentsList, result));
         return;
       }
       resolve(result);
+    });
+  });
+}
+
+function waitForCompletion(promise, timeoutMs) {
+  return new Promise((resolve) => {
+    const timer = setTimeout(() => resolve(false), timeoutMs);
+    promise.then(() => {
+      clearTimeout(timer);
+      resolve(true);
     });
   });
 }
@@ -319,6 +406,7 @@ class JsonRpcStdioClient {
   constructor(command, argumentsList, options) {
     this.child = spawn(command, argumentsList, {
       cwd: options.cwd,
+      detached: process.platform !== 'win32',
       env: options.env,
       stdio: ['pipe', 'pipe', 'pipe']
     });
@@ -326,10 +414,14 @@ class JsonRpcStdioClient {
     this.pending = new Map();
     this.stderr = [];
     this.closed = false;
+    this.exitPromise = new Promise((resolve) => {
+      this.resolveExit = resolve;
+    });
     this.child.stderr.on('data', (chunk) => this.stderr.push(chunk));
     this.child.on('error', (error) => this.rejectAll(error));
     this.child.on('close', (code, signal) => {
       this.closed = true;
+      this.resolveExit();
       this.rejectAll(
         new Error(
           `MCP process closed before the request completed (code=${code}, signal=${signal}).\n${this.stderrText()}`
@@ -399,9 +491,21 @@ class JsonRpcStdioClient {
 
   async close() {
     this.lines.close();
+    if (this.closed) {
+      await this.exitPromise;
+      return;
+    }
     this.child.stdin.end();
-    if (!this.closed) {
-      this.child.kill('SIGTERM');
+    terminateProcessTree(this.child, 'SIGTERM');
+    const graceful = await waitForCompletion(this.exitPromise, 5_000);
+    if (graceful) {
+      terminateProcessTree(this.child, 'SIGKILL');
+      return;
+    }
+    terminateProcessTree(this.child, 'SIGKILL');
+    const forced = await waitForCompletion(this.exitPromise, 5_000);
+    if (!forced) {
+      throw new Error(`MCP process did not exit after forced termination.\n${this.stderrText()}`);
     }
   }
 }
@@ -426,7 +530,14 @@ function assertValidation(result, expectedValid, label) {
   return result.structuredContent;
 }
 
-export async function smokeInstalledMcp({ contract, env, installPath, library, mcp }) {
+export async function smokeInstalledMcp({
+  clientName = 'primeui-plugins-claude-smoke',
+  contract,
+  env,
+  installPath,
+  library,
+  mcp
+}) {
   const server = mcp.mcpServers[library];
   const client = new JsonRpcStdioClient(server.command, server.args, {
     cwd: installPath,
@@ -436,7 +547,7 @@ export async function smokeInstalledMcp({ contract, env, installPath, library, m
   try {
     await client.request('initialize', {
       capabilities: {},
-      clientInfo: { name: 'primeui-plugins-claude-smoke', version: '1.0.0' },
+      clientInfo: { name: clientName, version: '1.0.0' },
       protocolVersion: '2025-06-18'
     });
     client.notify('notifications/initialized');

@@ -5,8 +5,70 @@ import path from 'node:path';
 import test from 'node:test';
 import {
   assertInstalledPayload,
-  parseClaudeSmokeArguments
+  parseClaudeSmokeArguments,
+  runCommand
 } from '../scripts/lib/claude-smoke.mjs';
+
+test('shared command runner waits for a timed-out child to exit', async () => {
+  const startedAt = Date.now();
+  await assert.rejects(
+    runCommand(
+      process.execPath,
+      [
+        '-e',
+        "process.on('SIGTERM', () => setTimeout(() => process.exit(0), 150)); setInterval(() => {}, 1000);"
+      ],
+      { timeoutMs: 500 }
+    ),
+    /timed out after 500ms/
+  );
+  assert.equal(Date.now() - startedAt >= 600, true);
+});
+
+test(
+  'shared command runner bounds descendants that inherit stdio after timeout',
+  { skip: process.platform === 'win32' },
+  async () => {
+    const startedAt = Date.now();
+    await assert.rejects(
+      runCommand('/bin/sh', ['-c', "(trap '' TERM; sleep 7) & wait"], {
+        forcedTerminationWaitMs: 100,
+        terminationGraceMs: 100,
+        timeoutMs: 50
+      }),
+      /timed out after 50ms/
+    );
+    const elapsedMs = Date.now() - startedAt;
+    assert.equal(elapsedMs >= 100, true);
+    assert.equal(elapsedMs < 1_000, true);
+  }
+);
+
+test(
+  'shared command runner hard bound handles ignored stdin and an escaped descendant',
+  { skip: process.platform === 'win32' },
+  async () => {
+    const escapedChild = [
+      "const { spawn } = require('node:child_process');",
+      "spawn(process.execPath, ['-e', 'setTimeout(() => process.exit(0), 400)'], {",
+      "  detached: true, stdio: ['ignore', process.stdout, process.stderr]",
+      '}).unref();',
+      'setInterval(() => {}, 1000);'
+    ].join('\n');
+    const startedAt = Date.now();
+    await assert.rejects(
+      runCommand(process.execPath, ['-e', escapedChild], {
+        forcedTerminationWaitMs: 50,
+        terminationGraceMs: 50,
+        timeoutMs: 100
+      }),
+      /timed out after 100ms/
+    );
+    const elapsedMs = Date.now() - startedAt;
+    assert.equal(elapsedMs >= 175, true);
+    assert.equal(elapsedMs < 750, true);
+  }
+);
 
 test('Claude smoke arguments use safe explicit matrix selectors', () => {
   assert.deepEqual(parseClaudeSmokeArguments([]), {

@@ -41,6 +41,7 @@ export function buildPayloadDocuments(pluginsConfig, lockConfig) {
   const documents = new Map();
 
   documents.set('.claude-plugin/marketplace.json', {
+    description: pluginsConfig.marketplace.description,
     name: pluginsConfig.marketplace.name,
     owner: {
       name: publisher.name,

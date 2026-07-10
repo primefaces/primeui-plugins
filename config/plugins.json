@@ -5,6 +5,7 @@
       "authentication": "ON_INSTALL",
       "installation": "AVAILABLE"
     },
+    "description": "PrimeUI workflow plugins for PrimeVue, PrimeNG, and PrimeReact with exact-version MCP tooling.",
     "displayName": "PrimeUI",
     "name": "primeui",
     "publisher": {

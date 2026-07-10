@@ -122,6 +122,16 @@ test('install-surface copy is bounded and cannot be left for generation to inven
   assert.match(errors, /installSurface\.defaultPrompt\[0\].*at most 128 characters/);
 });
 
+test('Claude marketplace description is authored and bounded', () => {
+  const invalid = structuredClone(pluginsConfig);
+  invalid.marketplace.description = '';
+
+  assert.match(
+    validatePluginsConfig(invalid).join('\n'),
+    /marketplace\.description must be a non-empty string and at most 160 characters/
+  );
+});
+
 test('lock states cannot disguise incomplete or complete source locks', () => {
   const lockedButIncomplete = structuredClone(sourcesLock);
   lockedButIncomplete.sources[1].source.skillHash = null;

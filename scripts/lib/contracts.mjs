@@ -233,13 +233,14 @@ export function validatePluginsConfig(config) {
     validateObject(
       marketplace,
       'plugins.marketplace',
-      ['codexPolicy', 'displayName', 'name', 'publisher', 'repository'],
+      ['codexPolicy', 'description', 'displayName', 'name', 'publisher', 'repository'],
       errors
     )
   ) {
     if (marketplace.name !== 'primeui') {
       errors.push('plugins.marketplace.name must equal primeui.');
     }
+    validateNonEmptyString(marketplace.description, 'plugins.marketplace.description', errors, 160);
     validateNonEmptyString(marketplace.displayName, 'plugins.marketplace.displayName', errors);
     validateSafeHttpsUrl(
       marketplace.repository,
@@ -541,6 +542,7 @@ export function validatePackageManifest(packageManifest) {
     'sync',
     'sync:check',
     'test',
+    'validate:claude',
     'validate:config',
     'validate:release'
   ];

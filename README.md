@@ -18,7 +18,27 @@ Each plugin combines:
 - An exact-version MCP configuration for current component documentation, API metadata, examples, guides, and usage validation.
 - Client-specific manifests generated from the same locked source inputs.
 
-Installation instructions are published with installable plugin releases.
+## Claude Code
+
+Add the public marketplace, then install the one library plugin you need:
+
+```bash
+claude plugin marketplace add primefaces/primeui-plugins
+claude plugin install primevue@primeui
+```
+
+Use `primeng@primeui` or `primereact@primeui` instead for the other libraries. Confirm the selected plugin and its enabled state with:
+
+```bash
+claude plugin list --json
+```
+
+Each plugin installs its own library skill and exact-version MCP server. Updates remain library-specific:
+
+```bash
+claude plugin marketplace update primeui
+claude plugin update primevue@primeui
+```
 
 ## Repository model
 
@@ -39,6 +59,7 @@ The repository uses Node.js built-ins only. Do not install dependencies.
 
 ```bash
 npm run validate:config
+npm run validate:claude
 npm test
 npm run format:check
 npm run check:boundaries
@@ -48,6 +69,8 @@ npm run check:clean
 ```
 
 `npm run validate:release` requires every source lock to contain a complete canonical skill hash and exact release versions.
+
+`npm run validate:claude` uses a fresh temporary home, Claude config, client cache, and npm cache for each library. It validates the marketplace and plugins with the detected client, then proves independent install, discovery, lifecycle, payload isolation, and MCP runtime behavior. Pass `--claude-version <exact-version>` to test a temporary published Claude Code version, or `--source github` to test the public marketplace source.
 
 `npm run check:clean` snapshots the exact Git state, runs the validation suite, and fails if a check modifies the worktree or index.
 

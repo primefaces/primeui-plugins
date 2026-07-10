@@ -75,6 +75,11 @@
         "codexPolicy": {
           "$ref": "#/$defs/codexPolicy"
         },
+        "description": {
+          "maxLength": 160,
+          "minLength": 1,
+          "type": "string"
+        },
         "displayName": {
           "minLength": 1,
           "type": "string"
@@ -91,6 +96,7 @@
       },
       "required": [
         "codexPolicy",
+        "description",
         "displayName",
         "name",
         "publisher",

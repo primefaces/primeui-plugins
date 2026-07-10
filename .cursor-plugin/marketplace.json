@@ -1,0 +1,26 @@
+{
+  "metadata": {
+    "description": "PrimeUI workflow plugins for PrimeVue, PrimeNG, and PrimeReact with exact-version MCP tooling."
+  },
+  "name": "primeui",
+  "owner": {
+    "name": "PrimeFaces"
+  },
+  "plugins": [
+    {
+      "description": "PrimeVue workflow guidance backed by the exact PrimeVue MCP package.",
+      "name": "primevue",
+      "source": "./plugins/primevue"
+    },
+    {
+      "description": "PrimeNG workflow guidance backed by the exact PrimeNG MCP package.",
+      "name": "primeng",
+      "source": "./plugins/primeng"
+    },
+    {
+      "description": "PrimeReact workflow and variant guidance backed by the exact PrimeReact MCP package.",
+      "name": "primereact",
+      "source": "./plugins/primereact"
+    }
+  ]
+}

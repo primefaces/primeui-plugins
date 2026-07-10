@@ -160,14 +160,17 @@
         },
         "hosts": {
           "items": false,
-          "maxItems": 3,
-          "minItems": 3,
+          "maxItems": 4,
+          "minItems": 4,
           "prefixItems": [
             {
               "const": "claude"
             },
             {
               "const": "codex"
+            },
+            {
+              "const": "cursor"
             },
             {
               "const": "gemini"

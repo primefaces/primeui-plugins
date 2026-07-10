@@ -4,7 +4,7 @@ Both configuration files are authored inputs. Unknown properties are rejected so
 
 ## `plugins.json`
 
-Defines the `primeui` marketplace, its public description, publisher identity, default Codex availability policy, and the exact three logical plugin entries. Each entry records its display metadata, authored install-surface copy, supported hosts, canonical repository-local skill source path, MCP package/binary/server identity, future output roots, and variant capabilities.
+Defines the `primeui` marketplace, its public description, publisher identity, default Codex availability policy, and the exact three logical plugin entries. Each entry records its display metadata, authored install-surface copy, supported hosts (Claude Code, Codex, Cursor, and Gemini CLI), canonical repository-local skill source path, MCP package/binary/server identity, future output roots, and variant capabilities.
 
 The install-surface block is host-neutral authored product input. The generator maps it to client metadata instead of inventing short/long descriptions, capability labels, or starter prompts. PrimeReact variants remain a separate framework capability contract.
 

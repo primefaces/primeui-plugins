@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 export const libraryOrder = ['primevue', 'primeng', 'primereact'];
-export const supportedHosts = ['claude', 'codex', 'gemini'];
+export const supportedHosts = ['claude', 'codex', 'cursor', 'gemini'];
 
 export const libraryContracts = {
   primevue: {
@@ -545,6 +545,7 @@ export function validatePackageManifest(packageManifest) {
     'validate:claude',
     'validate:codex',
     'validate:config',
+    'validate:cursor',
     'validate:gemini',
     'validate:release'
   ];

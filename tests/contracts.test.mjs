@@ -32,6 +32,12 @@ test('authored configuration is valid for development', () => {
   assert.deepEqual(validatePackageManifest(packageManifest), []);
 });
 
+test('all library plugins declare the exact supported host order including Cursor', () => {
+  for (const plugin of pluginsConfig.plugins) {
+    assert.deepEqual(plugin.hosts, ['claude', 'codex', 'cursor', 'gemini']);
+  }
+});
+
 test('release validation accepts the complete source locks', () => {
   assert.deepEqual(validateSourcesLock(sourcesLock, pluginsConfig, { release: true }), []);
   assert.equal(sourcesLock.sources.every((lock) => lock.lockState === 'locked'), true);

@@ -10,6 +10,7 @@ const allowedTopLevel = new Set([
   '.gitignore',
   '.agents',
   '.claude-plugin',
+  '.cursor-plugin',
   'README.md',
   'RELEASE.md',
   'config',

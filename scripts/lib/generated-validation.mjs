@@ -5,7 +5,13 @@ import { buildPayloadDocuments } from './payloads.mjs';
 import { detectSecretKinds } from './security.mjs';
 import { inspectSkillTree } from './skill-tree.mjs';
 
-export const generatedRoots = ['.agents/plugins', '.claude-plugin', 'gemini', 'plugins'];
+export const generatedRoots = [
+  '.agents/plugins',
+  '.claude-plugin',
+  '.cursor-plugin',
+  'gemini',
+  'plugins'
+];
 
 function comparePaths(left, right) {
   return Buffer.compare(Buffer.from(left), Buffer.from(right));

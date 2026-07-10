@@ -1,0 +1,13 @@
+{
+  "author": {
+    "name": "PrimeFaces"
+  },
+  "category": "Developer Tools",
+  "description": "PrimeVue workflow guidance backed by the exact PrimeVue MCP package.",
+  "displayName": "PrimeVue",
+  "mcpServers": "./.mcp.json",
+  "name": "primevue",
+  "repository": "https://github.com/primefaces/primeui-plugins",
+  "skills": "./skills/",
+  "version": "0.1.0-alpha.0"
+}

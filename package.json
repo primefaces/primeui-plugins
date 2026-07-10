@@ -20,6 +20,7 @@
     "validate:claude": "node scripts/validate-claude.mjs",
     "validate:codex": "node scripts/validate-codex.mjs",
     "validate:config": "node scripts/validate-config.mjs",
+    "validate:cursor": "node scripts/validate-cursor.mjs",
     "validate:gemini": "node scripts/validate-gemini.mjs",
     "validate:release": "node scripts/validate-config.mjs --release"
   },

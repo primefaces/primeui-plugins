@@ -1,0 +1,13 @@
+{
+  "author": {
+    "name": "PrimeFaces"
+  },
+  "category": "Developer Tools",
+  "description": "PrimeNG workflow guidance backed by the exact PrimeNG MCP package.",
+  "displayName": "PrimeNG",
+  "mcpServers": "./.mcp.json",
+  "name": "primeng",
+  "repository": "https://github.com/primefaces/primeui-plugins",
+  "skills": "./skills/",
+  "version": "0.1.0-alpha.0"
+}

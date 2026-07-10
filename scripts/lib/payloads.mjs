@@ -78,6 +78,21 @@ export function buildPayloadDocuments(pluginsConfig, lockConfig) {
     }))
   });
 
+  documents.set('.cursor-plugin/marketplace.json', {
+    metadata: {
+      description: pluginsConfig.marketplace.description
+    },
+    name: pluginsConfig.marketplace.name,
+    owner: {
+      name: publisher.name
+    },
+    plugins: pluginsConfig.plugins.map((plugin) => ({
+      description: plugin.description,
+      name: plugin.name,
+      source: `./plugins/${plugin.name}`
+    }))
+  });
+
   for (const plugin of pluginsConfig.plugins) {
     const lock = locks.get(plugin.name);
     const pluginRoot = plugin.outputs.plugin;
@@ -112,6 +127,20 @@ export function buildPayloadDocuments(pluginsConfig, lockConfig) {
         shortDescription: plugin.installSurface.shortDescription,
         websiteURL: publisher.url
       },
+      mcpServers: './.mcp.json',
+      name: plugin.name,
+      repository: pluginsConfig.marketplace.repository,
+      skills: './skills/',
+      version: lock.pluginVersion
+    });
+
+    documents.set(`${pluginRoot}/.cursor-plugin/plugin.json`, {
+      author: {
+        name: publisher.name
+      },
+      category: plugin.category,
+      description: plugin.description,
+      displayName: plugin.displayName,
       mcpServers: './.mcp.json',
       name: plugin.name,
       repository: pluginsConfig.marketplace.repository,

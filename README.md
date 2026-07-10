@@ -8,9 +8,9 @@ The `primeui` marketplace provides one independently installable plugin per libr
 
 | Plugin | MCP package | Supported clients |
 | --- | --- | --- |
-| `primevue` | `@primevue/mcp` | Claude Code, Codex, Gemini CLI |
-| `primeng` | `@primeng/mcp` | Claude Code, Codex, Gemini CLI |
-| `primereact` | `@primereact/mcp` | Claude Code, Codex, Gemini CLI |
+| `primevue` | `@primevue/mcp` | Claude Code, Codex, Cursor, Gemini CLI |
+| `primeng` | `@primeng/mcp` | Claude Code, Codex, Cursor, Gemini CLI |
+| `primereact` | `@primereact/mcp` | Claude Code, Codex, Cursor, Gemini CLI |
 
 Each plugin combines:
 
@@ -65,6 +65,20 @@ To remove the marketplace completely, remove its installed plugins first, then r
 
 For local development, pass the repository root to `codex plugin marketplace add`. Local marketplaces are live paths and do not support the Git-only `marketplace upgrade` command; remove and reinstall the selected plugin after changing generated payloads.
 
+## Cursor
+
+Cursor plugins bundle skills and MCP servers into one installation. After the PrimeUI plugins complete Cursor Marketplace review, find the selected PrimeVue, PrimeNG, or PrimeReact plugin in the Marketplace or open Cursor's supported `/add-plugin` flow. Cursor's public documentation does not define arguments for `/add-plugin`, so this repository does not publish a repository URL or path form for that command.
+
+Cursor can install Marketplace plugins at user or workspace scope. Manage installed plugins and their components from **Customize**. A plugin skill appears in **Agent Decides** and can be invoked as `/primevue`, `/primeng`, or `/primereact`; its MCP server can be enabled or disabled from the same surface. Public Marketplace updates are reviewed by Cursor and require the publisher to request a re-index after changing the repository.
+
+For local development, copy or symlink exactly one generated library root into Cursor's documented local-plugin directory, then restart Cursor or run **Developer: Reload Window**:
+
+```bash
+ln -s <persistent-checkout>/plugins/primevue ~/.cursor/plugins/local/primevue
+```
+
+Use `primeng` or `primereact` instead for the other libraries. The repository validator never writes to `~/.cursor`; it stages payloads only under a fresh temporary home. Client-native installation, discovery, component disable/remove, update, and reinstall remain manual acceptance checks until a safely isolated Cursor runtime is available.
+
 ## Gemini CLI
 
 Gemini installs one extension from one extension root. The public repository contains three extension roots, so install the selected library from an existing persistent checkout instead of the repository root:
@@ -113,6 +127,7 @@ The repository uses Node.js built-ins only. Do not install dependencies.
 npm run validate:config
 npm run validate:claude
 npm run validate:codex
+npm run validate:cursor -- --source all
 npm run validate:gemini -- --source all
 npm test
 npm run format:check
@@ -128,6 +143,8 @@ npm run check:clean
 
 `npm run validate:codex` verifies the installed Codex plugin command contract, then gives every library and source its own temporary `CODEX_HOME`, home, XDG config/cache, npm cache, and npm user configuration while stripping credential-bearing environment variables. It proves marketplace discovery, selected-only installation and cache isolation, manifest pointers, exact MCP pins, remove/reinstall behavior, the eight-tool MCP surface, Button documentation and validation, and PrimeReact styled/Tailwind routing. Pass `--source github` to test the public Git marketplace snapshot. Interactive enable/disable and desktop discovery remain manual client checks because Codex exposes no non-interactive plugin-state command.
 
+`npm run validate:cursor -- --source all` validates the direct library roots and the multi-plugin Cursor marketplace resolution independently. Each scenario uses a fresh temporary home, npm cache/configuration, Git configuration, and XDG directories with credential-bearing environment variables removed. It proves the current closed manifest shape, every referenced path, selected-only skill and MCP isolation, exact pins, temporary staging/refresh/remove/reinstall cleanup, the eight-tool MCP surface, Button documentation and validation, and PrimeReact styled/Tailwind routing. It does not execute Cursor or claim client discovery; those behaviors remain manual acceptance gates.
+
 `npm run validate:gemini` gives every library and source its own temporary home, Gemini settings and system files, XDG config/cache/data, npm cache and configuration, and Git global configuration while stripping credential-bearing environment variables. It validates each extension root with the installed client, proves selected-only install, native skill and MCP discovery, enable/disable, versioned local update, same-version reinstall, uninstall cleanup, exact MCP pins, the eight-tool MCP surface, Button documentation and validation, and PrimeReact styled/Tailwind routing. Pass `--source all` to repeat the matrix through temporary persistent checkouts of the public repository. External-auth mode bypasses model authentication only inside the isolated smoke; it does not import user credentials or exercise an authenticated model session. The validator fails closed when the platform cannot inspect process trees, because timeout cleanup must include descendants that create their own process groups.
 
 `npm run check:clean` snapshots the exact Git state, runs the validation suite, and fails if a check modifies the worktree or index.
@@ -140,7 +157,7 @@ npm run sync
 npm run sync:check
 ```
 
-`lock:sources` records deterministic hashes for the canonical trees under `skills/`. `sync` refuses to change the source lock, builds and validates a staged payload, and replaces only the generator-owned roots. `sync:check` generates outside the repository, reports added, removed, and changed files, and does not modify committed output.
+`lock:sources` records deterministic hashes for the canonical trees under `skills/`. `sync` refuses to change the source lock, builds and validates a staged payload, and replaces only the generator-owned roots. The root Cursor marketplace and library-local Cursor manifests reuse the same generated skill, MCP configuration, and provenance already present in each `plugins/<library>` root. `sync:check` generates outside the repository, reports added, removed, and changed files, and does not modify committed output.
 
 Normal `npm run check` validates canonical skill trees, committed payload structure, hashes, provenance, MCP pins, security, links, and library isolation without requiring framework checkouts.
 
@@ -151,6 +168,9 @@ Distribution output follows the official client contracts:
 - [Claude Code plugin reference](https://code.claude.com/docs/en/plugins-reference)
 - [Claude Code marketplace reference](https://code.claude.com/docs/en/plugin-marketplaces)
 - [Codex plugin documentation](https://learn.chatgpt.com/docs/build-plugins)
+- [Cursor plugin documentation](https://cursor.com/docs/plugins)
+- [Cursor plugin reference](https://cursor.com/docs/reference/plugins)
+- [Cursor Marketplace Publisher Terms](https://cursor.com/marketplace-publisher-terms)
 - [Gemini CLI extension reference](https://geminicli.com/docs/extensions/reference/)
 - [Gemini CLI Agent Skills](https://geminicli.com/docs/cli/skills/)
 

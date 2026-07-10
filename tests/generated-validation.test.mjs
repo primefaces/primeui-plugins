@@ -50,6 +50,16 @@ test('committed generated payload has exact structure, provenance, pins, and iso
     assert.equal(provenance.source.skillHash, lock.source.skillHash);
     assert.equal(provenance.mcp.package, lock.mcp.package);
     assert.equal(provenance.mcp.version, lock.mcp.version);
+
+    const cursorManifest = JSON.parse(
+      await readFile(
+        path.join(repositoryRoot, 'plugins', lock.name, '.cursor-plugin', 'plugin.json'),
+        'utf8'
+      )
+    );
+    assert.equal(cursorManifest.name, lock.name);
+    assert.equal(cursorManifest.skills, './skills/');
+    assert.equal(cursorManifest.mcpServers, './.mcp.json');
   }
 });
 

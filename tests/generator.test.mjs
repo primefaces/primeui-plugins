@@ -129,7 +129,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
     repositoryRoot: fixture.distributionRoot
   });
   assert.equal(first.stale, true);
-  assert.equal(first.added.length, 32);
+  assert.equal(first.added.length, 36);
 
   const afterFirst = await listSnapshotFiles(fixture.distributionRoot);
   const second = await syncDistribution({
@@ -221,6 +221,22 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
   assert.equal(provenance.name, 'primevue');
   assert.equal(provenance.mcp.package, '@primevue/mcp');
   assert.equal(provenance.pluginVersion, '0.1.0-alpha.0');
+
+  const cursorMarketplace = JSON.parse(
+    await readFile(path.join(fixture.distributionRoot, '.cursor-plugin', 'marketplace.json'), 'utf8')
+  );
+  assert.deepEqual(
+    cursorMarketplace.plugins.map((plugin) => plugin.source),
+    ['./plugins/primevue', './plugins/primeng', './plugins/primereact']
+  );
+  const cursorManifest = JSON.parse(
+    await readFile(
+      path.join(fixture.distributionRoot, 'plugins', 'primevue', '.cursor-plugin', 'plugin.json'),
+      'utf8'
+    )
+  );
+  assert.equal(cursorManifest.skills, './skills/');
+  assert.equal(cursorManifest.mcpServers, './.mcp.json');
 
   await appendFile(sourceSkillPath, 'dirty\n');
   const beforeRejectedGeneration = await listSnapshotFiles(fixture.distributionRoot);

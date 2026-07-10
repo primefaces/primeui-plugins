@@ -1,0 +1,54 @@
+{
+  "$schema": "./schemas/sources-lock.schema.json",
+  "schemaVersion": 1,
+  "sources": [
+    {
+      "lockState": "unresolved",
+      "mcp": {
+        "package": "@primevue/mcp",
+        "version": "5.0.0-rc.2"
+      },
+      "name": "primevue",
+      "pluginVersion": "0.1.0-alpha.0",
+      "source": {
+        "commit": "f3774e5baf90393ffcd2926028f66208782c427a",
+        "repository": "https://github.com/primefaces/primevue-nextchapter.git",
+        "skillHash": null,
+        "skillPath": "packages/skills/primevue"
+      },
+      "unresolvedReason": "The deterministic skill-tree hash has not been recorded."
+    },
+    {
+      "lockState": "unresolved",
+      "mcp": {
+        "package": "@primeng/mcp",
+        "version": "22.0.0-rc.2"
+      },
+      "name": "primeng",
+      "pluginVersion": "0.1.0-alpha.0",
+      "source": {
+        "commit": null,
+        "repository": "https://github.com/primefaces/primeng-nextchapter.git",
+        "skillHash": null,
+        "skillPath": "packages/skills/primeng"
+      },
+      "unresolvedReason": "The accepted skill source commit and deterministic skill-tree hash have not been recorded."
+    },
+    {
+      "lockState": "unresolved",
+      "mcp": {
+        "package": "@primereact/mcp",
+        "version": "11.0.0-rc.2"
+      },
+      "name": "primereact",
+      "pluginVersion": "0.1.0-alpha.0",
+      "source": {
+        "commit": null,
+        "repository": "https://github.com/primefaces/primereact-nextchapter.git",
+        "skillHash": null,
+        "skillPath": "packages/skills/primereact"
+      },
+      "unresolvedReason": "The accepted skill source commit and deterministic skill-tree hash have not been recorded."
+    }
+  ]
+}

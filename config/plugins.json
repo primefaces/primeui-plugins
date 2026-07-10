@@ -1,0 +1,129 @@
+{
+  "$schema": "./schemas/plugins.schema.json",
+  "marketplace": {
+    "codexPolicy": {
+      "authentication": "ON_INSTALL",
+      "installation": "AVAILABLE"
+    },
+    "displayName": "PrimeUI",
+    "name": "primeui",
+    "publisher": {
+      "name": "PrimeFaces",
+      "url": "https://primefaces.org"
+    },
+    "repository": "https://github.com/primefaces/primeui-plugins"
+  },
+  "plugins": [
+    {
+      "category": "Developer Tools",
+      "description": "PrimeVue workflow guidance backed by the exact PrimeVue MCP package.",
+      "displayName": "PrimeVue",
+      "hosts": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "installSurface": {
+        "capabilities": [
+          "Documentation",
+          "Code guidance",
+          "Usage validation"
+        ],
+        "defaultPrompt": [
+          "Build a PrimeVue component with grounded docs and usage validation.",
+          "Review this PrimeVue code and fix invalid component APIs."
+        ],
+        "longDescription": "Build, customize, migrate, and validate PrimeVue code with workflow guidance grounded in the exact PrimeVue MCP package.",
+        "shortDescription": "Grounded PrimeVue workflows and validation"
+      },
+      "mcp": {
+        "binary": "primevue-mcp",
+        "package": "@primevue/mcp",
+        "serverName": "primevue"
+      },
+      "name": "primevue",
+      "outputs": {
+        "gemini": "gemini/primevue",
+        "plugin": "plugins/primevue"
+      },
+      "skillSourcePath": "packages/skills/primevue",
+      "variants": []
+    },
+    {
+      "category": "Developer Tools",
+      "description": "PrimeNG workflow guidance backed by the exact PrimeNG MCP package.",
+      "displayName": "PrimeNG",
+      "hosts": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "installSurface": {
+        "capabilities": [
+          "Documentation",
+          "Code guidance",
+          "Usage validation"
+        ],
+        "defaultPrompt": [
+          "Build a PrimeNG component with grounded docs and usage validation.",
+          "Review this PrimeNG code and fix invalid component APIs."
+        ],
+        "longDescription": "Build, customize, migrate, and validate PrimeNG code with workflow guidance grounded in the exact PrimeNG MCP package.",
+        "shortDescription": "Grounded PrimeNG workflows and validation"
+      },
+      "mcp": {
+        "binary": "primeng-mcp",
+        "package": "@primeng/mcp",
+        "serverName": "primeng"
+      },
+      "name": "primeng",
+      "outputs": {
+        "gemini": "gemini/primeng",
+        "plugin": "plugins/primeng"
+      },
+      "skillSourcePath": "packages/skills/primeng",
+      "variants": []
+    },
+    {
+      "category": "Developer Tools",
+      "description": "PrimeReact workflow and variant guidance backed by the exact PrimeReact MCP package.",
+      "displayName": "PrimeReact",
+      "hosts": [
+        "claude",
+        "codex",
+        "gemini"
+      ],
+      "installSurface": {
+        "capabilities": [
+          "Documentation",
+          "Code guidance",
+          "Usage validation"
+        ],
+        "defaultPrompt": [
+          "Build a PrimeReact component with grounded docs and usage validation.",
+          "Choose the right PrimeReact variant and validate this component code."
+        ],
+        "longDescription": "Build, customize, migrate, and validate PrimeReact code with variant-aware guidance grounded in the exact PrimeReact MCP package.",
+        "shortDescription": "Variant-aware PrimeReact workflows and validation"
+      },
+      "mcp": {
+        "binary": "primereact-mcp",
+        "package": "@primereact/mcp",
+        "serverName": "primereact"
+      },
+      "name": "primereact",
+      "outputs": {
+        "gemini": "gemini/primereact",
+        "plugin": "plugins/primereact"
+      },
+      "skillSourcePath": "packages/skills/primereact",
+      "variants": [
+        "styled",
+        "tailwind",
+        "primitive",
+        "headless"
+      ]
+    }
+  ],
+  "schemaVersion": 1
+}

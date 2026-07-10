@@ -1,0 +1,384 @@
+{
+  "$defs": {
+    "exactSemver": {
+      "pattern": "^(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)\\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\\+[0-9A-Za-z-]+(?:\\.[0-9A-Za-z-]+)*)?$",
+      "type": "string"
+    },
+    "lock": {
+      "additionalProperties": false,
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "lockState": {
+                "const": "locked"
+              }
+            },
+            "required": [
+              "lockState"
+            ]
+          },
+          "then": {
+            "not": {
+              "required": [
+                "unresolvedReason"
+              ]
+            },
+            "properties": {
+              "source": {
+                "$ref": "#/$defs/lockedSource"
+              }
+            }
+          }
+        },
+        {
+          "if": {
+            "properties": {
+              "lockState": {
+                "const": "unresolved"
+              }
+            },
+            "required": [
+              "lockState"
+            ]
+          },
+          "then": {
+            "properties": {
+              "source": {
+                "$ref": "#/$defs/unresolvedSource"
+              },
+              "unresolvedReason": {
+                "minLength": 1,
+                "type": "string"
+              }
+            },
+            "required": [
+              "unresolvedReason"
+            ]
+          }
+        }
+      ],
+      "properties": {
+        "lockState": {
+          "enum": [
+            "locked",
+            "unresolved"
+          ],
+          "type": "string"
+        },
+        "mcp": {
+          "$ref": "#/$defs/mcp"
+        },
+        "name": {
+          "enum": [
+            "primevue",
+            "primeng",
+            "primereact"
+          ],
+          "type": "string"
+        },
+        "pluginVersion": {
+          "$ref": "#/$defs/exactSemver"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        },
+        "unresolvedReason": {
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "lockState",
+        "mcp",
+        "name",
+        "pluginVersion",
+        "source"
+      ],
+      "type": "object"
+    },
+    "lockedSource": {
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "pattern": "^[0-9a-f]{40}$",
+          "type": "string"
+        },
+        "repository": {
+          "$ref": "#/$defs/repository"
+        },
+        "skillHash": {
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "type": "string"
+        },
+        "skillPath": {
+          "$ref": "#/$defs/relativePath"
+        }
+      },
+      "required": [
+        "commit",
+        "repository",
+        "skillHash",
+        "skillPath"
+      ],
+      "type": "object"
+    },
+    "mcp": {
+      "additionalProperties": false,
+      "properties": {
+        "package": {
+          "pattern": "^@[a-z0-9-]+/[a-z0-9-]+$",
+          "type": "string"
+        },
+        "version": {
+          "$ref": "#/$defs/exactSemver"
+        }
+      },
+      "required": [
+        "package",
+        "version"
+      ],
+      "type": "object"
+    },
+    "primengLock": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/lock"
+        },
+        {
+          "properties": {
+            "mcp": {
+              "properties": {
+                "package": {
+                  "const": "@primeng/mcp"
+                }
+              }
+            },
+            "name": {
+              "const": "primeng"
+            },
+            "source": {
+              "properties": {
+                "repository": {
+                  "const": "https://github.com/primefaces/primeng-nextchapter.git"
+                },
+                "skillPath": {
+                  "const": "packages/skills/primeng"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "primereactLock": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/lock"
+        },
+        {
+          "properties": {
+            "mcp": {
+              "properties": {
+                "package": {
+                  "const": "@primereact/mcp"
+                }
+              }
+            },
+            "name": {
+              "const": "primereact"
+            },
+            "source": {
+              "properties": {
+                "repository": {
+                  "const": "https://github.com/primefaces/primereact-nextchapter.git"
+                },
+                "skillPath": {
+                  "const": "packages/skills/primereact"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "primevueLock": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/lock"
+        },
+        {
+          "properties": {
+            "mcp": {
+              "properties": {
+                "package": {
+                  "const": "@primevue/mcp"
+                }
+              }
+            },
+            "name": {
+              "const": "primevue"
+            },
+            "source": {
+              "properties": {
+                "repository": {
+                  "const": "https://github.com/primefaces/primevue-nextchapter.git"
+                },
+                "skillPath": {
+                  "const": "packages/skills/primevue"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    "relativePath": {
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._@/-]+$",
+      "type": "string"
+    },
+    "repository": {
+      "format": "uri",
+      "pattern": "^https://github\\.com/[A-Za-z0-9_.-]+/[A-Za-z0-9_.-]+\\.git$",
+      "type": "string"
+    },
+    "source": {
+      "additionalProperties": false,
+      "properties": {
+        "commit": {
+          "oneOf": [
+            {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "repository": {
+          "$ref": "#/$defs/repository"
+        },
+        "skillHash": {
+          "oneOf": [
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "skillPath": {
+          "$ref": "#/$defs/relativePath"
+        }
+      },
+      "required": [
+        "commit",
+        "repository",
+        "skillHash",
+        "skillPath"
+      ],
+      "type": "object"
+    },
+    "unresolvedSource": {
+      "additionalProperties": false,
+      "anyOf": [
+        {
+          "properties": {
+            "commit": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "commit"
+          ]
+        },
+        {
+          "properties": {
+            "skillHash": {
+              "type": "null"
+            }
+          },
+          "required": [
+            "skillHash"
+          ]
+        }
+      ],
+      "properties": {
+        "commit": {
+          "oneOf": [
+            {
+              "pattern": "^[0-9a-f]{40}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "repository": {
+          "$ref": "#/$defs/repository"
+        },
+        "skillHash": {
+          "oneOf": [
+            {
+              "pattern": "^sha256:[0-9a-f]{64}$",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "skillPath": {
+          "$ref": "#/$defs/relativePath"
+        }
+      },
+      "required": [
+        "commit",
+        "repository",
+        "skillHash",
+        "skillPath"
+      ],
+      "type": "object"
+    }
+  },
+  "$id": "https://primefaces.org/schemas/primeui-plugins/sources-lock.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "const": "./schemas/sources-lock.schema.json"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "sources": {
+      "items": false,
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/primevueLock"
+        },
+        {
+          "$ref": "#/$defs/primengLock"
+        },
+        {
+          "$ref": "#/$defs/primereactLock"
+        }
+      ],
+      "type": "array"
+    }
+  },
+  "required": [
+    "$schema",
+    "schemaVersion",
+    "sources"
+  ],
+  "title": "PrimeUI plugin source lock",
+  "type": "object"
+}

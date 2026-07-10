@@ -1,0 +1,22 @@
+{
+  "description": "Validation tooling for the PrimeUI plugin distribution repository.",
+  "engines": {
+    "node": ">=22"
+  },
+  "license": "UNLICENSED",
+  "name": "primeui-plugin-distribution",
+  "private": true,
+  "scripts": {
+    "check": "node scripts/check.mjs",
+    "check:boundaries": "node scripts/check-boundaries.mjs",
+    "check:clean": "node scripts/check-clean.mjs",
+    "check:security": "node scripts/check-security.mjs",
+    "format:check": "node scripts/check-format.mjs",
+    "prepublishOnly": "node scripts/deny-publish.mjs",
+    "test": "node --test",
+    "validate:config": "node scripts/validate-config.mjs",
+    "validate:release": "node scripts/validate-config.mjs --release"
+  },
+  "type": "module",
+  "version": "0.0.0-private"
+}

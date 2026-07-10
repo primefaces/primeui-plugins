@@ -1,0 +1,431 @@
+{
+  "$defs": {
+    "codexPolicy": {
+      "additionalProperties": false,
+      "properties": {
+        "authentication": {
+          "enum": [
+            "ON_INSTALL",
+            "ON_USE"
+          ],
+          "type": "string"
+        },
+        "installation": {
+          "enum": [
+            "NOT_AVAILABLE",
+            "AVAILABLE",
+            "INSTALLED_BY_DEFAULT"
+          ],
+          "type": "string"
+        }
+      },
+      "required": [
+        "authentication",
+        "installation"
+      ],
+      "type": "object"
+    },
+    "installSurface": {
+      "additionalProperties": false,
+      "properties": {
+        "capabilities": {
+          "items": {
+            "maxLength": 40,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 6,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "defaultPrompt": {
+          "items": {
+            "maxLength": 128,
+            "minLength": 1,
+            "type": "string"
+          },
+          "maxItems": 3,
+          "minItems": 1,
+          "type": "array",
+          "uniqueItems": true
+        },
+        "longDescription": {
+          "maxLength": 240,
+          "minLength": 1,
+          "type": "string"
+        },
+        "shortDescription": {
+          "maxLength": 80,
+          "minLength": 1,
+          "type": "string"
+        }
+      },
+      "required": [
+        "capabilities",
+        "defaultPrompt",
+        "longDescription",
+        "shortDescription"
+      ],
+      "type": "object"
+    },
+    "marketplace": {
+      "additionalProperties": false,
+      "properties": {
+        "codexPolicy": {
+          "$ref": "#/$defs/codexPolicy"
+        },
+        "displayName": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "name": {
+          "const": "primeui"
+        },
+        "publisher": {
+          "$ref": "#/$defs/publisher"
+        },
+        "repository": {
+          "const": "https://github.com/primefaces/primeui-plugins"
+        }
+      },
+      "required": [
+        "codexPolicy",
+        "displayName",
+        "name",
+        "publisher",
+        "repository"
+      ],
+      "type": "object"
+    },
+    "mcp": {
+      "additionalProperties": false,
+      "properties": {
+        "binary": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "type": "string"
+        },
+        "package": {
+          "pattern": "^@[a-z0-9-]+/[a-z0-9-]+$",
+          "type": "string"
+        },
+        "serverName": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "type": "string"
+        }
+      },
+      "required": [
+        "binary",
+        "package",
+        "serverName"
+      ],
+      "type": "object"
+    },
+    "outputs": {
+      "additionalProperties": false,
+      "properties": {
+        "gemini": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "plugin": {
+          "$ref": "#/$defs/relativePath"
+        }
+      },
+      "required": [
+        "gemini",
+        "plugin"
+      ],
+      "type": "object"
+    },
+    "plugin": {
+      "additionalProperties": false,
+      "properties": {
+        "category": {
+          "const": "Developer Tools"
+        },
+        "description": {
+          "maxLength": 160,
+          "minLength": 1,
+          "type": "string"
+        },
+        "displayName": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "hosts": {
+          "items": false,
+          "maxItems": 3,
+          "minItems": 3,
+          "prefixItems": [
+            {
+              "const": "claude"
+            },
+            {
+              "const": "codex"
+            },
+            {
+              "const": "gemini"
+            }
+          ],
+          "type": "array"
+        },
+        "installSurface": {
+          "$ref": "#/$defs/installSurface"
+        },
+        "mcp": {
+          "$ref": "#/$defs/mcp"
+        },
+        "name": {
+          "enum": [
+            "primevue",
+            "primeng",
+            "primereact"
+          ],
+          "type": "string"
+        },
+        "outputs": {
+          "$ref": "#/$defs/outputs"
+        },
+        "skillSourcePath": {
+          "$ref": "#/$defs/relativePath"
+        },
+        "variants": {
+          "$ref": "#/$defs/variants"
+        }
+      },
+      "required": [
+        "category",
+        "description",
+        "displayName",
+        "hosts",
+        "installSurface",
+        "mcp",
+        "name",
+        "outputs",
+        "skillSourcePath",
+        "variants"
+      ],
+      "type": "object"
+    },
+    "primengPlugin": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/plugin"
+        },
+        {
+          "properties": {
+            "displayName": {
+              "const": "PrimeNG"
+            },
+            "mcp": {
+              "properties": {
+                "binary": {
+                  "const": "primeng-mcp"
+                },
+                "package": {
+                  "const": "@primeng/mcp"
+                },
+                "serverName": {
+                  "const": "primeng"
+                }
+              }
+            },
+            "name": {
+              "const": "primeng"
+            },
+            "outputs": {
+              "properties": {
+                "gemini": {
+                  "const": "gemini/primeng"
+                },
+                "plugin": {
+                  "const": "plugins/primeng"
+                }
+              }
+            },
+            "skillSourcePath": {
+              "const": "packages/skills/primeng"
+            },
+            "variants": {
+              "const": []
+            }
+          }
+        }
+      ]
+    },
+    "primereactPlugin": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/plugin"
+        },
+        {
+          "properties": {
+            "displayName": {
+              "const": "PrimeReact"
+            },
+            "mcp": {
+              "properties": {
+                "binary": {
+                  "const": "primereact-mcp"
+                },
+                "package": {
+                  "const": "@primereact/mcp"
+                },
+                "serverName": {
+                  "const": "primereact"
+                }
+              }
+            },
+            "name": {
+              "const": "primereact"
+            },
+            "outputs": {
+              "properties": {
+                "gemini": {
+                  "const": "gemini/primereact"
+                },
+                "plugin": {
+                  "const": "plugins/primereact"
+                }
+              }
+            },
+            "skillSourcePath": {
+              "const": "packages/skills/primereact"
+            },
+            "variants": {
+              "const": [
+                "styled",
+                "tailwind",
+                "primitive",
+                "headless"
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "primevuePlugin": {
+      "allOf": [
+        {
+          "$ref": "#/$defs/plugin"
+        },
+        {
+          "properties": {
+            "displayName": {
+              "const": "PrimeVue"
+            },
+            "mcp": {
+              "properties": {
+                "binary": {
+                  "const": "primevue-mcp"
+                },
+                "package": {
+                  "const": "@primevue/mcp"
+                },
+                "serverName": {
+                  "const": "primevue"
+                }
+              }
+            },
+            "name": {
+              "const": "primevue"
+            },
+            "outputs": {
+              "properties": {
+                "gemini": {
+                  "const": "gemini/primevue"
+                },
+                "plugin": {
+                  "const": "plugins/primevue"
+                }
+              }
+            },
+            "skillSourcePath": {
+              "const": "packages/skills/primevue"
+            },
+            "variants": {
+              "const": []
+            }
+          }
+        }
+      ]
+    },
+    "publisher": {
+      "additionalProperties": false,
+      "properties": {
+        "name": {
+          "minLength": 1,
+          "type": "string"
+        },
+        "url": {
+          "format": "uri",
+          "pattern": "^https://",
+          "type": "string"
+        }
+      },
+      "required": [
+        "name",
+        "url"
+      ],
+      "type": "object"
+    },
+    "relativePath": {
+      "minLength": 1,
+      "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._@/-]+$",
+      "type": "string"
+    },
+    "variants": {
+      "items": {
+        "enum": [
+          "styled",
+          "tailwind",
+          "primitive",
+          "headless"
+        ],
+        "type": "string"
+      },
+      "maxItems": 4,
+      "type": "array",
+      "uniqueItems": true
+    }
+  },
+  "$id": "https://primefaces.org/schemas/primeui-plugins/plugins.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "additionalProperties": false,
+  "properties": {
+    "$schema": {
+      "const": "./schemas/plugins.schema.json"
+    },
+    "marketplace": {
+      "$ref": "#/$defs/marketplace"
+    },
+    "plugins": {
+      "items": false,
+      "maxItems": 3,
+      "minItems": 3,
+      "prefixItems": [
+        {
+          "$ref": "#/$defs/primevuePlugin"
+        },
+        {
+          "$ref": "#/$defs/primengPlugin"
+        },
+        {
+          "$ref": "#/$defs/primereactPlugin"
+        }
+      ],
+      "type": "array"
+    },
+    "schemaVersion": {
+      "const": 1
+    }
+  },
+  "required": [
+    "$schema",
+    "marketplace",
+    "plugins",
+    "schemaVersion"
+  ],
+  "title": "PrimeUI plugin product configuration",
+  "type": "object"
+}

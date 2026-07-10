@@ -65,6 +65,33 @@ To remove the marketplace completely, remove its installed plugins first, then r
 
 For local development, pass the repository root to `codex plugin marketplace add`. Local marketplaces are live paths and do not support the Git-only `marketplace upgrade` command; remove and reinstall the selected plugin after changing generated payloads.
 
+## Gemini CLI
+
+Gemini installs one extension from one extension root. The public repository contains three extension roots, so install the selected library from an existing persistent checkout instead of the repository root:
+
+```bash
+gemini extensions validate <persistent-checkout>/gemini/primevue
+gemini extensions install <persistent-checkout>/gemini/primevue --consent
+gemini extensions list --output-format json
+```
+
+Use `primeng` or `primereact` in the path for the other libraries. Gemini CLI 0.29.3 requires extension management to be enabled with `experimental.extensionManagement` in its settings. The extension uses native `skills/<library>/SKILL.md` discovery and embeds the exact matching MCP server; it does not generate `GEMINI.md`.
+
+The installed extension retains its local source path. After refreshing that persistent checkout, update a versioned payload with:
+
+```bash
+gemini extensions update primevue
+```
+
+Gemini 0.29.3 detects local updates by comparing the source and installed manifest versions. If refreshed content keeps the same version, use the supported uninstall and reinstall path:
+
+```bash
+gemini extensions uninstall primevue
+gemini extensions install <persistent-checkout>/gemini/primevue --consent
+```
+
+Extension installation has no Git-subdirectory `--path` option. Persistent checkout management belongs to the PrimeUI CLI integration rather than this extension repository.
+
 ## Repository model
 
 This repository owns the canonical skills and the generated client payloads. Framework repositories own only their MCP packages. Keeping the skill source beside its distribution tooling makes skill review, plugin generation, and release versioning one atomic repository change.
@@ -86,6 +113,7 @@ The repository uses Node.js built-ins only. Do not install dependencies.
 npm run validate:config
 npm run validate:claude
 npm run validate:codex
+npm run validate:gemini -- --source all
 npm test
 npm run format:check
 npm run check:boundaries
@@ -99,6 +127,8 @@ npm run check:clean
 `npm run validate:claude` uses a fresh temporary home, Claude config, client cache, and npm cache for each library. It validates the marketplace and plugins with the detected client, then proves independent install, discovery, lifecycle, payload isolation, and MCP runtime behavior. Pass `--claude-version <exact-version>` to test a temporary published Claude Code version, or `--source github` to test the public marketplace source.
 
 `npm run validate:codex` verifies the installed Codex plugin command contract, then gives every library and source its own temporary `CODEX_HOME`, home, XDG config/cache, npm cache, and npm user configuration while stripping credential-bearing environment variables. It proves marketplace discovery, selected-only installation and cache isolation, manifest pointers, exact MCP pins, remove/reinstall behavior, the eight-tool MCP surface, Button documentation and validation, and PrimeReact styled/Tailwind routing. Pass `--source github` to test the public Git marketplace snapshot. Interactive enable/disable and desktop discovery remain manual client checks because Codex exposes no non-interactive plugin-state command.
+
+`npm run validate:gemini` gives every library and source its own temporary home, Gemini settings and system files, XDG config/cache/data, npm cache and configuration, and Git global configuration while stripping credential-bearing environment variables. It validates each extension root with the installed client, proves selected-only install, native skill and MCP discovery, enable/disable, versioned local update, same-version reinstall, uninstall cleanup, exact MCP pins, the eight-tool MCP surface, Button documentation and validation, and PrimeReact styled/Tailwind routing. Pass `--source all` to repeat the matrix through temporary persistent checkouts of the public repository. External-auth mode bypasses model authentication only inside the isolated smoke; it does not import user credentials or exercise an authenticated model session. The validator fails closed when the platform cannot inspect process trees, because timeout cleanup must include descendants that create their own process groups.
 
 `npm run check:clean` snapshots the exact Git state, runs the validation suite, and fails if a check modifies the worktree or index.
 

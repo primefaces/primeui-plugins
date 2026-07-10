@@ -545,6 +545,7 @@ export function validatePackageManifest(packageManifest) {
     'validate:claude',
     'validate:codex',
     'validate:config',
+    'validate:gemini',
     'validate:release'
   ];
   if (!isPlainObject(packageManifest.scripts)) {

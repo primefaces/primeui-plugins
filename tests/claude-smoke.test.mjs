@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
@@ -8,6 +9,10 @@ import {
   parseClaudeSmokeArguments,
   runCommand
 } from '../scripts/lib/claude-smoke.mjs';
+
+const processInspectionAvailable =
+  process.platform !== 'win32' &&
+  spawnSync('ps', ['-axo', 'pid=,ppid='], { stdio: 'ignore' }).status === 0;
 
 test('shared command runner waits for a timed-out child to exit', async () => {
   const startedAt = Date.now();
@@ -45,28 +50,51 @@ test(
 );
 
 test(
-  'shared command runner hard bound handles ignored stdin and an escaped descendant',
-  { skip: process.platform === 'win32' },
+  'shared command runner terminates an escaped descendant after timeout',
+  { skip: processInspectionAvailable ? false : 'requires POSIX process-tree inspection' },
   async () => {
     const escapedChild = [
       "const { spawn } = require('node:child_process');",
-      "spawn(process.execPath, ['-e', 'setTimeout(() => process.exit(0), 400)'], {",
+      "const child = spawn(process.execPath, ['-e', 'setInterval(() => {}, 1000)'], {",
       "  detached: true, stdio: ['ignore', process.stdout, process.stderr]",
-      '}).unref();',
+      '});',
+      'child.unref();',
+      "process.stdout.write(`ESCAPED_PID:${child.pid}\\n`);",
       'setInterval(() => {}, 1000);'
     ].join('\n');
     const startedAt = Date.now();
-    await assert.rejects(
-      runCommand(process.execPath, ['-e', escapedChild], {
+    let timeoutError;
+    try {
+      await runCommand(process.execPath, ['-e', escapedChild], {
         forcedTerminationWaitMs: 50,
         terminationGraceMs: 50,
-        timeoutMs: 100
-      }),
-      /timed out after 100ms/
-    );
+        timeoutMs: 500
+      });
+    } catch (error) {
+      timeoutError = error;
+    }
+    assert.match(timeoutError?.message ?? '', /timed out after 500ms/);
+    const pidMatch = /ESCAPED_PID:(\d+)/.exec(timeoutError.message);
+    assert.notEqual(pidMatch, null);
+    const escapedPid = Number(pidMatch[1]);
+    await new Promise((resolve) => setTimeout(resolve, 50));
+    try {
+      assert.throws(
+        () => process.kill(escapedPid, 0),
+        (error) => error?.code === 'ESRCH'
+      );
+    } finally {
+      try {
+        process.kill(escapedPid, 'SIGKILL');
+      } catch (error) {
+        if (error.code !== 'ESRCH') {
+          throw error;
+        }
+      }
+    }
     const elapsedMs = Date.now() - startedAt;
-    assert.equal(elapsedMs >= 175, true);
-    assert.equal(elapsedMs < 750, true);
+    assert.equal(elapsedMs >= 500, true);
+    assert.equal(elapsedMs < 1_250, true);
   }
 );
 

@@ -109,7 +109,48 @@ function commandError(command, argumentsList, result) {
   );
 }
 
-function terminateProcessTree(child, signal) {
+function descendantProcessIds(rootPid) {
+  const result = spawnSync('ps', ['-axo', 'pid=,ppid='], {
+    encoding: 'utf8',
+    stdio: ['ignore', 'pipe', 'ignore']
+  });
+  if (result.status !== 0 || typeof result.stdout !== 'string') {
+    return [];
+  }
+  const childrenByParent = new Map();
+  for (const line of result.stdout.split('\n')) {
+    const [pidText, parentPidText] = line.trim().split(/\s+/);
+    const pid = Number(pidText);
+    const parentPid = Number(parentPidText);
+    if (!Number.isInteger(pid) || !Number.isInteger(parentPid)) {
+      continue;
+    }
+    const children = childrenByParent.get(parentPid) ?? [];
+    children.push(pid);
+    childrenByParent.set(parentPid, children);
+  }
+  const descendants = [];
+  const visit = (parentPid) => {
+    for (const childPid of childrenByParent.get(parentPid) ?? []) {
+      visit(childPid);
+      descendants.push(childPid);
+    }
+  };
+  visit(rootPid);
+  return descendants;
+}
+
+export function hasProcessTreeInspection() {
+  if (process.platform === 'win32') {
+    return true;
+  }
+  const result = spawnSync('ps', ['-axo', 'pid=,ppid='], {
+    stdio: 'ignore'
+  });
+  return result.status === 0;
+}
+
+function terminateProcessTree(child, signal, knownDescendantPids = new Set()) {
   if (child.pid === undefined) {
     return false;
   }
@@ -125,15 +166,29 @@ function terminateProcessTree(child, signal) {
     }
     return child.kill(signal);
   }
+  for (const pid of descendantProcessIds(child.pid)) {
+    knownDescendantPids.add(pid);
+  }
+  let terminated = false;
   try {
     process.kill(-child.pid, signal);
-    return true;
+    terminated = true;
   } catch (error) {
-    if (error.code === 'ESRCH') {
-      return false;
+    if (error.code !== 'ESRCH') {
+      throw error;
     }
-    throw error;
   }
+  for (const pid of knownDescendantPids) {
+    try {
+      process.kill(pid, signal);
+      terminated = true;
+    } catch (error) {
+      if (error.code !== 'ESRCH') {
+        throw error;
+      }
+    }
+  }
+  return terminated;
 }
 
 export function runCommand(
@@ -143,6 +198,7 @@ export function runCommand(
     cwd,
     env,
     forcedTerminationWaitMs = 1_000,
+    input,
     terminationGraceMs = 5_000,
     timeoutMs = 120_000
   } = {}
@@ -152,7 +208,7 @@ export function runCommand(
       cwd,
       detached: process.platform !== 'win32',
       env,
-      stdio: ['ignore', 'pipe', 'pipe']
+      stdio: [input === undefined ? 'ignore' : 'pipe', 'pipe', 'pipe']
     });
     const stdout = [];
     const stderr = [];
@@ -160,6 +216,7 @@ export function runCommand(
     let timedOut = false;
     let forceTimer;
     let hardTimer;
+    const knownDescendantPids = new Set();
     function timeoutError() {
       const details = [
         Buffer.concat(stdout).toString('utf8').trim(),
@@ -175,10 +232,10 @@ export function runCommand(
     }
     const timer = setTimeout(() => {
       timedOut = true;
-      terminateProcessTree(child, 'SIGTERM');
+      terminateProcessTree(child, 'SIGTERM', knownDescendantPids);
       forceTimer = setTimeout(() => {
         if (!settled) {
-          terminateProcessTree(child, 'SIGKILL');
+          terminateProcessTree(child, 'SIGKILL', knownDescendantPids);
           hardTimer = setTimeout(() => {
             if (settled) {
               return;
@@ -206,7 +263,7 @@ export function runCommand(
     });
     child.on('close', (code, signal) => {
       if (timedOut) {
-        terminateProcessTree(child, 'SIGKILL');
+        terminateProcessTree(child, 'SIGKILL', knownDescendantPids);
       }
       clearTimeout(timer);
       clearTimeout(forceTimer);
@@ -230,6 +287,14 @@ export function runCommand(
       }
       resolve(result);
     });
+    if (input !== undefined) {
+      child.stdin.on('error', (error) => {
+        if (error.code !== 'EPIPE') {
+          child.emit('error', error);
+        }
+      });
+      child.stdin.end(input);
+    }
   });
 }
 
@@ -414,6 +479,7 @@ class JsonRpcStdioClient {
     this.pending = new Map();
     this.stderr = [];
     this.closed = false;
+    this.knownDescendantPids = new Set();
     this.exitPromise = new Promise((resolve) => {
       this.resolveExit = resolve;
     });
@@ -496,13 +562,13 @@ class JsonRpcStdioClient {
       return;
     }
     this.child.stdin.end();
-    terminateProcessTree(this.child, 'SIGTERM');
+    terminateProcessTree(this.child, 'SIGTERM', this.knownDescendantPids);
     const graceful = await waitForCompletion(this.exitPromise, 5_000);
     if (graceful) {
-      terminateProcessTree(this.child, 'SIGKILL');
+      terminateProcessTree(this.child, 'SIGKILL', this.knownDescendantPids);
       return;
     }
-    terminateProcessTree(this.child, 'SIGKILL');
+    terminateProcessTree(this.child, 'SIGKILL', this.knownDescendantPids);
     const forced = await waitForCompletion(this.exitPromise, 5_000);
     if (!forced) {
       throw new Error(`MCP process did not exit after forced termination.\n${this.stderrText()}`);

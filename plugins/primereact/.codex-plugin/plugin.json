@@ -1,0 +1,29 @@
+{
+  "author": {
+    "name": "PrimeFaces",
+    "url": "https://primefaces.org"
+  },
+  "description": "PrimeReact workflow and variant guidance backed by the exact PrimeReact MCP package.",
+  "interface": {
+    "capabilities": [
+      "Documentation",
+      "Code guidance",
+      "Usage validation"
+    ],
+    "category": "Developer Tools",
+    "defaultPrompt": [
+      "Build a PrimeReact component with grounded docs and usage validation.",
+      "Choose the right PrimeReact variant and validate this component code."
+    ],
+    "developerName": "PrimeFaces",
+    "displayName": "PrimeReact",
+    "longDescription": "Build, customize, migrate, and validate PrimeReact code with variant-aware guidance grounded in the exact PrimeReact MCP package.",
+    "shortDescription": "Variant-aware PrimeReact workflows and validation",
+    "websiteURL": "https://primefaces.org"
+  },
+  "mcpServers": "./.mcp.json",
+  "name": "primereact",
+  "repository": "https://github.com/primefaces/primeui-plugins",
+  "skills": "./skills/",
+  "version": "0.1.0-alpha.0"
+}

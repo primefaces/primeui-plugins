@@ -1,0 +1,29 @@
+{
+  "author": {
+    "name": "PrimeFaces",
+    "url": "https://primefaces.org"
+  },
+  "description": "PrimeNG workflow guidance backed by the exact PrimeNG MCP package.",
+  "interface": {
+    "capabilities": [
+      "Documentation",
+      "Code guidance",
+      "Usage validation"
+    ],
+    "category": "Developer Tools",
+    "defaultPrompt": [
+      "Build a PrimeNG component with grounded docs and usage validation.",
+      "Review this PrimeNG code and fix invalid component APIs."
+    ],
+    "developerName": "PrimeFaces",
+    "displayName": "PrimeNG",
+    "longDescription": "Build, customize, migrate, and validate PrimeNG code with workflow guidance grounded in the exact PrimeNG MCP package.",
+    "shortDescription": "Grounded PrimeNG workflows and validation",
+    "websiteURL": "https://primefaces.org"
+  },
+  "mcpServers": "./.mcp.json",
+  "name": "primeng",
+  "repository": "https://github.com/primefaces/primeui-plugins",
+  "skills": "./skills/",
+  "version": "0.1.0-alpha.0"
+}

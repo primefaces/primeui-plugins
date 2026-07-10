@@ -1,0 +1,21 @@
+{
+  "mcp": {
+    "package": "@primereact/mcp",
+    "version": "11.0.0-rc.2"
+  },
+  "name": "primereact",
+  "pluginVersion": "0.1.0-alpha.0",
+  "schemaVersion": 1,
+  "source": {
+    "commit": "1f7faedeb36b4ea2da5deeaa1a60b19e9b794fa7",
+    "repository": "https://github.com/primefaces/primereact-nextchapter.git",
+    "skillHash": "sha256:8cd8a4e75d8a252faf33b40f826987641eb6a9213e103ddd5a71b674c2a2bf8b",
+    "skillPath": "packages/skills/primereact"
+  },
+  "variants": [
+    "styled",
+    "tailwind",
+    "primitive",
+    "headless"
+  ]
+}

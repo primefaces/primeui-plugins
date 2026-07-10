@@ -1,0 +1,30 @@
+{
+  "name": "primeui",
+  "owner": {
+    "name": "PrimeFaces",
+    "url": "https://primefaces.org"
+  },
+  "plugins": [
+    {
+      "category": "Developer Tools",
+      "description": "PrimeVue workflow guidance backed by the exact PrimeVue MCP package.",
+      "name": "primevue",
+      "source": "./plugins/primevue",
+      "version": "0.1.0-alpha.0"
+    },
+    {
+      "category": "Developer Tools",
+      "description": "PrimeNG workflow guidance backed by the exact PrimeNG MCP package.",
+      "name": "primeng",
+      "source": "./plugins/primeng",
+      "version": "0.1.0-alpha.0"
+    },
+    {
+      "category": "Developer Tools",
+      "description": "PrimeReact workflow and variant guidance backed by the exact PrimeReact MCP package.",
+      "name": "primereact",
+      "source": "./plugins/primereact",
+      "version": "0.1.0-alpha.0"
+    }
+  ]
+}

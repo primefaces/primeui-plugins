@@ -1,0 +1,14 @@
+{
+  "description": "PrimeReact workflow and variant guidance backed by the exact PrimeReact MCP package.",
+  "mcpServers": {
+    "primereact": {
+      "args": [
+        "-y",
+        "@primereact/mcp@11.0.0-rc.2"
+      ],
+      "command": "npx"
+    }
+  },
+  "name": "primereact",
+  "version": "0.1.0-alpha.0"
+}

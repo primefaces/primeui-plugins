@@ -1,0 +1,44 @@
+{
+  "interface": {
+    "displayName": "PrimeUI"
+  },
+  "name": "primeui",
+  "plugins": [
+    {
+      "category": "Developer Tools",
+      "name": "primevue",
+      "policy": {
+        "authentication": "ON_INSTALL",
+        "installation": "AVAILABLE"
+      },
+      "source": {
+        "path": "./plugins/primevue",
+        "source": "local"
+      }
+    },
+    {
+      "category": "Developer Tools",
+      "name": "primeng",
+      "policy": {
+        "authentication": "ON_INSTALL",
+        "installation": "AVAILABLE"
+      },
+      "source": {
+        "path": "./plugins/primeng",
+        "source": "local"
+      }
+    },
+    {
+      "category": "Developer Tools",
+      "name": "primereact",
+      "policy": {
+        "authentication": "ON_INSTALL",
+        "installation": "AVAILABLE"
+      },
+      "source": {
+        "path": "./plugins/primereact",
+        "source": "local"
+      }
+    }
+  ]
+}

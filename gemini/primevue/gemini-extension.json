@@ -1,0 +1,14 @@
+{
+  "description": "PrimeVue workflow guidance backed by the exact PrimeVue MCP package.",
+  "mcpServers": {
+    "primevue": {
+      "args": [
+        "-y",
+        "@primevue/mcp@5.0.0-rc.2"
+      ],
+      "command": "npx"
+    }
+  },
+  "name": "primevue",
+  "version": "0.1.0-alpha.0"
+}

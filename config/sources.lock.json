@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "sources": [
     {
-      "lockState": "unresolved",
+      "lockState": "locked",
       "mcp": {
         "package": "@primevue/mcp",
         "version": "5.0.0-rc.2"
@@ -11,15 +11,14 @@
       "name": "primevue",
       "pluginVersion": "0.1.0-alpha.0",
       "source": {
-        "commit": "f3774e5baf90393ffcd2926028f66208782c427a",
+        "commit": "1a0eb625b0c4d3c62e5e778d771b420c3ba2a6e4",
         "repository": "https://github.com/primefaces/primevue-nextchapter.git",
-        "skillHash": null,
+        "skillHash": "sha256:326e1e3893497861fed21a37d83063ce326a72f82ca01e2b3b3a0d5a383ae6d6",
         "skillPath": "packages/skills/primevue"
-      },
-      "unresolvedReason": "The deterministic skill-tree hash has not been recorded."
+      }
     },
     {
-      "lockState": "unresolved",
+      "lockState": "locked",
       "mcp": {
         "package": "@primeng/mcp",
         "version": "22.0.0-rc.2"
@@ -27,15 +26,14 @@
       "name": "primeng",
       "pluginVersion": "0.1.0-alpha.0",
       "source": {
-        "commit": null,
+        "commit": "9e785c42825d523446523f15f577b66500660591",
         "repository": "https://github.com/primefaces/primeng-nextchapter.git",
-        "skillHash": null,
+        "skillHash": "sha256:4b1ce8cf7cac365014267c16afbb1f167981025ae21248f5d4874c2cf6629feb",
         "skillPath": "packages/skills/primeng"
-      },
-      "unresolvedReason": "The accepted skill source commit and deterministic skill-tree hash have not been recorded."
+      }
     },
     {
-      "lockState": "unresolved",
+      "lockState": "locked",
       "mcp": {
         "package": "@primereact/mcp",
         "version": "11.0.0-rc.2"
@@ -43,12 +41,11 @@
       "name": "primereact",
       "pluginVersion": "0.1.0-alpha.0",
       "source": {
-        "commit": null,
+        "commit": "1f7faedeb36b4ea2da5deeaa1a60b19e9b794fa7",
         "repository": "https://github.com/primefaces/primereact-nextchapter.git",
-        "skillHash": null,
+        "skillHash": "sha256:8cd8a4e75d8a252faf33b40f826987641eb6a9213e103ddd5a71b674c2a2bf8b",
         "skillPath": "packages/skills/primereact"
-      },
-      "unresolvedReason": "The accepted skill source commit and deterministic skill-tree hash have not been recorded."
+      }
     }
   ]
 }

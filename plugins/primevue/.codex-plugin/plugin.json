@@ -1,0 +1,29 @@
+{
+  "author": {
+    "name": "PrimeFaces",
+    "url": "https://primefaces.org"
+  },
+  "description": "PrimeVue workflow guidance backed by the exact PrimeVue MCP package.",
+  "interface": {
+    "capabilities": [
+      "Documentation",
+      "Code guidance",
+      "Usage validation"
+    ],
+    "category": "Developer Tools",
+    "defaultPrompt": [
+      "Build a PrimeVue component with grounded docs and usage validation.",
+      "Review this PrimeVue code and fix invalid component APIs."
+    ],
+    "developerName": "PrimeFaces",
+    "displayName": "PrimeVue",
+    "longDescription": "Build, customize, migrate, and validate PrimeVue code with workflow guidance grounded in the exact PrimeVue MCP package.",
+    "shortDescription": "Grounded PrimeVue workflows and validation",
+    "websiteURL": "https://primefaces.org"
+  },
+  "mcpServers": "./.mcp.json",
+  "name": "primevue",
+  "repository": "https://github.com/primefaces/primeui-plugins",
+  "skills": "./skills/",
+  "version": "0.1.0-alpha.0"
+}

@@ -1,0 +1,14 @@
+{
+  "description": "PrimeNG workflow guidance backed by the exact PrimeNG MCP package.",
+  "mcpServers": {
+    "primeng": {
+      "args": [
+        "-y",
+        "@primeng/mcp@22.0.0-rc.2"
+      ],
+      "command": "npx"
+    }
+  },
+  "name": "primeng",
+  "version": "0.1.0-alpha.0"
+}

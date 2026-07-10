@@ -32,8 +32,22 @@ test('authored configuration is valid for development', () => {
   assert.deepEqual(validatePackageManifest(packageManifest), []);
 });
 
+test('release validation accepts the complete source locks', () => {
+  assert.deepEqual(validateSourcesLock(sourcesLock, pluginsConfig, { release: true }), []);
+  assert.equal(sourcesLock.sources.every((lock) => lock.lockState === 'locked'), true);
+});
+
 test('release validation rejects every unresolved source lock', () => {
-  const errors = validateSourcesLock(sourcesLock, pluginsConfig, { release: true });
+  const unresolved = structuredClone(sourcesLock);
+  for (const lock of unresolved.sources) {
+    lock.lockState = 'unresolved';
+    lock.source.skillHash = null;
+    lock.unresolvedReason = 'Hash pending.';
+  }
+  unresolved.sources[1].source.commit = null;
+  unresolved.sources[2].source.commit = null;
+
+  const errors = validateSourcesLock(unresolved, pluginsConfig, { release: true });
   assert.equal(errors.filter((error) => error.includes('is not release-ready')).length, 3);
   assert.match(errors.join('\n'), /primevue.*source\.skillHash/);
   assert.match(errors.join('\n'), /primeng.*source\.commit, source\.skillHash/);
@@ -113,12 +127,12 @@ test('install-surface copy is bounded and cannot be left for generation to inven
 
 test('lock states cannot disguise incomplete or complete source locks', () => {
   const lockedButIncomplete = structuredClone(sourcesLock);
-  lockedButIncomplete.sources[1].lockState = 'locked';
-  delete lockedButIncomplete.sources[1].unresolvedReason;
+  lockedButIncomplete.sources[1].source.skillHash = null;
   assert.match(validateSourcesLock(lockedButIncomplete, pluginsConfig).join('\n'), /locked but missing/);
 
   const unresolvedButComplete = structuredClone(sourcesLock);
-  unresolvedButComplete.sources[0].source.skillHash = `sha256:${'a'.repeat(64)}`;
+  unresolvedButComplete.sources[0].lockState = 'unresolved';
+  unresolvedButComplete.sources[0].unresolvedReason = 'Pending review.';
   assert.match(
     validateSourcesLock(unresolvedButComplete, pluginsConfig).join('\n'),
     /unresolved but contains a complete source lock/

@@ -1,0 +1,15 @@
+{
+  "mcp": {
+    "package": "@primevue/mcp",
+    "version": "5.0.0-rc.2"
+  },
+  "name": "primevue",
+  "pluginVersion": "0.1.0-alpha.0",
+  "schemaVersion": 1,
+  "source": {
+    "commit": "1a0eb625b0c4d3c62e5e778d771b420c3ba2a6e4",
+    "repository": "https://github.com/primefaces/primevue-nextchapter.git",
+    "skillHash": "sha256:326e1e3893497861fed21a37d83063ce326a72f82ca01e2b3b3a0d5a383ae6d6",
+    "skillPath": "packages/skills/primevue"
+  }
+}

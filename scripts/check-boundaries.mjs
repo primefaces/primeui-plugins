@@ -1,24 +1,22 @@
-import path from 'node:path';
+import { validateGeneratedPayload } from './lib/generated-validation.mjs';
+import { readDistributionConfiguration } from './lib/generator.mjs';
 import { listRepositoryFiles } from './lib/repository.mjs';
+import { repositoryRoot } from './lib/repository.mjs';
 
 const files = await listRepositoryFiles();
 const errors = [];
 const allowedTopLevel = new Set([
   '.gitignore',
+  '.agents',
+  '.claude-plugin',
   'README.md',
   'RELEASE.md',
   'config',
+  'gemini',
   'package.json',
+  'plugins',
   'scripts',
   'tests'
-]);
-const forbiddenPrefixes = ['.agents/', '.claude-plugin/', 'gemini/', 'plugins/'];
-const forbiddenBasenames = new Set([
-  '.mcp.json',
-  'SKILL.md',
-  'gemini-extension.json',
-  'plugin.json',
-  'provenance.json'
 ]);
 
 for (const relativePath of files) {
@@ -26,16 +24,15 @@ for (const relativePath of files) {
   if (!allowedTopLevel.has(topLevel)) {
     errors.push(`${relativePath}: top-level path is outside the repository boundary policy.`);
   }
-  if (forbiddenPrefixes.some((prefix) => relativePath.startsWith(prefix))) {
-    errors.push(`${relativePath}: distribution payloads must be generated, not hand-authored.`);
-  }
-  if (forbiddenBasenames.has(path.posix.basename(relativePath))) {
-    errors.push(`${relativePath}: plugin payload files must be produced by the repository generator.`);
-  }
-  if (/^scripts\/(?:sync|generate)(?:[.-]|$)/.test(relativePath)) {
-    errors.push(`${relativePath}: generator implementation requires its generation contract and tests.`);
+  if (relativePath.startsWith('.agents/') && !relativePath.startsWith('.agents/plugins/')) {
+    errors.push(`${relativePath}: only .agents/plugins is generator-owned.`);
   }
 }
+
+const { lockConfig, pluginsConfig } = await readDistributionConfiguration(repositoryRoot, {
+  release: true
+});
+errors.push(...(await validateGeneratedPayload(repositoryRoot, pluginsConfig, lockConfig)));
 
 if (errors.length > 0) {
   console.error('Repository boundary checks failed:');
@@ -43,4 +40,4 @@ if (errors.length > 0) {
   process.exit(1);
 }
 
-console.log('Repository boundary checks passed; no generated payload was hand-authored.');
+console.log('Repository boundary checks passed with strict generated-root validation.');

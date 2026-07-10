@@ -1,0 +1,10 @@
+{
+  "author": {
+    "name": "PrimeFaces",
+    "url": "https://primefaces.org"
+  },
+  "description": "PrimeVue workflow guidance backed by the exact PrimeVue MCP package.",
+  "name": "primevue",
+  "repository": "https://github.com/primefaces/primeui-plugins",
+  "version": "0.1.0-alpha.0"
+}

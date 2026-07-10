@@ -25,3 +25,7 @@ Defines the release tuple for each plugin:
 The base validator accepts an honest unresolved development state. The release validator rejects it. Empty strings, placeholder SHAs, guessed hashes, tags, and moving refs are never valid substitutes.
 
 The repository generator defines and tests the deterministic skill-tree hashing algorithm used to fill `source.skillHash`.
+
+The accepted `source.commit` is authored before locking. `npm run lock:sources` requires exactly one canonical absolute checkout path per configured library, verifies every checkout is clean and at that accepted commit, rejects physical files not represented by regular Git blobs, computes `source.skillHash`, sets `lockState` to `locked`, and removes `unresolvedReason`. Repository URLs, skill paths, plugin versions, MCP packages, and MCP versions are preserved.
+
+The hash input is a compact JSON array sorted by UTF-8 path bytes. Each record has `path`, byte `size`, and the lowercase hexadecimal SHA-256 of the exact file bytes. The outer digest is stored with the `sha256:` prefix. See [the release rules](../RELEASE.md#deterministic-skill-tree-hash) for the full rejection and normalization contract.

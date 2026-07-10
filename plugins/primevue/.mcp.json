@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "primevue": {
+      "args": [
+        "-y",
+        "@primevue/mcp@5.0.0-rc.2"
+      ],
+      "command": "npx"
+    }
+  }
+}

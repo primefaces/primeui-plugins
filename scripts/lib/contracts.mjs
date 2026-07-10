@@ -543,7 +543,10 @@ export function validatePackageManifest(packageManifest) {
     'check:clean',
     'check:security',
     'format:check',
+    'lock:sources',
     'prepublishOnly',
+    'sync',
+    'sync:check',
     'test',
     'validate:config',
     'validate:release'

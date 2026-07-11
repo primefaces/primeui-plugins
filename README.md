@@ -167,3 +167,7 @@ Distribution output follows the official client contracts:
 - [Gemini CLI Agent Skills](https://geminicli.com/docs/cli/skills/)
 
 See [RELEASE.md](RELEASE.md) for release integrity requirements.
+
+## License
+
+This public repository contains PrimeUI assistant plugin and skill source. Using these plugins with PrimeUI libraries is subject to the [PrimeUI License](https://primeui.dev/licenses).

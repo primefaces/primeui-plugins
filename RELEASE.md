@@ -55,7 +55,7 @@ Claude, Codex, Cursor, and Gemini reuse each existing `plugins/<library>` root. 
 6. Run schema, security, path-safety, provenance, host-manifest, and isolation checks.
 7. Export Gemini distribution roots and verify byte-identical repeated output.
 8. Run clean Claude, Codex, Cursor payload, and Gemini installation smokes.
-9. Confirm an approved repository license and update public manifest metadata before Marketplace submission.
+9. Confirm the public PrimeUI License notice and manifest metadata before Marketplace submission.
 10. Tag only after review approval. Do not publish this package to npm.
 
-Cursor Marketplace submission is a separate external release step. The publisher must host the plugins in the public repository, confirm an approved permissive licensing position, submit the repository at `cursor.com/marketplace/publish`, satisfy Cursor's manual code and publisher review, and request re-indexing for updates. Submission, approval, and authenticated client acceptance are not automated repository gates.
+Cursor Marketplace submission is a separate external release step. The publisher must host the plugins in the public repository, confirm that the PrimeUI License is acceptable under the current Cursor Publisher Terms, submit the repository at `cursor.com/marketplace/publish`, satisfy Cursor's manual code and publisher review, and request re-indexing for updates. Submission, approval, and authenticated client acceptance are not automated repository gates.

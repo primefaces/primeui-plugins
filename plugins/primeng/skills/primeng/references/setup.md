@@ -36,7 +36,7 @@ Use this reference for PrimeNG installation, standalone or NgModule configuratio
 When the PrimeNG MCP, skill, resources, or validator are missing or fail to start, run or request:
 
 ```text
-primeui ai doctor --json --tool <tool> --library primeng
+primeui doctor --json --tool <tool> --library primeng
 ```
 
 Report failing check identifiers, details, and suggestions. Do not claim the doctor ran if the CLI or command is unavailable. Retry the MCP operation after a passing repair. Use accessible local generated PrimeNG docs or package metadata only as a named fallback, and do not present fallback content as MCP-validated.

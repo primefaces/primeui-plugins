@@ -23,7 +23,7 @@ Never validate another library's syntax with the PrimeNG validator. A foreign im
 - For `unknown-prop`, compare the rejected Angular input against current component metadata. Treat any returned allowed list as a hint, not a replacement for docs.
 - For `framework-import-mismatch` or `selector-mismatch`, fix the library scope, import, component selector, or attribute-directive placement before changing inputs.
 - Report `api-unavailable` or incomplete metadata as incomplete validation and name the missing component or metadata.
-- If the tool or server is unavailable, run or request `primeui ai doctor --json --tool <tool> --library primeng`. Report failed checks and any named fallback source; do not call the usage validated.
+- If the tool or server is unavailable, run or request `primeui doctor --json --tool <tool> --library primeng`. Report failed checks and any named fallback source; do not call the usage validated.
 - Do not hide a failure or silently remove behavior merely to obtain a passing result.
 
 ## Scenario Evidence

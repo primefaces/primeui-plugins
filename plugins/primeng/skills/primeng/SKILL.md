@@ -14,7 +14,7 @@ Use this skill as the PrimeNG workflow layer. Keep live component documentation,
 3. Query the PrimeNG MCP before relying on library-specific details. Use `version` for server capabilities, `list` and `search` for discovery, `get_setup` for installation and provider/theme setup, `get_component` for current inputs, outputs, templates, directives, imports, and API metadata, `get_guide` for concepts and migrations, and `get_example` for source-backed behavior.
 4. Write Angular and PrimeNG code that preserves the project's standalone or NgModule pattern, template syntax, forms approach, theme configuration, and style conventions. Ask one short clarification only when local context and official sources cannot resolve a material choice.
 5. Validate final component usage with `validate_usage` whenever available. Correct failures and validate again. Follow [validation.md](references/validation.md) when interpreting incomplete metadata or validation limits.
-6. If MCP startup, tools, resources, configuration, or validation fail, run or request `primeui ai doctor --json --tool <tool> --library primeng`. Report failures honestly and do not replace missing official data with guesses or web-search analogies.
+6. If MCP startup, tools, resources, configuration, or validation fail, run or request `primeui doctor --json --tool <tool> --library primeng`. Report failures honestly and do not replace missing official data with guesses or web-search analogies.
 7. Do not invent inputs, outputs, templates, directives, selectors, imports, form bindings, pass-through keys, token names, setup steps, package availability, pricing, access, or licensing.
 
 ## Reference Map

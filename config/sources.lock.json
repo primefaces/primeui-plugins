@@ -12,7 +12,7 @@
       "pluginVersion": "0.1.0-alpha.0",
       "source": {
         "repository": "https://github.com/primefaces/primeui-plugins",
-        "skillHash": "sha256:326e1e3893497861fed21a37d83063ce326a72f82ca01e2b3b3a0d5a383ae6d6",
+        "skillHash": "sha256:811563bcafbd8d42d1a9e22bd20116a2c3028124d61c21f53afb18ea0ead1cb4",
         "skillPath": "skills/primevue"
       }
     },
@@ -26,7 +26,7 @@
       "pluginVersion": "0.1.0-alpha.0",
       "source": {
         "repository": "https://github.com/primefaces/primeui-plugins",
-        "skillHash": "sha256:4b1ce8cf7cac365014267c16afbb1f167981025ae21248f5d4874c2cf6629feb",
+        "skillHash": "sha256:ea8da20b90b1754e41cb2a13b9cec3a31b0fac9add287da6c6ddd976d4298275",
         "skillPath": "skills/primeng"
       }
     },
@@ -40,7 +40,7 @@
       "pluginVersion": "0.1.0-alpha.0",
       "source": {
         "repository": "https://github.com/primefaces/primeui-plugins",
-        "skillHash": "sha256:8cd8a4e75d8a252faf33b40f826987641eb6a9213e103ddd5a71b674c2a2bf8b",
+        "skillHash": "sha256:bfae83742ebfcfd2d9002138d3f019a90626191e4b142581a0877e4a11bbca7d",
         "skillPath": "skills/primereact"
       }
     }

@@ -22,7 +22,7 @@ Use this reference for PrimeVue installation, application plugin or Nuxt module 
 When the PrimeVue MCP, skill, resources, or validator are missing or fail to start, run or request:
 
 ```text
-primeui ai doctor --json --tool <tool> --library primevue
+primeui doctor --json --tool <tool> --library primevue
 ```
 
 Report failing check identifiers, details, and suggestions. Retry the MCP operation after a passing repair. Use accessible local generated docs or package metadata only as a named fallback, and do not present fallback content as MCP-validated.

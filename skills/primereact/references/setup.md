@@ -34,7 +34,7 @@ Use this reference for PrimeReact installation, React host configuration, aliase
 For a missing skill, MCP configuration, startup, tool surface, resource, or validator, run or request:
 
 ```text
-primeui ai doctor --json --tool <tool> --library primereact --variant <styled|tailwind|primitive|headless>
+primeui doctor --json --tool <tool> --library primereact --variant <styled|tailwind|primitive|headless>
 ```
 
 Report failed check identifiers, details, and suggestions. Retry MCP after repair. If it remains unavailable, use only accessible generated docs or current package metadata for the selected mode, name that fallback, and do not claim MCP validation.

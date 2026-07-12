@@ -15,7 +15,7 @@ Use this skill as the PrimeReact workflow layer. Keep live component docs, API t
 4. Query only the PrimeReact MCP with the selected value passed as `mode`. Use `version` for server capabilities, `list` and `search` for discovery, `get_setup` for installation and provider/theme setup, `get_component` for current API metadata, `get_guide` for concepts or migrations, and `get_example` for source-backed behavior.
 5. Preserve the selected mode and project conventions. Keep package component imports as package imports and local copied components on their resolved local alias or relative path.
 6. Validate final component usage with `validate_usage` and the same `mode`. Include imports when mode routing matters, correct failures, and validate again.
-7. If MCP startup, tools, resources, configuration, or validation fail, use `primeui ai doctor --json --tool <tool> --library primereact --variant <mode>`. Report failures honestly and do not replace missing official data with guesses.
+7. If MCP startup, tools, resources, configuration, or validation fail, use `primeui doctor --json --tool <tool> --library primereact --variant <mode>`. Report failures honestly and do not replace missing official data with guesses.
 8. Do not invent props, events, imports, hook returns, compound parts, pass-through keys, tokens, setup steps, package availability, pricing, access, or licensing.
 
 ## Reference Map

@@ -8,7 +8,7 @@
   "schemaVersion": 1,
   "source": {
     "repository": "https://github.com/primefaces/primeui-plugins",
-    "skillHash": "sha256:326e1e3893497861fed21a37d83063ce326a72f82ca01e2b3b3a0d5a383ae6d6",
+    "skillHash": "sha256:811563bcafbd8d42d1a9e22bd20116a2c3028124d61c21f53afb18ea0ead1cb4",
     "skillPath": "skills/primevue"
   }
 }

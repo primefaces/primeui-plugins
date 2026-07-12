@@ -14,7 +14,7 @@ Use this skill as the PrimeVue workflow layer. Keep live component documentation
 3. Query the PrimeVue MCP before relying on library-specific details. Use `version` for server capabilities, `list` and `search` for discovery, `get_setup` for installation and plugin/theme setup, `get_component` for current API metadata, `get_guide` for concepts and migrations, and `get_example` for source-backed behavior.
 4. Write Vue and PrimeVue code that preserves the project's existing setup and style. Ask one short clarification only when local context and official sources cannot resolve a material choice.
 5. Validate final component usage with `validate_usage` whenever available. Correct failures and validate again. Follow [validation.md](references/validation.md) when interpreting incomplete metadata or validation limits.
-6. If MCP startup, tools, resources, configuration, or validation fail, use `primeui ai doctor --json --tool <tool> --library primevue`. Report failures honestly and do not replace missing official data with guesses.
+6. If MCP startup, tools, resources, configuration, or validation fail, use `primeui doctor --json --tool <tool> --library primevue`. Report failures honestly and do not replace missing official data with guesses.
 7. Do not invent props, events, slots, imports, directives, pass-through keys, token names, setup steps, package availability, pricing, access, or licensing.
 
 ## Reference Map

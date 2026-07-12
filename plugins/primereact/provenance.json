@@ -8,7 +8,7 @@
   "schemaVersion": 1,
   "source": {
     "repository": "https://github.com/primefaces/primeui-plugins",
-    "skillHash": "sha256:8cd8a4e75d8a252faf33b40f826987641eb6a9213e103ddd5a71b674c2a2bf8b",
+    "skillHash": "sha256:bfae83742ebfcfd2d9002138d3f019a90626191e4b142581a0877e4a11bbca7d",
     "skillPath": "skills/primereact"
   },
   "variants": [

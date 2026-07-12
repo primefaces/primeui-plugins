@@ -6,7 +6,7 @@ Use this reference when MCP, setup, imports, plugins, themes, examples, validati
 
 1. Use `version` to confirm the server identity, package/docs version, compact tool surface, resources, and known metadata gaps.
 2. Confirm that the active server is PrimeVue and exposes `list`, `search`, `get_component`, `get_guide`, `get_example`, `get_setup`, `validate_usage`, and `version`.
-3. Run or request `primeui ai doctor --json --tool <tool> --library primevue` for missing skill discovery, configuration, startup, tools, resources, or validation.
+3. Run or request `primeui doctor --json --tool <tool> --library primevue` for missing skill discovery, configuration, startup, tools, resources, or validation.
 4. Treat failed doctor checks as setup/tooling blockers. Report check identifiers, details, and suggestions; retry after repair.
 5. If official MCP access still fails, use accessible local generated PrimeVue docs or current package metadata only as an explicit fallback. Do not guess or claim MCP validation.
 

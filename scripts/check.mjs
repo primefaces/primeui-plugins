@@ -7,6 +7,7 @@ const checks = [
   ['tests', ['--test']],
   ['formatting', ['scripts/check-format.mjs']],
   ['repository boundaries', ['scripts/check-boundaries.mjs']],
+  ['skill commands', ['scripts/check-skill-commands.mjs']],
   ['security', ['scripts/check-security.mjs']]
 ];
 

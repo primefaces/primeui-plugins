@@ -199,7 +199,10 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
     repositoryRoot: fixture.distributionRoot
   });
   assert.equal(first.stale, true);
-  assert.equal(first.added.length, 39);
+  const expectedGeneratedFiles = 21 + fixture.pluginsConfig.plugins
+    .flatMap((plugin) => plugin.skills)
+    .length * 2;
+  assert.equal(first.added.length, expectedGeneratedFiles);
 
   const afterFirst = await listSnapshotFiles(fixture.distributionRoot);
   const second = await syncDistribution({

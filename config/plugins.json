@@ -141,12 +141,60 @@
       },
       "skills": [
         {
-          "directory": "primeng",
-          "id": "primeng",
-          "name": "primeng",
+          "directory": "primeng-router",
+          "id": "primeng-router",
+          "name": "primeng-router",
           "order": 0,
           "owner": "primeng",
-          "sourcePath": "skills/primeng"
+          "sourcePath": "skills/primeng/primeng-router"
+        },
+        {
+          "directory": "primeng-component-implementation",
+          "id": "primeng-component-implementation",
+          "name": "primeng-component-implementation",
+          "order": 1,
+          "owner": "primeng",
+          "sourcePath": "skills/primeng/primeng-component-implementation"
+        },
+        {
+          "directory": "primeng-setup-installation",
+          "id": "primeng-setup-installation",
+          "name": "primeng-setup-installation",
+          "order": 2,
+          "owner": "primeng",
+          "sourcePath": "skills/primeng/primeng-setup-installation"
+        },
+        {
+          "directory": "primeng-theming-customization",
+          "id": "primeng-theming-customization",
+          "name": "primeng-theming-customization",
+          "order": 3,
+          "owner": "primeng",
+          "sourcePath": "skills/primeng/primeng-theming-customization"
+        },
+        {
+          "directory": "primeng-accessibility-icons",
+          "id": "primeng-accessibility-icons",
+          "name": "primeng-accessibility-icons",
+          "order": 4,
+          "owner": "primeng",
+          "sourcePath": "skills/primeng/primeng-accessibility-icons"
+        },
+        {
+          "directory": "primeng-migration",
+          "id": "primeng-migration",
+          "name": "primeng-migration",
+          "order": 5,
+          "owner": "primeng",
+          "sourcePath": "skills/primeng/primeng-migration"
+        },
+        {
+          "directory": "primeng-audit-troubleshooting",
+          "id": "primeng-audit-troubleshooting",
+          "name": "primeng-audit-troubleshooting",
+          "order": 6,
+          "owner": "primeng",
+          "sourcePath": "skills/primeng/primeng-audit-troubleshooting"
         }
       ],
       "variants": []

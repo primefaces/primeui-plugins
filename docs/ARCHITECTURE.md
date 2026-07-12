@@ -41,7 +41,7 @@ The generator exclusively owns `.agents/plugins/`, `.claude-plugin/`, `.cursor-p
 
 The ordered-set model is the compatibility boundary for the previous single-skill layout. A library may currently declare one entry, but generation always treats it as a set. Moving to several entries replaces the entire generated `skills/` root transactionally, removes the old single-skill copy, and rolls back the prior root on failure. No fallback or duplicate compatibility copy is retained.
 
-PrimeVue uses that model for one router plus six focused workflow skills. The router selects exactly one smallest workflow, and the focused skills contain procedure and call budgets only; component documentation, API tables, examples, setup candidates, and citations remain owned by the PrimeVue MCP artifacts.
+PrimeVue and PrimeNG use that model for one router plus six focused workflow skills. Each router selects exactly one smallest workflow, and the focused skills contain procedure and call budgets only; component documentation, API tables, examples, setup candidates, and citations remain owned by the matching MCP artifacts. PrimeNG's setup skill accepts only current routed standalone setup metadata and returns unsupported for undocumented NgModule setup without synthesizing guidance or URLs.
 
 ## Gemini distribution
 

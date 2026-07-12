@@ -14,22 +14,100 @@
       "provenance.json"
     ],
     "skillRoots": [
-      "skills/primeng"
+      "skills/primeng-router",
+      "skills/primeng-component-implementation",
+      "skills/primeng-setup-installation",
+      "skills/primeng-theming-customization",
+      "skills/primeng-accessibility-icons",
+      "skills/primeng-migration",
+      "skills/primeng-audit-troubleshooting"
     ]
   },
   "pluginVersion": "0.1.0-alpha.0",
   "schemaVersion": 2,
   "skills": [
     {
-      "directory": "primeng",
-      "id": "primeng",
-      "name": "primeng",
+      "directory": "primeng-router",
+      "id": "primeng-router",
+      "name": "primeng-router",
       "order": 0,
       "owner": "primeng",
       "source": {
-        "path": "skills/primeng",
+        "path": "skills/primeng/primeng-router",
         "repository": "https://github.com/primefaces/primeui-plugins",
-        "treeHash": "sha256:ea8da20b90b1754e41cb2a13b9cec3a31b0fac9add287da6c6ddd976d4298275"
+        "treeHash": "sha256:d5d46056db94f9bdf1f5ba96501a7f27a17e16edfc63adaf2979001cb45492ab"
+      }
+    },
+    {
+      "directory": "primeng-component-implementation",
+      "id": "primeng-component-implementation",
+      "name": "primeng-component-implementation",
+      "order": 1,
+      "owner": "primeng",
+      "source": {
+        "path": "skills/primeng/primeng-component-implementation",
+        "repository": "https://github.com/primefaces/primeui-plugins",
+        "treeHash": "sha256:184f08b39080905411dc9dad4ed493dc16419ea44e35309ccdceebf899da789e"
+      }
+    },
+    {
+      "directory": "primeng-setup-installation",
+      "id": "primeng-setup-installation",
+      "name": "primeng-setup-installation",
+      "order": 2,
+      "owner": "primeng",
+      "source": {
+        "path": "skills/primeng/primeng-setup-installation",
+        "repository": "https://github.com/primefaces/primeui-plugins",
+        "treeHash": "sha256:44fa78c851e970216e7de4d60de05f6208228fca742fc53cc26a6affb74e158b"
+      }
+    },
+    {
+      "directory": "primeng-theming-customization",
+      "id": "primeng-theming-customization",
+      "name": "primeng-theming-customization",
+      "order": 3,
+      "owner": "primeng",
+      "source": {
+        "path": "skills/primeng/primeng-theming-customization",
+        "repository": "https://github.com/primefaces/primeui-plugins",
+        "treeHash": "sha256:ff7795ed41cd57095e7bbd8079dbde227277bfb469968fc50ae2c1d3d8d3f3e2"
+      }
+    },
+    {
+      "directory": "primeng-accessibility-icons",
+      "id": "primeng-accessibility-icons",
+      "name": "primeng-accessibility-icons",
+      "order": 4,
+      "owner": "primeng",
+      "source": {
+        "path": "skills/primeng/primeng-accessibility-icons",
+        "repository": "https://github.com/primefaces/primeui-plugins",
+        "treeHash": "sha256:84448db9b7805acf0440826de32cf2dab235eecd75a4114e70e8911828eabd92"
+      }
+    },
+    {
+      "directory": "primeng-migration",
+      "id": "primeng-migration",
+      "name": "primeng-migration",
+      "order": 5,
+      "owner": "primeng",
+      "source": {
+        "path": "skills/primeng/primeng-migration",
+        "repository": "https://github.com/primefaces/primeui-plugins",
+        "treeHash": "sha256:92250d9b2df8b01f308ac7595064be59f6434ef2a8a066bd8f86113711d2a5ac"
+      }
+    },
+    {
+      "directory": "primeng-audit-troubleshooting",
+      "id": "primeng-audit-troubleshooting",
+      "name": "primeng-audit-troubleshooting",
+      "order": 6,
+      "owner": "primeng",
+      "source": {
+        "path": "skills/primeng/primeng-audit-troubleshooting",
+        "repository": "https://github.com/primefaces/primeui-plugins",
+        "treeHash": "sha256:10cbd42cdd7325c6a3c8851a2f30fc3900ec9b649fef0dd764227dc22ed109f0"
       }
     }
   ]

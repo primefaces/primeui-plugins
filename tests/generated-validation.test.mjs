@@ -76,9 +76,8 @@ test('generated validation rejects stale files and public-boundary violations', 
     'plugins',
     'primevue',
     'skills',
-    'primevue',
-    'references',
-    'setup.md'
+    'primevue-component-implementation',
+    'SKILL.md'
   );
   const internalLookingWorkItem = 'TASK-999';
   const localPath = ['/Us', 'ers/example/private'].join('');

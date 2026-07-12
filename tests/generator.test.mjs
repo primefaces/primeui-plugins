@@ -116,7 +116,33 @@ function configureSyntheticSevenSkills(pluginsConfig, lockConfig) {
   }
 }
 
-async function createGeneratorFixture(context, { sevenSkills = false } = {}) {
+function configureSingleSkills(pluginsConfig, lockConfig) {
+  for (const plugin of pluginsConfig.plugins) {
+    plugin.skills = [{
+      directory: plugin.name,
+      id: plugin.name,
+      name: plugin.name,
+      order: 0,
+      owner: plugin.name,
+      sourcePath: `skills/${plugin.name}`
+    }];
+    const lock = lockConfig.sources.find((candidate) => candidate.name === plugin.name);
+    lock.skills = plugin.skills.map((skill) => ({
+      directory: skill.directory,
+      id: skill.id,
+      name: skill.name,
+      order: skill.order,
+      owner: skill.owner,
+      source: {
+        path: skill.sourcePath,
+        repository: 'https://github.com/primefaces/primeui-plugins',
+        treeHash: null
+      }
+    }));
+  }
+}
+
+async function createGeneratorFixture(context, { oneSkill = false, sevenSkills = false } = {}) {
   const temporaryRoot = await realpath(os.tmpdir());
   const root = await mkdtemp(path.join(temporaryRoot, 'primeui-generator-test-'));
   context.after(() => rm(root, { force: true, recursive: true }));
@@ -127,6 +153,8 @@ async function createGeneratorFixture(context, { sevenSkills = false } = {}) {
   const lockConfig = await readJson('config/sources.lock.json');
   if (sevenSkills) {
     configureSyntheticSevenSkills(pluginsConfig, lockConfig);
+  } else if (oneSkill) {
+    configureSingleSkills(pluginsConfig, lockConfig);
   }
   for (const plugin of pluginsConfig.plugins) {
     const lock = lockConfig.sources.find((candidate) => candidate.name === plugin.name);
@@ -171,7 +199,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
     repositoryRoot: fixture.distributionRoot
   });
   assert.equal(first.stale, true);
-  assert.equal(first.added.length, 27);
+  assert.equal(first.added.length, 39);
 
   const afterFirst = await listSnapshotFiles(fixture.distributionRoot);
   const second = await syncDistribution({
@@ -198,7 +226,11 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
   await writeFile(stalePath, 'stale\n');
 
   const staleBefore = await listSnapshotFiles(fixture.distributionRoot);
-  const sourceSkillPath = path.join(fixture.distributionRoot, 'skills', 'primevue', 'SKILL.md');
+  const sourceSkillPath = path.join(
+    fixture.distributionRoot,
+    ...fixture.pluginsConfig.plugins[0].skills[0].sourcePath.split('/'),
+    'SKILL.md'
+  );
   const sourceSkillBeforePreflightMutation = await readFile(sourceSkillPath);
   await assert.rejects(
     syncDistribution({
@@ -361,7 +393,7 @@ test('synthetic seven-skill libraries generate exact ordered discovery for all f
 });
 
 test('one-skill compatibility layout migrates without fallback copies and rolls back atomically', async (context) => {
-  const fixture = await createGeneratorFixture(context);
+  const fixture = await createGeneratorFixture(context, { oneSkill: true });
   await syncDistribution({ check: false, repositoryRoot: fixture.distributionRoot });
   const oldGenerated = path.join(fixture.distributionRoot, 'plugins', 'primevue', 'skills', 'primevue');
   await access(oldGenerated);

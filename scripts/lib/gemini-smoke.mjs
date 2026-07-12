@@ -253,6 +253,44 @@ async function installedExtensions(scenario) {
   return extensions;
 }
 
+export function assertGeminiRuntimeSkillInventory(discoveredSkills, expectedSkills, label) {
+  assert(Array.isArray(discoveredSkills), `${label}: Gemini extension skills must be an array.`);
+  const expectedNames = expectedSkills.map((skill) => skill.name);
+  const discoveredNames = discoveredSkills.map((skill) => skill?.name);
+  const counts = new Map();
+  for (const name of discoveredNames) {
+    counts.set(name, (counts.get(name) ?? 0) + 1);
+  }
+
+  const duplicates = [...counts]
+    .filter(([, count]) => count > 1)
+    .map(([name]) => name);
+  assert(
+    duplicates.length === 0,
+    `${label}: Gemini runtime discovery contains duplicate skills: ${duplicates.join(', ')}.`
+  );
+
+  const discoveredSet = new Set(discoveredNames);
+  const expectedSet = new Set(expectedNames);
+  const missing = expectedNames.filter((name) => !discoveredSet.has(name));
+  assert(
+    missing.length === 0,
+    `${label}: Gemini runtime discovery is missing skills: ${missing.join(', ')}.`
+  );
+
+  const foreign = discoveredNames.filter((name) => !expectedSet.has(name));
+  assert(
+    foreign.length === 0,
+    `${label}: Gemini runtime discovery contains foreign skills: ${foreign.join(', ')}.`
+  );
+  assert(
+    discoveredNames.length === expectedNames.length,
+    `${label}: Gemini runtime discovery must expose exactly ${expectedNames.length} unique selected-library skills.`
+  );
+
+  return discoveredNames;
+}
+
 async function assertOneExtension(scenario, contract, library, expectedActive) {
   const extensions = await installedExtensions(scenario);
   assert(extensions.length === 1, `${library}: expected exactly one installed Gemini extension.`);
@@ -260,16 +298,21 @@ async function assertOneExtension(scenario, contract, library, expectedActive) {
   assert(extension.name === library, `${library}: installed Gemini extension name does not match.`);
   assert(extension.version === contract.pluginVersion, `${library}: installed Gemini version does not match.`);
   assert(extension.isActive === expectedActive, `${library}: Gemini enabled state does not match.`);
-  assert(
-    Array.isArray(extension.skills) &&
-      JSON.stringify(extension.skills.map((skill) => skill.name)) ===
-        JSON.stringify(contract.skills.map((skill) => skill.name)),
-    `${library}: Gemini must discover the exact ordered extension skill inventory.`
+  assertGeminiRuntimeSkillInventory(
+    extension.skills,
+    contract.skills,
+    `${library}: installed Gemini extension`
   );
   assert(
     Object.keys(extension.mcpServers ?? {}).length === 1 &&
       Object.hasOwn(extension.mcpServers, library),
     `${library}: Gemini must discover exactly one matching extension MCP server.`
+  );
+  assert(
+    extension.mcpServers[library].command === 'npx' &&
+      JSON.stringify(extension.mcpServers[library].args) ===
+        JSON.stringify(['-y', `${contract.mcpPackage}@${contract.mcpVersion}`]),
+    `${library}: Gemini must discover the exact installed extension MCP pin.`
   );
   return extension;
 }

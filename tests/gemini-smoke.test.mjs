@@ -1,16 +1,59 @@
 import assert from 'node:assert/strict';
-import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
+import { cp, mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { inspectSkillTree } from '../scripts/lib/skill-tree.mjs';
 import { runCommand } from '../scripts/lib/process.mjs';
 import {
+  assertGeminiRuntimeSkillInventory,
   assertInstalledGeminiPayload,
   geminiScenarioEnvironment,
   parseGeminiSmokeArguments,
   sanitizeGeminiProcessEnvironment
 } from '../scripts/lib/gemini-smoke.mjs';
+import { configuredSkillContracts } from '../scripts/lib/smoke-contracts.mjs';
+import { repositoryRoot } from '../scripts/lib/repository.mjs';
+
+const orderedPrimeVueSkills = [
+  'primevue-router',
+  'primevue-component-implementation',
+  'primevue-setup-installation',
+  'primevue-theming-customization',
+  'primevue-accessibility-icons',
+  'primevue-migration',
+  'primevue-audit-troubleshooting'
+];
+
+test('Gemini runtime skill discovery is exact-set and order-neutral', () => {
+  const expected = orderedPrimeVueSkills.map((name) => ({ name }));
+  const shuffled = [
+    'primevue-theming-customization',
+    'primevue-setup-installation',
+    'primevue-router',
+    'primevue-migration',
+    'primevue-component-implementation',
+    'primevue-audit-troubleshooting',
+    'primevue-accessibility-icons'
+  ].map((name) => ({ name }));
+
+  assert.deepEqual(
+    assertGeminiRuntimeSkillInventory(shuffled, expected, 'primevue'),
+    shuffled.map((skill) => skill.name)
+  );
+  assert.throws(
+    () => assertGeminiRuntimeSkillInventory(shuffled.slice(1), expected, 'primevue'),
+    /missing skills: primevue-theming-customization/
+  );
+  assert.throws(
+    () => assertGeminiRuntimeSkillInventory([...shuffled, shuffled[0]], expected, 'primevue'),
+    /duplicate skills: primevue-theming-customization/
+  );
+  assert.throws(
+    () => assertGeminiRuntimeSkillInventory([...shuffled, { name: 'primeng-router' }], expected, 'primevue'),
+    /foreign skills: primeng-router/
+  );
+});
 
 test('Gemini smoke arguments use safe explicit matrix selectors', () => {
   assert.deepEqual(parseGeminiSmokeArguments([]), {
@@ -159,4 +202,65 @@ test('installed Gemini payload inspection enforces source, skill, MCP, and exten
     assertInstalledGeminiPayload({ contract, geminiHome, installPath, library: 'primevue', sourcePath }),
     /must contain only the selected library/
   );
+});
+
+test('installed Gemini payload preserves approved PrimeVue order, independent hashes, and exact MCP pin', async (context) => {
+  const root = await mkdtemp(path.join(os.tmpdir(), 'primeui-gemini-focused-payload-test-'));
+  context.after(() => rm(root, { force: true, recursive: true }));
+  const geminiHome = path.join(root, 'home', '.gemini');
+  const sourcePath = path.join(repositoryRoot, 'plugins', 'primevue');
+  const installPath = path.join(geminiHome, 'extensions', 'primevue');
+  await mkdir(path.dirname(installPath), { recursive: true });
+  await cp(sourcePath, installPath, { recursive: true });
+  await writeFile(
+    path.join(installPath, '.gemini-extension-install.json'),
+    JSON.stringify({ source: sourcePath, type: 'local' })
+  );
+
+  const [pluginsConfig, lockConfig] = await Promise.all([
+    readFile(path.join(repositoryRoot, 'config', 'plugins.json'), 'utf8').then(JSON.parse),
+    readFile(path.join(repositoryRoot, 'config', 'sources.lock.json'), 'utf8').then(JSON.parse)
+  ]);
+  const plugin = pluginsConfig.plugins.find((candidate) => candidate.name === 'primevue');
+  const lock = lockConfig.sources.find((candidate) => candidate.name === 'primevue');
+  const contract = {
+    mcpPackage: lock.mcp.package,
+    mcpVersion: lock.mcp.version,
+    pluginVersion: lock.pluginVersion,
+    skills: configuredSkillContracts(plugin, lock),
+    lockedSkills: lock.skills
+  };
+  const validate = () => assertInstalledGeminiPayload({
+    contract,
+    geminiHome,
+    installPath,
+    library: 'primevue',
+    sourcePath
+  });
+
+  assert.deepEqual(contract.skills.map((skill) => skill.name), orderedPrimeVueSkills);
+  assert.equal(new Set(contract.skills.map((skill) => skill.treeHash)).size, 7);
+  await assert.doesNotReject(validate());
+
+  const provenancePath = path.join(installPath, 'provenance.json');
+  const provenance = JSON.parse(await readFile(provenancePath, 'utf8'));
+  provenance.skills = [provenance.skills[1], provenance.skills[0], ...provenance.skills.slice(2)];
+  await writeFile(provenancePath, JSON.stringify(provenance));
+  await assert.rejects(validate(), /provenance skill inventory does not match/);
+  await writeFile(
+    provenancePath,
+    await readFile(path.join(sourcePath, 'provenance.json'), 'utf8')
+  );
+
+  const skillPath = path.join(installPath, 'skills', 'primevue-router', 'SKILL.md');
+  const skillContent = await readFile(skillPath, 'utf8');
+  await writeFile(skillPath, `${skillContent}\nchanged\n`);
+  await assert.rejects(validate(), /skill hash does not match/);
+  await writeFile(skillPath, skillContent);
+
+  const manifestPath = path.join(installPath, 'gemini-extension.json');
+  const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+  manifest.mcpServers.primevue.args = ['-y', '@primevue/mcp@wrong'];
+  await writeFile(manifestPath, JSON.stringify(manifest));
+  await assert.rejects(validate(), /MCP package pin does not match/);
 });

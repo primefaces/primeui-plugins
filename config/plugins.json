@@ -49,12 +49,60 @@
       },
       "skills": [
         {
-          "directory": "primevue",
-          "id": "primevue",
-          "name": "primevue",
+          "directory": "primevue-router",
+          "id": "primevue-router",
+          "name": "primevue-router",
           "order": 0,
           "owner": "primevue",
-          "sourcePath": "skills/primevue"
+          "sourcePath": "skills/primevue/primevue-router"
+        },
+        {
+          "directory": "primevue-component-implementation",
+          "id": "primevue-component-implementation",
+          "name": "primevue-component-implementation",
+          "order": 1,
+          "owner": "primevue",
+          "sourcePath": "skills/primevue/primevue-component-implementation"
+        },
+        {
+          "directory": "primevue-setup-installation",
+          "id": "primevue-setup-installation",
+          "name": "primevue-setup-installation",
+          "order": 2,
+          "owner": "primevue",
+          "sourcePath": "skills/primevue/primevue-setup-installation"
+        },
+        {
+          "directory": "primevue-theming-customization",
+          "id": "primevue-theming-customization",
+          "name": "primevue-theming-customization",
+          "order": 3,
+          "owner": "primevue",
+          "sourcePath": "skills/primevue/primevue-theming-customization"
+        },
+        {
+          "directory": "primevue-accessibility-icons",
+          "id": "primevue-accessibility-icons",
+          "name": "primevue-accessibility-icons",
+          "order": 4,
+          "owner": "primevue",
+          "sourcePath": "skills/primevue/primevue-accessibility-icons"
+        },
+        {
+          "directory": "primevue-migration",
+          "id": "primevue-migration",
+          "name": "primevue-migration",
+          "order": 5,
+          "owner": "primevue",
+          "sourcePath": "skills/primevue/primevue-migration"
+        },
+        {
+          "directory": "primevue-audit-troubleshooting",
+          "id": "primevue-audit-troubleshooting",
+          "name": "primevue-audit-troubleshooting",
+          "order": 6,
+          "owner": "primevue",
+          "sourcePath": "skills/primevue/primevue-audit-troubleshooting"
         }
       ],
       "variants": []

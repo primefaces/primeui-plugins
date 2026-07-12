@@ -12,15 +12,87 @@
       "pluginVersion": "0.1.0-alpha.0",
       "skills": [
         {
-          "directory": "primevue",
-          "id": "primevue",
-          "name": "primevue",
+          "directory": "primevue-router",
+          "id": "primevue-router",
+          "name": "primevue-router",
           "order": 0,
           "owner": "primevue",
           "source": {
-            "path": "skills/primevue",
+            "path": "skills/primevue/primevue-router",
             "repository": "https://github.com/primefaces/primeui-plugins",
-            "treeHash": "sha256:811563bcafbd8d42d1a9e22bd20116a2c3028124d61c21f53afb18ea0ead1cb4"
+            "treeHash": "sha256:b11daa93111efb62b009a62596410f2a9c91c49f0ee2138c0c20cb66811604c3"
+          }
+        },
+        {
+          "directory": "primevue-component-implementation",
+          "id": "primevue-component-implementation",
+          "name": "primevue-component-implementation",
+          "order": 1,
+          "owner": "primevue",
+          "source": {
+            "path": "skills/primevue/primevue-component-implementation",
+            "repository": "https://github.com/primefaces/primeui-plugins",
+            "treeHash": "sha256:f561168ef136b8cd774351aec846c2cd0e020bf679042a5a1a4b9d79b73e9332"
+          }
+        },
+        {
+          "directory": "primevue-setup-installation",
+          "id": "primevue-setup-installation",
+          "name": "primevue-setup-installation",
+          "order": 2,
+          "owner": "primevue",
+          "source": {
+            "path": "skills/primevue/primevue-setup-installation",
+            "repository": "https://github.com/primefaces/primeui-plugins",
+            "treeHash": "sha256:af39ae6a2488291db7759d53ae3576ea3116ba18cd80abb0e5b6d4bfb461251e"
+          }
+        },
+        {
+          "directory": "primevue-theming-customization",
+          "id": "primevue-theming-customization",
+          "name": "primevue-theming-customization",
+          "order": 3,
+          "owner": "primevue",
+          "source": {
+            "path": "skills/primevue/primevue-theming-customization",
+            "repository": "https://github.com/primefaces/primeui-plugins",
+            "treeHash": "sha256:87f80dc41292ca3ad3d18b20fea3b78196e7ded96cced0f9f82fb291bce5e842"
+          }
+        },
+        {
+          "directory": "primevue-accessibility-icons",
+          "id": "primevue-accessibility-icons",
+          "name": "primevue-accessibility-icons",
+          "order": 4,
+          "owner": "primevue",
+          "source": {
+            "path": "skills/primevue/primevue-accessibility-icons",
+            "repository": "https://github.com/primefaces/primeui-plugins",
+            "treeHash": "sha256:96fbeb21ad326e16e9df1c658f92102067c3835eb21f73f5ee25e0fbcac5f2fb"
+          }
+        },
+        {
+          "directory": "primevue-migration",
+          "id": "primevue-migration",
+          "name": "primevue-migration",
+          "order": 5,
+          "owner": "primevue",
+          "source": {
+            "path": "skills/primevue/primevue-migration",
+            "repository": "https://github.com/primefaces/primeui-plugins",
+            "treeHash": "sha256:429b580a218392e13be083f78ccbb01b2eb15c914ef382775d14ace89424e14e"
+          }
+        },
+        {
+          "directory": "primevue-audit-troubleshooting",
+          "id": "primevue-audit-troubleshooting",
+          "name": "primevue-audit-troubleshooting",
+          "order": 6,
+          "owner": "primevue",
+          "source": {
+            "path": "skills/primevue/primevue-audit-troubleshooting",
+            "repository": "https://github.com/primefaces/primeui-plugins",
+            "treeHash": "sha256:07b8b3fa61dc41487d507b5198d707672b4ca8508efa00c791f28bf5d1f785c6"
           }
         }
       ]

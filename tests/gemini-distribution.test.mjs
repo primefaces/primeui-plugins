@@ -51,7 +51,12 @@ test('Gemini distribution export creates isolated deterministic extension roots'
     assert.equal(manifest.name, library);
     assert.deepEqual(Object.keys(manifest.mcpServers), [library]);
     assert.equal(manifest.mcpServers[library].command, 'npx');
-    assert.equal((await inspectSkillTree(path.join(extensionRoot, 'skills', library))).records.length > 0, true);
+    const provenance = JSON.parse(await readFile(path.join(extensionRoot, 'provenance.json'), 'utf8'));
+    for (const skill of provenance.skills) {
+      const inspection = await inspectSkillTree(path.join(extensionRoot, 'skills', skill.directory));
+      assert.equal(inspection.records.length > 0, true);
+      assert.equal(inspection.hash, skill.source.treeHash);
+    }
     await assert.rejects(access(path.join(extensionRoot, '.claude-plugin')));
     await assert.rejects(access(path.join(extensionRoot, '.codex-plugin')));
     await assert.rejects(access(path.join(extensionRoot, '.cursor-plugin')));

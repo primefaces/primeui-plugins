@@ -18,6 +18,8 @@ Each plugin combines:
 - An exact-version MCP configuration for current component documentation, API metadata, examples, guides, and usage validation.
 - Client-specific manifests generated from the same locked source inputs.
 
+PrimeVue currently ships this ordered focused set: `primevue-router`, `primevue-component-implementation`, `primevue-setup-installation`, `primevue-theming-customization`, `primevue-accessibility-icons`, `primevue-migration`, and `primevue-audit-troubleshooting`. The router selects one smallest workflow; current component/API/example truth remains in `@primevue/mcp`.
+
 ## Claude Code
 
 Add the public marketplace, then install the one library plugin you need:
@@ -69,7 +71,7 @@ For local development, pass the repository root to `codex plugin marketplace add
 
 Cursor plugins bundle skills and MCP servers into one installation. After the PrimeUI plugins complete Cursor Marketplace review, find the selected PrimeVue, PrimeNG, or PrimeReact plugin in the Marketplace or open Cursor's supported `/add-plugin` flow. Cursor's public documentation does not define arguments for `/add-plugin`, so this repository does not publish a repository URL or path form for that command.
 
-Cursor can install Marketplace plugins at user or workspace scope. Manage installed plugins and their components from **Customize**. A plugin skill appears in **Agent Decides** and can be invoked as `/primevue`, `/primeng`, or `/primereact`; its MCP server can be enabled or disabled from the same surface. Public Marketplace updates are reviewed by Cursor and require the publisher to request a re-index after changing the repository.
+Cursor can install Marketplace plugins at user or workspace scope. Manage installed plugins and their components from **Customize**. Plugin skills appear in **Agent Decides** under their declared names; the PrimeVue plugin exposes the seven focused names above, while the other libraries retain their current declared inventories. The selected plugin's MCP server can be enabled or disabled from the same surface. Public Marketplace updates are reviewed by Cursor and require the publisher to request a re-index after changing the repository.
 
 For local development, copy or symlink exactly one generated library root into Cursor's documented local-plugin directory, then restart Cursor or run **Developer: Reload Window**:
 
@@ -89,7 +91,7 @@ gemini extensions install <persistent-checkout>/plugins/primevue --consent
 gemini extensions list --output-format json
 ```
 
-Use `primeng` or `primereact` in the path for the other libraries. Gemini CLI 0.29.3 requires extension management to be enabled with `experimental.extensionManagement` in its settings. The extension uses native `skills/<library>/SKILL.md` discovery and embeds the exact matching MCP server; it does not generate `GEMINI.md`.
+Use `primeng` or `primereact` in the path for the other libraries. Gemini CLI 0.29.3 requires extension management to be enabled with `experimental.extensionManagement` in its settings. The extension uses native discovery for every declared `skills/<skill-name>/SKILL.md` and embeds the exact matching MCP server; it does not generate `GEMINI.md`.
 
 The installed extension retains its local source path. After refreshing that persistent checkout, update a versioned payload with:
 

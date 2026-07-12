@@ -6,6 +6,7 @@ import {
   readFile,
   realpath,
   rm,
+  symlink,
   writeFile
 } from 'node:fs/promises';
 import os from 'node:os';
@@ -32,6 +33,10 @@ async function createDistributionFixture() {
 }
 
 function fixtureConfiguration(skillPath, skillHash) {
+  const skill = {
+    directory: 'primevue', id: 'primevue', name: 'primevue', order: 0,
+    owner: 'primevue', sourcePath: skillPath
+  };
   return {
     lockConfig: {
       sources: [
@@ -40,16 +45,20 @@ function fixtureConfiguration(skillPath, skillHash) {
           mcp: { package: '@primevue/mcp', version: '5.0.0-rc.2' },
           name: 'primevue',
           pluginVersion: '0.1.0-alpha.0',
-          source: {
-            repository: 'https://github.com/primefaces/primeui-plugins',
-            skillHash,
-            skillPath
-          }
+          skills: [{
+            directory: skill.directory, id: skill.id, name: skill.name,
+            order: skill.order, owner: skill.owner,
+            source: {
+              path: skillPath,
+              repository: 'https://github.com/primefaces/primeui-plugins',
+              treeHash: skillHash
+            }
+          }]
         }
       ]
     },
     pluginsConfig: {
-      plugins: [{ name: 'primevue', skillSourcePath: skillPath }]
+      plugins: [{ name: 'primevue', skills: [skill] }]
     }
   };
 }
@@ -79,12 +88,12 @@ test('canonical skill verification rejects missing, duplicate, drifted, and chan
     lockConfig,
     { requireLocked: true, verifyHash: true }
   );
-  assert.equal(snapshots.get('primevue').skillRoot, fixture.skillRoot);
+  assert.equal(snapshots.get('primevue').skills[0].skillRoot, fixture.skillRoot);
 
   const duplicatePlugins = {
     plugins: [
       ...pluginsConfig.plugins,
-      { name: 'primeng', skillSourcePath: fixture.skillPath }
+      { name: 'primeng', skills: [{ ...pluginsConfig.plugins[0].skills[0], owner: 'primeng' }] }
     ]
   };
   const duplicateLocks = structuredClone(lockConfig);
@@ -98,16 +107,26 @@ test('canonical skill verification rejects missing, duplicate, drifted, and chan
   );
 
   const missingPlugins = structuredClone(pluginsConfig);
-  missingPlugins.plugins[0].skillSourcePath = 'skills/missing';
+  missingPlugins.plugins[0].skills[0].sourcePath = 'skills/missing';
   const missingLocks = structuredClone(lockConfig);
-  missingLocks.sources[0].source.skillPath = 'skills/missing';
+  missingLocks.sources[0].skills[0].source.path = 'skills/missing';
   await assert.rejects(
     inspectCanonicalSkills(fixture.repositoryRoot, missingPlugins, missingLocks),
     /does not exist/
   );
 
+  const linkedPlugins = structuredClone(pluginsConfig);
+  linkedPlugins.plugins[0].skills[0].sourcePath = 'skills/linked';
+  const linkedLocks = structuredClone(lockConfig);
+  linkedLocks.sources[0].skills[0].source.path = 'skills/linked';
+  await symlink(fixture.skillRoot, path.join(fixture.repositoryRoot, 'skills', 'linked'));
+  await assert.rejects(
+    inspectCanonicalSkills(fixture.repositoryRoot, linkedPlugins, linkedLocks),
+    /must be a physical directory/
+  );
+
   const wrongHash = structuredClone(lockConfig);
-  wrongHash.sources[0].source.skillHash = `sha256:${'0'.repeat(64)}`;
+  wrongHash.sources[0].skills[0].source.treeHash = `sha256:${'0'.repeat(64)}`;
   await assert.rejects(
     inspectCanonicalSkills(fixture.repositoryRoot, pluginsConfig, wrongHash, {
       verifyHash: true
@@ -136,17 +155,17 @@ test('source-lock generation records canonical skill hashes without external Git
   const { lockConfig } = fixtureConfiguration(fixture.skillPath, null);
   lockConfig.sources[0].lockState = 'unresolved';
   lockConfig.sources[0].unresolvedReason = 'Hash pending.';
-  const snapshots = new Map([['primevue', { inspection: fixture.inspection }]]);
+  const snapshots = new Map([['primevue', { skills: [{ id: 'primevue', inspection: fixture.inspection }] }]]);
   const completed = completeSourceLock(lockConfig, snapshots);
 
   assert.equal(completed.sources[0].lockState, 'locked');
-  assert.equal(completed.sources[0].source.skillHash, fixture.inspection.hash);
-  assert.equal(completed.sources[0].source.skillPath, 'skills/primevue');
+  assert.equal(completed.sources[0].skills[0].source.treeHash, fixture.inspection.hash);
+  assert.equal(completed.sources[0].skills[0].source.path, 'skills/primevue');
   assert.equal(
-    completed.sources[0].source.repository,
+    completed.sources[0].skills[0].source.repository,
     'https://github.com/primefaces/primeui-plugins'
   );
-  assert.equal(Object.hasOwn(completed.sources[0].source, 'commit'), false);
+  assert.equal(Object.hasOwn(completed.sources[0].skills[0].source, 'commit'), false);
   assert.equal(Object.hasOwn(completed.sources[0], 'unresolvedReason'), false);
   assert.equal(lockConfig.sources[0].lockState, 'unresolved');
 });

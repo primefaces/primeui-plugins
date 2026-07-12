@@ -47,7 +47,16 @@
       "outputs": {
         "plugin": "plugins/primevue"
       },
-      "skillSourcePath": "skills/primevue",
+      "skills": [
+        {
+          "directory": "primevue",
+          "id": "primevue",
+          "name": "primevue",
+          "order": 0,
+          "owner": "primevue",
+          "sourcePath": "skills/primevue"
+        }
+      ],
       "variants": []
     },
     {
@@ -82,7 +91,16 @@
       "outputs": {
         "plugin": "plugins/primeng"
       },
-      "skillSourcePath": "skills/primeng",
+      "skills": [
+        {
+          "directory": "primeng",
+          "id": "primeng",
+          "name": "primeng",
+          "order": 0,
+          "owner": "primeng",
+          "sourcePath": "skills/primeng"
+        }
+      ],
       "variants": []
     },
     {
@@ -117,7 +135,16 @@
       "outputs": {
         "plugin": "plugins/primereact"
       },
-      "skillSourcePath": "skills/primereact",
+      "skills": [
+        {
+          "directory": "primereact",
+          "id": "primereact",
+          "name": "primereact",
+          "order": 0,
+          "owner": "primereact",
+          "sourcePath": "skills/primereact"
+        }
+      ],
       "variants": [
         "styled",
         "tailwind",
@@ -126,5 +153,5 @@
       ]
     }
   ],
-  "schemaVersion": 1
+  "schemaVersion": 2
 }

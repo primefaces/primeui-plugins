@@ -17,8 +17,12 @@ import { isExactSemver } from './contracts.mjs';
 import { readDistributionConfiguration } from './generator.mjs';
 import { smokeInstalledMcp } from './mcp-smoke.mjs';
 import { hasProcessTreeInspection } from './process.mjs';
-import { inspectSkillTree } from './skill-tree.mjs';
-import { libraryNames, usageContracts } from './smoke-contracts.mjs';
+import {
+  assertPhysicalSkillInventory,
+  configuredSkillContracts,
+  libraryNames,
+  usageContracts
+} from './smoke-contracts.mjs';
 const sourceNames = ['payload', 'marketplace'];
 const pluginNamePattern = /^[a-z0-9](?:[a-z0-9.-]*[a-z0-9])?$/;
 const pluginManifestKeys = new Set([
@@ -310,19 +314,7 @@ export async function assertCursorPayload({ contract, installPath, library }) {
     resolvePhysicalPath(canonicalInstallPath, manifest.skills, `${library} Cursor skills path`),
     resolvePhysicalPath(canonicalInstallPath, manifest.mcpServers, `${library} Cursor MCP path`)
   ]);
-  const skillEntries = await readdir(skillsRoot, { withFileTypes: true });
-  assert(
-    skillEntries.length === 1 &&
-      skillEntries[0].name === library &&
-      skillEntries[0].isDirectory() &&
-      !skillEntries[0].isSymbolicLink(),
-    `${library}: Cursor payload must contain exactly one physical matching skill directory.`
-  );
-  const skillRoot = path.join(skillsRoot, library);
-  const skillInspection = await inspectSkillTree(skillRoot);
-  assert(skillInspection.hash === contract.skillHash, `${library}: Cursor skill hash does not match.`);
-  const skill = await readFile(path.join(skillRoot, 'SKILL.md'), 'utf8');
-  assert(new RegExp(`^name: ${library}$`, 'm').test(skill), `${library}: Cursor skill name does not match.`);
+  await assertPhysicalSkillInventory(skillsRoot, contract.skills, `${library}: Cursor payload`);
 
   const mcp = await readJson(mcpPath, `${library} Cursor MCP configuration`);
   const serverNames = Object.keys(mcp.mcpServers ?? {});
@@ -348,7 +340,10 @@ export async function assertCursorPayload({ contract, installPath, library }) {
       provenance.mcp?.version === contract.mcpVersion,
     `${library}: Cursor provenance MCP pin does not match.`
   );
-  assert(provenance.source?.skillHash === contract.skillHash, `${library}: Cursor provenance skill hash does not match.`);
+  assert(
+    JSON.stringify(provenance.skills) === JSON.stringify(contract.lockedSkills),
+    `${library}: Cursor provenance skill inventory does not match.`
+  );
 
   for (const foreignLibrary of libraryNames.filter((name) => name !== library)) {
     assert(
@@ -361,7 +356,7 @@ export async function assertCursorPayload({ contract, installPath, library }) {
     );
   }
 
-  return { manifest, mcp, mcpPath, skillRoot };
+  return { manifest, mcp, mcpPath, skillsRoot };
 }
 
 export async function resolveCursorMarketplace(repositoryRoot, pluginsConfig) {
@@ -475,7 +470,8 @@ export async function runCursorPayloadScenario({
     pluginVersion: lock.pluginVersion,
     publisherName: pluginsConfig.marketplace.publisher.name,
     repository: pluginsConfig.marketplace.repository,
-    skillHash: lock.source.skillHash
+    skills: configuredSkillContracts(plugin, lock),
+    lockedSkills: lock.skills
   };
 
   let sourceRoot;

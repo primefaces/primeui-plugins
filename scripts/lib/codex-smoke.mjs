@@ -4,7 +4,12 @@ import path from 'node:path';
 import { readDistributionConfiguration } from './generator.mjs';
 import { smokeInstalledMcp } from './mcp-smoke.mjs';
 import { runCommand } from './process.mjs';
-import { libraryNames, usageContracts } from './smoke-contracts.mjs';
+import {
+  assertPhysicalSkillInventory,
+  configuredSkillContracts,
+  libraryNames,
+  usageContracts
+} from './smoke-contracts.mjs';
 const safeEnvironmentKeys = new Set([
   'ALL_PROXY',
   'CI',
@@ -230,30 +235,19 @@ export async function assertInstalledCodexPayload({ codexHome, contract, install
   const skillsRoot = path.join(canonicalInstallPath, 'skills');
   const manifestPath = path.join(canonicalInstallPath, '.codex-plugin', 'plugin.json');
   const mcpPath = path.join(canonicalInstallPath, '.mcp.json');
-  const skillPath = path.join(skillsRoot, library, 'SKILL.md');
-  for (const requiredPath of [manifestPath, mcpPath, skillPath]) {
+  for (const requiredPath of [manifestPath, mcpPath, skillsRoot]) {
     assert(await pathExists(requiredPath), `${library}: installed payload is missing ${requiredPath}.`);
   }
 
-  const [manifest, mcp, skill] = await Promise.all([
+  const [manifest, mcp] = await Promise.all([
     readJson(manifestPath),
-    readJson(mcpPath),
-    readFile(skillPath, 'utf8')
+    readJson(mcpPath)
   ]);
   assert(manifest.name === library, `${library}: installed manifest name does not match.`);
   assert(manifest.version === contract.pluginVersion, `${library}: installed plugin version does not match.`);
   assert(manifest.skills === './skills/', `${library}: installed manifest skill pointer does not match.`);
   assert(manifest.mcpServers === './.mcp.json', `${library}: installed manifest MCP pointer does not match.`);
-  assert(new RegExp(`^name: ${library}$`, 'm').test(skill), `${library}: installed skill name does not match.`);
-
-  const skillEntries = await readdir(skillsRoot, { withFileTypes: true });
-  assert(
-    skillEntries.length === 1 &&
-      skillEntries[0].name === library &&
-      skillEntries[0].isDirectory() &&
-      !skillEntries[0].isSymbolicLink(),
-    `${library}: installed payload must contain exactly one physical matching skill directory.`
-  );
+  await assertPhysicalSkillInventory(skillsRoot, contract.skills, `${library}: installed Codex payload`);
 
   const serverNames = Object.keys(mcp.mcpServers ?? {});
   assert(
@@ -298,7 +292,7 @@ export async function assertInstalledCodexPayload({ codexHome, contract, install
     `${library}: isolated Codex install cache must contain only the locked plugin version.`
   );
 
-  return { manifest, mcp, mcpPath, skillPath };
+  return { manifest, mcp, mcpPath, skillsRoot };
 }
 
 function assertPluginListShape(value, label) {
@@ -456,7 +450,8 @@ export async function runCodexInstallScenario({ keepTemp = false, library, repos
           mcpPackage: lock.mcp.package,
           mcpVersion: lock.mcp.version,
           pluginVersion: lock.pluginVersion,
-          serverName: plugin.mcp.serverName
+          serverName: plugin.mcp.serverName,
+          skills: configuredSkillContracts(plugin, lock)
         }
       ];
     })

@@ -4,11 +4,33 @@
     "version": "5.0.0-rc.2"
   },
   "name": "primevue",
+  "payload": {
+    "documents": [
+      ".claude-plugin/plugin.json",
+      ".codex-plugin/plugin.json",
+      ".cursor-plugin/plugin.json",
+      ".mcp.json",
+      "gemini-extension.json",
+      "provenance.json"
+    ],
+    "skillRoots": [
+      "skills/primevue"
+    ]
+  },
   "pluginVersion": "0.1.0-alpha.0",
-  "schemaVersion": 1,
-  "source": {
-    "repository": "https://github.com/primefaces/primeui-plugins",
-    "skillHash": "sha256:811563bcafbd8d42d1a9e22bd20116a2c3028124d61c21f53afb18ea0ead1cb4",
-    "skillPath": "skills/primevue"
-  }
+  "schemaVersion": 2,
+  "skills": [
+    {
+      "directory": "primevue",
+      "id": "primevue",
+      "name": "primevue",
+      "order": 0,
+      "owner": "primevue",
+      "source": {
+        "path": "skills/primevue",
+        "repository": "https://github.com/primefaces/primeui-plugins",
+        "treeHash": "sha256:811563bcafbd8d42d1a9e22bd20116a2c3028124d61c21f53afb18ea0ead1cb4"
+      }
+    }
+  ]
 }

@@ -10,7 +10,7 @@ export const libraryContracts = {
     mcpPackage: '@primevue/mcp',
     repository: 'https://github.com/primefaces/primeui-plugins',
     serverName: 'primevue',
-    skillPath: 'skills/primevue',
+    skillRoot: 'skills/primevue',
     variants: []
   },
   primeng: {
@@ -19,7 +19,7 @@ export const libraryContracts = {
     mcpPackage: '@primeng/mcp',
     repository: 'https://github.com/primefaces/primeui-plugins',
     serverName: 'primeng',
-    skillPath: 'skills/primeng',
+    skillRoot: 'skills/primeng',
     variants: []
   },
   primereact: {
@@ -28,7 +28,7 @@ export const libraryContracts = {
     mcpPackage: '@primereact/mcp',
     repository: 'https://github.com/primefaces/primeui-plugins',
     serverName: 'primereact',
-    skillPath: 'skills/primereact',
+    skillRoot: 'skills/primereact',
     variants: ['styled', 'tailwind', 'primitive', 'headless']
   }
 };
@@ -37,6 +37,7 @@ const exactSemverPattern =
   /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
 const skillHashPattern = /^sha256:[0-9a-f]{64}$/;
 const sensitiveKeyPattern = /^(?:api[_-]?key|access[_-]?token|client[_-]?secret|credentials?|password|private[_-]?key|secret|token)$/i;
+const skillIdentityPattern = /^[a-z][a-z0-9-]*$/;
 
 function compareStrings(left, right) {
   return left < right ? -1 : left > right ? 1 : 0;
@@ -213,6 +214,89 @@ export function stableStringify(value) {
   return `${JSON.stringify(sortRecursively(value), null, 2)}\n`;
 }
 
+export function normalizeHostSkillName(value) {
+  return value.normalize('NFKC').toLowerCase().replace(/[^a-z0-9]+/gu, '-').replace(/^-|-$/gu, '');
+}
+
+function validateSkillSet(skills, pluginName, expected, location, errors, { locked = false } = {}) {
+  if (!Array.isArray(skills) || skills.length === 0) {
+    errors.push(`${location} must be a non-empty ordered array.`);
+    return;
+  }
+
+  const ids = new Set();
+  const names = new Set();
+  const directories = new Set();
+  const sourcePaths = new Set();
+  const normalizedNames = new Map();
+  const normalizedDirectories = new Map();
+  for (const [index, skill] of skills.entries()) {
+    const skillLocation = `${location}[${index}]`;
+    const required = locked
+      ? ['directory', 'id', 'name', 'order', 'owner', 'source']
+      : ['directory', 'id', 'name', 'order', 'owner', 'sourcePath'];
+    if (!validateObject(skill, skillLocation, required, errors)) {
+      continue;
+    }
+
+    for (const field of ['id', 'name', 'directory']) {
+      if (typeof skill[field] !== 'string' || !skillIdentityPattern.test(skill[field])) {
+        errors.push(`${skillLocation}.${field} must be a lowercase skill identifier.`);
+      }
+    }
+    if (skill.order !== index) {
+      errors.push(`${skillLocation}.order must equal its declared array index ${index}.`);
+    }
+    if (skill.owner !== pluginName) {
+      errors.push(`${skillLocation}.owner must equal selected library ${pluginName}.`);
+    }
+
+    const source = locked ? skill.source : undefined;
+    const sourcePath = locked ? source?.path : skill.sourcePath;
+    if (locked) {
+      if (validateObject(source, `${skillLocation}.source`, ['path', 'repository', 'treeHash'], errors)) {
+        validateSafeHttpsUrl(source.repository, `${skillLocation}.source.repository`, errors, expected.repository);
+        if (source.treeHash !== null && !skillHashPattern.test(source.treeHash)) {
+          errors.push(`${skillLocation}.source.treeHash must be null or sha256:<64 lowercase hex>.`);
+        }
+      }
+    }
+    if (!isSafeRelativePath(sourcePath)) {
+      errors.push(`${skillLocation}.${locked ? 'source.path' : 'sourcePath'} must be a safe normalized relative POSIX path.`);
+    } else if (sourcePath !== expected.skillRoot && !sourcePath.startsWith(`${expected.skillRoot}/`)) {
+      errors.push(`${skillLocation}.${locked ? 'source.path' : 'sourcePath'} must be owned by ${expected.skillRoot}.`);
+    }
+
+    for (const [set, value, label] of [
+      [ids, skill.id, 'id'],
+      [names, skill.name, 'name'],
+      [directories, skill.directory, 'directory'],
+      [sourcePaths, sourcePath, locked ? 'source.path' : 'sourcePath']
+    ]) {
+      if (set.has(value)) {
+        errors.push(`${location} contains duplicate ${label} ${value}.`);
+      }
+      set.add(value);
+    }
+    if (typeof skill.name === 'string') {
+      const normalized = normalizeHostSkillName(skill.name);
+      const prior = normalizedNames.get(normalized);
+      if (prior !== undefined) {
+        errors.push(`${location} skill names ${prior} and ${skill.name} collide after host normalization (${normalized}).`);
+      }
+      normalizedNames.set(normalized, skill.name);
+    }
+    if (typeof skill.directory === 'string') {
+      const normalized = normalizeHostSkillName(skill.directory);
+      const prior = normalizedDirectories.get(normalized);
+      if (prior !== undefined) {
+        errors.push(`${location} directories ${prior} and ${skill.directory} collide after host normalization (${normalized}).`);
+      }
+      normalizedDirectories.set(normalized, skill.directory);
+    }
+  }
+}
+
 export function validatePluginsConfig(config) {
   const errors = [];
   validateSensitiveKeys(config, 'plugins', errors);
@@ -224,8 +308,8 @@ export function validatePluginsConfig(config) {
   if (config.$schema !== './schemas/plugins.schema.json') {
     errors.push('plugins.$schema must equal ./schemas/plugins.schema.json.');
   }
-  if (config.schemaVersion !== 1) {
-    errors.push('plugins.schemaVersion must equal 1.');
+  if (config.schemaVersion !== 2) {
+    errors.push('plugins.schemaVersion must equal 2.');
   }
 
   const marketplace = config.marketplace;
@@ -290,7 +374,7 @@ export function validatePluginsConfig(config) {
           'mcp',
           'name',
           'outputs',
-          'skillSourcePath',
+          'skills',
           'variants'
         ],
         errors
@@ -362,12 +446,7 @@ export function validatePluginsConfig(config) {
       }
     }
 
-    if (!isSafeRelativePath(plugin.skillSourcePath)) {
-      errors.push(`${location}.skillSourcePath must be a safe normalized relative POSIX path.`);
-    }
-    if (plugin.skillSourcePath !== expected.skillPath) {
-      errors.push(`${location}.skillSourcePath must equal ${expected.skillPath}.`);
-    }
+    validateSkillSet(plugin.skills, plugin.name, expected, `${location}.skills`, errors);
 
     if (validateObject(plugin.outputs, `${location}.outputs`, ['plugin'], errors)) {
       const expectedPluginPath = `plugins/${plugin.name}`;
@@ -394,8 +473,8 @@ export function validateSourcesLock(lockConfig, pluginsConfig, { release = false
   if (lockConfig.$schema !== './schemas/sources-lock.schema.json') {
     errors.push('sourcesLock.$schema must equal ./schemas/sources-lock.schema.json.');
   }
-  if (lockConfig.schemaVersion !== 2) {
-    errors.push('sourcesLock.schemaVersion must equal 2.');
+  if (lockConfig.schemaVersion !== 3) {
+    errors.push('sourcesLock.schemaVersion must equal 3.');
   }
   if (!validateKnownLibraryOrder(lockConfig.sources, 'sourcesLock.sources', errors)) {
     return errors;
@@ -407,7 +486,7 @@ export function validateSourcesLock(lockConfig, pluginsConfig, { release = false
       !validateObject(
         lock,
         location,
-        ['lockState', 'mcp', 'name', 'pluginVersion', 'source'],
+        ['lockState', 'mcp', 'name', 'pluginVersion', 'skills'],
         errors,
         ['unresolvedReason']
       )
@@ -443,23 +522,15 @@ export function validateSourcesLock(lockConfig, pluginsConfig, { release = false
       }
     }
 
-    let missingReleaseFields = [];
-    if (validateObject(lock.source, `${location}.source`, ['repository', 'skillHash', 'skillPath'], errors)) {
-      validateSafeHttpsUrl(lock.source.repository, `${location}.source.repository`, errors, expected.repository);
-      if (!isSafeRelativePath(lock.source.skillPath)) {
-        errors.push(`${location}.source.skillPath must be a safe normalized relative POSIX path.`);
-      }
-      if (lock.source.skillPath !== expected.skillPath) {
-        errors.push(`${location}.source.skillPath must equal ${expected.skillPath}.`);
-      }
-      if (plugin && lock.source.skillPath !== plugin.skillSourcePath) {
-        errors.push(`${location}.source.skillPath must match config/plugins.json.`);
-      }
-
-      if (lock.source.skillHash === null) {
-        missingReleaseFields.push('source.skillHash');
-      } else if (typeof lock.source.skillHash !== 'string' || !skillHashPattern.test(lock.source.skillHash)) {
-        errors.push(`${location}.source.skillHash must be null or sha256:<64 lowercase hex>.`);
+    validateSkillSet(lock.skills, lock.name, expected, `${location}.skills`, errors, { locked: true });
+    const missingReleaseFields = Array.isArray(lock.skills)
+      ? lock.skills.flatMap((skill, skillIndex) => skill?.source?.treeHash === null ? [`skills[${skillIndex}].source.treeHash`] : [])
+      : ['skills'];
+    if (plugin && Array.isArray(plugin.skills) && Array.isArray(lock.skills)) {
+      const pluginShape = plugin.skills.map(({ directory, id, name, order, owner, sourcePath }) => ({ directory, id, name, order, owner, sourcePath }));
+      const lockShape = lock.skills.map(({ directory, id, name, order, owner, source }) => ({ directory, id, name, order, owner, sourcePath: source?.path }));
+      if (JSON.stringify(pluginShape) !== JSON.stringify(lockShape)) {
+        errors.push(`${location}.skills must match config/plugins.json identity, order, ownership, directory, and source paths.`);
       }
     }
 

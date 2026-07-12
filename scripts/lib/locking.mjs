@@ -6,7 +6,13 @@ export function completeSourceLock(lockConfig, snapshots) {
       throw new Error(`Missing verified source snapshot for ${lock.name}.`);
     }
     lock.lockState = 'locked';
-    lock.source.skillHash = snapshot.inspection.hash;
+    for (const [index, skill] of lock.skills.entries()) {
+      const skillSnapshot = snapshot.skills[index];
+      if (!skillSnapshot || skillSnapshot.id !== skill.id) {
+        throw new Error(`Missing verified source snapshot for ${lock.name}/${skill.id}.`);
+      }
+      skill.source.treeHash = skillSnapshot.inspection.hash;
+    }
     delete lock.unresolvedReason;
   }
   return updatedLock;

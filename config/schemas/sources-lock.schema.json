@@ -6,58 +6,6 @@
     },
     "lock": {
       "additionalProperties": false,
-      "allOf": [
-        {
-          "if": {
-            "properties": {
-              "lockState": {
-                "const": "locked"
-              }
-            },
-            "required": [
-              "lockState"
-            ]
-          },
-          "then": {
-            "not": {
-              "required": [
-                "unresolvedReason"
-              ]
-            },
-            "properties": {
-              "source": {
-                "$ref": "#/$defs/lockedSource"
-              }
-            }
-          }
-        },
-        {
-          "if": {
-            "properties": {
-              "lockState": {
-                "const": "unresolved"
-              }
-            },
-            "required": [
-              "lockState"
-            ]
-          },
-          "then": {
-            "properties": {
-              "source": {
-                "$ref": "#/$defs/unresolvedSource"
-              },
-              "unresolvedReason": {
-                "minLength": 1,
-                "type": "string"
-              }
-            },
-            "required": [
-              "unresolvedReason"
-            ]
-          }
-        }
-      ],
       "properties": {
         "lockState": {
           "enum": [
@@ -80,8 +28,12 @@
         "pluginVersion": {
           "$ref": "#/$defs/exactSemver"
         },
-        "source": {
-          "$ref": "#/$defs/source"
+        "skills": {
+          "items": {
+            "$ref": "#/$defs/skillLock"
+          },
+          "minItems": 1,
+          "type": "array"
         },
         "unresolvedReason": {
           "minLength": 1,
@@ -93,28 +45,7 @@
         "mcp",
         "name",
         "pluginVersion",
-        "source"
-      ],
-      "type": "object"
-    },
-    "lockedSource": {
-      "additionalProperties": false,
-      "properties": {
-        "repository": {
-          "$ref": "#/$defs/repository"
-        },
-        "skillHash": {
-          "pattern": "^sha256:[0-9a-f]{64}$",
-          "type": "string"
-        },
-        "skillPath": {
-          "$ref": "#/$defs/relativePath"
-        }
-      },
-      "required": [
-        "repository",
-        "skillHash",
-        "skillPath"
+        "skills"
       ],
       "type": "object"
     },
@@ -151,16 +82,6 @@
             },
             "name": {
               "const": "primeng"
-            },
-            "source": {
-              "properties": {
-                "repository": {
-                  "const": "https://github.com/primefaces/primeui-plugins"
-                },
-                "skillPath": {
-                  "const": "skills/primeng"
-                }
-              }
             }
           }
         }
@@ -182,16 +103,6 @@
             },
             "name": {
               "const": "primereact"
-            },
-            "source": {
-              "properties": {
-                "repository": {
-                  "const": "https://github.com/primefaces/primeui-plugins"
-                },
-                "skillPath": {
-                  "const": "skills/primereact"
-                }
-              }
             }
           }
         }
@@ -213,16 +124,6 @@
             },
             "name": {
               "const": "primevue"
-            },
-            "source": {
-              "properties": {
-                "repository": {
-                  "const": "https://github.com/primefaces/primeui-plugins"
-                },
-                "skillPath": {
-                  "const": "skills/primevue"
-                }
-              }
             }
           }
         }
@@ -237,13 +138,57 @@
       "const": "https://github.com/primefaces/primeui-plugins",
       "type": "string"
     },
+    "skillLock": {
+      "additionalProperties": false,
+      "properties": {
+        "directory": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "type": "string"
+        },
+        "name": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "type": "string"
+        },
+        "order": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "owner": {
+          "enum": [
+            "primevue",
+            "primeng",
+            "primereact"
+          ],
+          "type": "string"
+        },
+        "source": {
+          "$ref": "#/$defs/source"
+        }
+      },
+      "required": [
+        "directory",
+        "id",
+        "name",
+        "order",
+        "owner",
+        "source"
+      ],
+      "type": "object"
+    },
     "source": {
       "additionalProperties": false,
       "properties": {
+        "path": {
+          "$ref": "#/$defs/relativePath"
+        },
         "repository": {
           "$ref": "#/$defs/repository"
         },
-        "skillHash": {
+        "treeHash": {
           "anyOf": [
             {
               "pattern": "^sha256:[0-9a-f]{64}$",
@@ -253,35 +198,12 @@
               "type": "null"
             }
           ]
-        },
-        "skillPath": {
-          "$ref": "#/$defs/relativePath"
         }
       },
       "required": [
+        "path",
         "repository",
-        "skillHash",
-        "skillPath"
-      ],
-      "type": "object"
-    },
-    "unresolvedSource": {
-      "additionalProperties": false,
-      "properties": {
-        "repository": {
-          "$ref": "#/$defs/repository"
-        },
-        "skillHash": {
-          "type": "null"
-        },
-        "skillPath": {
-          "$ref": "#/$defs/relativePath"
-        }
-      },
-      "required": [
-        "repository",
-        "skillHash",
-        "skillPath"
+        "treeHash"
       ],
       "type": "object"
     }
@@ -294,7 +216,7 @@
       "const": "./schemas/sources-lock.schema.json"
     },
     "schemaVersion": {
-      "const": 2
+      "const": 3
     },
     "sources": {
       "items": false,

@@ -8,21 +8,18 @@ export async function validateSkillDoctorCommands(repositoryRoot, pluginsConfig)
   const errors = [];
 
   for (const plugin of pluginsConfig.plugins) {
-    const surfaces = [
-      ['canonical', path.join(repositoryRoot, ...plugin.skillSourcePath.split('/'))],
-      [
-        'generated',
-        path.join(repositoryRoot, plugin.outputs.plugin, 'skills', plugin.name)
-      ]
-    ];
+    const surfaces = plugin.skills.flatMap((skill) => [
+      ['canonical', skill.id, path.join(repositoryRoot, ...skill.sourcePath.split('/'))],
+      ['generated', skill.id, path.join(repositoryRoot, plugin.outputs.plugin, 'skills', skill.directory)]
+    ]);
 
-    for (const [surface, skillRoot] of surfaces) {
+    for (const [surface, skillId, skillRoot] of surfaces) {
       const inspection = await inspectSkillTree(skillRoot);
       for (const record of inspection.records) {
         const content = await readFile(path.join(skillRoot, ...record.path.split('/')), 'utf8');
         if (content.includes(staleDoctorCommand)) {
           errors.push(
-            `${surface}/${plugin.name}/${record.path}: stale PrimeUI doctor command is forbidden.`
+            `${surface}/${plugin.name}/${skillId}/${record.path}: stale PrimeUI doctor command is forbidden.`
           );
         }
       }

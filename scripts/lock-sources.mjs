@@ -48,7 +48,9 @@ async function main() {
 
   console.log('Source locks recorded:');
   for (const lock of updatedLock.sources) {
-    console.log(`- ${lock.name}: ${lock.source.skillPath} ${lock.source.skillHash}`);
+    for (const skill of lock.skills) {
+      console.log(`- ${lock.name}/${skill.id}: ${skill.source.path} ${skill.source.treeHash}`);
+    }
   }
 }
 

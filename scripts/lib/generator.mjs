@@ -158,11 +158,13 @@ async function createStagedPayload(
 
     for (const plugin of pluginsConfig.plugins) {
       const snapshot = sourceSnapshots.get(plugin.name);
-      await copySkillTree(
-        snapshot.skillRoot,
-        path.join(payloadRoot, plugin.outputs.plugin, 'skills', plugin.name),
-        snapshot.inspection
-      );
+      for (const skill of snapshot.skills) {
+        await copySkillTree(
+          skill.skillRoot,
+          path.join(payloadRoot, plugin.outputs.plugin, 'skills', skill.directory),
+          skill.inspection
+        );
+      }
     }
 
     const validationErrors = await validateGeneratedPayload(payloadRoot, pluginsConfig, lockConfig);

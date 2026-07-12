@@ -3,6 +3,7 @@ import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import { inspectSkillTree } from '../scripts/lib/skill-tree.mjs';
 import { runCommand } from '../scripts/lib/process.mjs';
 import {
   assertInstalledGeminiPayload,
@@ -125,21 +126,29 @@ test('installed Gemini payload inspection enforces source, skill, MCP, and exten
     JSON.stringify({ source: sourcePath, type: 'local' })
   );
   await writeFile(
+    path.join(installPath, 'skills', 'primevue', 'SKILL.md'),
+    '---\nname: primevue\ndescription: Test\n---\n'
+  );
+  const treeHash = (await inspectSkillTree(path.join(installPath, 'skills', 'primevue'))).hash;
+  const lockedSkills = [{
+    directory: 'primevue', id: 'primevue', name: 'primevue', order: 0, owner: 'primevue',
+    source: { path: 'skills/primevue', repository: 'https://github.com/primefaces/primeui-plugins', treeHash }
+  }];
+  await writeFile(
     path.join(installPath, 'provenance.json'),
     JSON.stringify({
       mcp: { package: '@primevue/mcp', version: '5.0.0-rc.2' },
-      name: 'primevue'
+      name: 'primevue',
+      skills: lockedSkills
     })
-  );
-  await writeFile(
-    path.join(installPath, 'skills', 'primevue', 'SKILL.md'),
-    '---\nname: primevue\ndescription: Test\n---\n'
   );
 
   const contract = {
     mcpPackage: '@primevue/mcp',
     mcpVersion: '5.0.0-rc.2',
-    pluginVersion: '0.1.0-alpha.0'
+    pluginVersion: '0.1.0-alpha.0',
+    skills: [{ directory: 'primevue', id: 'primevue', name: 'primevue', order: 0, owner: 'primevue', treeHash }],
+    lockedSkills
   };
   await assert.doesNotReject(
     assertInstalledGeminiPayload({ contract, geminiHome, installPath, library: 'primevue', sourcePath })

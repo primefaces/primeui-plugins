@@ -21,7 +21,14 @@ async function createFixture(command) {
         {
           name: 'primevue',
           outputs: { plugin: 'plugins/primevue' },
-          skillSourcePath: 'skills/primevue'
+          skills: [{
+            directory: 'primevue',
+            id: 'primevue',
+            name: 'primevue',
+            order: 0,
+            owner: 'primevue',
+            sourcePath: 'skills/primevue'
+          }]
         }
       ]
     },
@@ -46,8 +53,8 @@ test('skill command validation rejects stale canonical and generated instruction
   assert.deepEqual(
     await validateSkillDoctorCommands(fixture.repositoryRoot, fixture.pluginsConfig),
     [
-      'canonical/primevue/SKILL.md: stale PrimeUI doctor command is forbidden.',
-      'generated/primevue/SKILL.md: stale PrimeUI doctor command is forbidden.'
+      'canonical/primevue/primevue/SKILL.md: stale PrimeUI doctor command is forbidden.',
+      'generated/primevue/primevue/SKILL.md: stale PrimeUI doctor command is forbidden.'
     ]
   );
 });

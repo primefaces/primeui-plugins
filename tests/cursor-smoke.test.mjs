@@ -129,13 +129,17 @@ test('Cursor payload inspection enforces exact manifest pointers, skill hash, MC
     '---\nname: primevue\ndescription: Test\n---\n'
   );
   const skillHash = (await inspectSkillTree(path.join(root, 'skills', 'primevue'))).hash;
+  const lockedSkills = [{
+    directory: 'primevue', id: 'primevue', name: 'primevue', order: 0, owner: 'primevue',
+    source: { path: 'skills/primevue', repository: 'https://github.com/primefaces/primeui-plugins', treeHash: skillHash }
+  }];
   await writeFile(
     path.join(root, 'provenance.json'),
     JSON.stringify({
       mcp: { package: '@primevue/mcp', version: '5.0.0-rc.2' },
       name: 'primevue',
       pluginVersion: '0.1.0-alpha.0',
-      source: { skillHash }
+      skills: lockedSkills
     })
   );
 
@@ -147,7 +151,8 @@ test('Cursor payload inspection enforces exact manifest pointers, skill hash, MC
     pluginVersion: '0.1.0-alpha.0',
     publisherName: 'PrimeFaces',
     repository: 'https://github.com/primefaces/primeui-plugins',
-    skillHash
+    skills: [{ directory: 'primevue', id: 'primevue', name: 'primevue', order: 0, owner: 'primevue', treeHash: skillHash }],
+    lockedSkills
   };
   await assert.doesNotReject(
     assertCursorPayload({ contract, installPath: root, library: 'primevue' })
@@ -156,6 +161,6 @@ test('Cursor payload inspection enforces exact manifest pointers, skill hash, MC
   await mkdir(path.join(root, 'skills', 'primeng'), { recursive: true });
   await assert.rejects(
     assertCursorPayload({ contract, installPath: root, library: 'primevue' }),
-    /exactly one physical matching skill directory/
+    /skill inventory differs/
   );
 });

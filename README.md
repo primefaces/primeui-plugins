@@ -2,7 +2,7 @@
 
 Official AI assistant integrations for PrimeVue, PrimeNG, and PrimeReact.
 
-The `primeui` marketplace provides one independently installable plugin per library. Installing a library plugin adds its workflow skill and connects the matching MCP server without loading guidance or tools from the other libraries.
+The `primeui` marketplace provides one independently installable plugin per library. Installing a library plugin adds its ordered workflow skill set and connects the matching MCP server without loading guidance or tools from the other libraries.
 
 ## Plugins
 
@@ -14,7 +14,7 @@ The `primeui` marketplace provides one independently installable plugin per libr
 
 Each plugin combines:
 
-- A library-specific skill for setup, implementation, customization, migration, troubleshooting, and validation workflows.
+- A library-specific ordered skill set for progressive workflow disclosure.
 - An exact-version MCP configuration for current component documentation, API metadata, examples, guides, and usage validation.
 - Client-specific manifests generated from the same locked source inputs.
 
@@ -33,7 +33,7 @@ Use `primeng@primeui` or `primereact@primeui` instead for the other libraries. C
 claude plugin list --json
 ```
 
-Each plugin installs its own library skill and exact-version MCP server. Updates remain library-specific:
+Each plugin installs its own library skill set and exact-version MCP server. Updates remain library-specific:
 
 ```bash
 claude plugin marketplace update primeui
@@ -51,7 +51,7 @@ codex plugin add primevue@primeui
 codex plugin list
 ```
 
-Use `primeng@primeui` or `primereact@primeui` instead for the other libraries. Codex installs the selected plugin into its versioned plugin cache with one library skill and one exact-version MCP server. Use the interactive `/plugins` browser or the ChatGPT desktop Plugins screen to enable or disable a plugin. The CLI's generic `--enable` and `--disable` options control Codex feature flags, not plugin state.
+Use `primeng@primeui` or `primereact@primeui` instead for the other libraries. Codex installs the selected plugin into its versioned plugin cache with one ordered library skill set and one exact-version MCP server. Use the interactive `/plugins` browser or the ChatGPT desktop Plugins screen to enable or disable a plugin. The CLI's generic `--enable` and `--disable` options control Codex feature flags, not plugin state.
 
 Refresh a Git-backed marketplace, remove the installed plugin, and reinstall it to pick up a new plugin version:
 
@@ -112,9 +112,9 @@ This repository owns the canonical skills and the generated client payloads. Fra
 
 Authored inputs include:
 
-- `config/plugins.json`: marketplace identity, plugin metadata, MCP identities, client support, and output declarations.
-- `skills/<library>/`: canonical PrimeVue, PrimeNG, and PrimeReact workflow skills.
-- `config/sources.lock.json`: canonical skill hashes, plugin versions, and exact MCP versions.
+- `config/plugins.json`: marketplace identity, plugin metadata, MCP identities, client support, output declarations, and ordered skill identity/ownership/source contracts.
+- Declared paths below `skills/<library>/`: canonical PrimeVue, PrimeNG, and PrimeReact workflow skills.
+- `config/sources.lock.json`: ordered per-skill tree hashes, plugin versions, and exact MCP versions.
 - JSON Schemas, validation tooling, tests, and release rules.
 
 Generated outputs include marketplace catalogs, client manifests, copied physical skill trees, MCP launch configurations, Gemini extensions, and provenance records. Generated payloads are never edited manually.

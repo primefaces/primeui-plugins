@@ -5,7 +5,12 @@ import { exportGeminiDistributions } from './gemini-distribution.mjs';
 import { readDistributionConfiguration } from './generator.mjs';
 import { smokeInstalledMcp } from './mcp-smoke.mjs';
 import { hasProcessTreeInspection, runCommand } from './process.mjs';
-import { libraryNames, usageContracts } from './smoke-contracts.mjs';
+import {
+  assertPhysicalSkillInventory,
+  configuredSkillContracts,
+  libraryNames,
+  usageContracts
+} from './smoke-contracts.mjs';
 const safeEnvironmentKeys = new Set([
   'CI',
   'COLORTERM',
@@ -257,9 +262,9 @@ async function assertOneExtension(scenario, contract, library, expectedActive) {
   assert(extension.isActive === expectedActive, `${library}: Gemini enabled state does not match.`);
   assert(
     Array.isArray(extension.skills) &&
-      extension.skills.length === 1 &&
-      extension.skills[0].name === library,
-    `${library}: Gemini must discover exactly one matching extension skill.`
+      JSON.stringify(extension.skills.map((skill) => skill.name)) ===
+        JSON.stringify(contract.skills.map((skill) => skill.name)),
+    `${library}: Gemini must discover the exact ordered extension skill inventory.`
   );
   assert(
     Object.keys(extension.mcpServers ?? {}).length === 1 &&
@@ -320,8 +325,7 @@ export async function assertInstalledGeminiPayload({
   const metadataPath = path.join(canonicalInstallPath, '.gemini-extension-install.json');
   const provenancePath = path.join(canonicalInstallPath, 'provenance.json');
   const skillsRoot = path.join(canonicalInstallPath, 'skills');
-  const skillPath = path.join(skillsRoot, library, 'SKILL.md');
-  for (const requiredPath of [manifestPath, metadataPath, provenancePath, skillPath]) {
+  for (const requiredPath of [manifestPath, metadataPath, provenancePath, skillsRoot]) {
     assert(await pathExists(requiredPath), `${library}: installed Gemini payload is missing ${requiredPath}.`);
   }
   assert(
@@ -329,11 +333,10 @@ export async function assertInstalledGeminiPayload({
     `${library}: installed Gemini payload must use native skills without GEMINI.md.`
   );
 
-  const [manifest, metadata, provenance, skill] = await Promise.all([
+  const [manifest, metadata, provenance] = await Promise.all([
     readJson(manifestPath),
     readJson(metadataPath),
-    readJson(provenancePath),
-    readFile(skillPath, 'utf8')
+    readJson(provenancePath)
   ]);
   assert(manifest.name === library, `${library}: installed Gemini manifest name does not match.`);
   assert(manifest.version === contract.pluginVersion, `${library}: installed Gemini manifest version does not match.`);
@@ -348,15 +351,10 @@ export async function assertInstalledGeminiPayload({
       provenance.mcp?.version === contract.mcpVersion,
     `${library}: installed Gemini provenance MCP pin does not match.`
   );
-  assert(new RegExp(`^name: ${library}$`, 'm').test(skill), `${library}: installed Gemini skill name does not match.`);
-
-  const skillEntries = await readdir(skillsRoot, { withFileTypes: true });
+  await assertPhysicalSkillInventory(skillsRoot, contract.skills, `${library}: installed Gemini payload`);
   assert(
-    skillEntries.length === 1 &&
-      skillEntries[0].name === library &&
-      skillEntries[0].isDirectory() &&
-      !skillEntries[0].isSymbolicLink(),
-    `${library}: installed Gemini payload must contain exactly one physical matching skill directory.`
+    JSON.stringify(provenance.skills) === JSON.stringify(contract.lockedSkills),
+    `${library}: installed Gemini provenance skill inventory does not match.`
   );
   const serverNames = Object.keys(manifest.mcpServers ?? {});
   assert(
@@ -392,7 +390,7 @@ export async function assertInstalledGeminiPayload({
     `${library}: isolated Gemini extension state must contain only the selected library.`
   );
 
-  return { manifest, manifestPath, metadata, skillPath };
+  return { manifest, manifestPath, metadata, skillsRoot };
 }
 
 async function clonePersistentSource(scenario) {
@@ -488,7 +486,9 @@ export async function runGeminiInstallScenario({
     mcpPackage: lock.mcp.package,
     mcpVersion: lock.mcp.version,
     pluginVersion: lock.pluginVersion,
-    serverName: plugin.mcp.serverName
+    serverName: plugin.mcp.serverName,
+    skills: configuredSkillContracts(plugin, lock),
+    lockedSkills: lock.skills
   };
   assert(contract.serverName === library, `${library}: Gemini MCP server name must match the extension.`);
 

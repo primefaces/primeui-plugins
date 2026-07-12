@@ -98,13 +98,13 @@ function markdownLinkTargets(content) {
   return targets;
 }
 
-async function validateSkillContent(name, skillRoot, records, errors) {
+async function validateSkillContent(library, name, skillRoot, records, errors) {
   const paths = new Set(records.map((record) => record.path));
   const foreignLibraries = {
     primeng: ['primevue', 'primereact'],
     primereact: ['primevue', 'primeng'],
     primevue: ['primeng', 'primereact']
-  }[name];
+  }[library];
 
   for (const record of records) {
     const absolutePath = path.join(skillRoot, ...record.path.split('/'));
@@ -196,25 +196,29 @@ export async function validateGeneratedPayload(payloadRoot, pluginsConfig, lockC
 
   for (const plugin of pluginsConfig.plugins) {
     const lock = locks.get(plugin.name);
-    const pluginSkillRoot = path.join(payloadRoot, plugin.outputs.plugin, 'skills', plugin.name);
-    let pluginInspection;
-    try {
-      pluginInspection = await inspectSkillTree(pluginSkillRoot);
-    } catch (error) {
-      errors.push(`${plugin.name}: unable to inspect copied skill trees (${error.message}).`);
-      continue;
-    }
+    const lockedSkills = new Map(lock.skills.map((skill) => [skill.id, skill]));
+    for (const skill of plugin.skills) {
+      const lockedSkill = lockedSkills.get(skill.id);
+      const pluginSkillRoot = path.join(payloadRoot, plugin.outputs.plugin, 'skills', skill.directory);
+      let pluginInspection;
+      try {
+        pluginInspection = await inspectSkillTree(pluginSkillRoot);
+      } catch (error) {
+        errors.push(`${plugin.name}/${skill.id}: unable to inspect copied skill tree (${error.message}).`);
+        continue;
+      }
 
-    if (pluginInspection.hash !== lock.source.skillHash) {
-      errors.push(
-        `${plugin.name}: plugin skill hash ${pluginInspection.hash} does not match ${lock.source.skillHash}.`
-      );
-    }
-    validateSkillPathPolicy(plugin.name, pluginInspection.records, errors);
-    await validateSkillContent(plugin.name, pluginSkillRoot, pluginInspection.records, errors);
+      if (pluginInspection.hash !== lockedSkill.source.treeHash) {
+        errors.push(
+          `${plugin.name}/${skill.id}: plugin skill hash ${pluginInspection.hash} does not match ${lockedSkill.source.treeHash}.`
+        );
+      }
+      validateSkillPathPolicy(skill.name, pluginInspection.records, errors);
+      await validateSkillContent(plugin.name, skill.name, pluginSkillRoot, pluginInspection.records, errors);
 
-    for (const record of pluginInspection.records) {
-      expectedFiles.add(`${plugin.outputs.plugin}/skills/${plugin.name}/${record.path}`);
+      for (const record of pluginInspection.records) {
+        expectedFiles.add(`${plugin.outputs.plugin}/skills/${skill.directory}/${record.path}`);
+      }
     }
   }
 

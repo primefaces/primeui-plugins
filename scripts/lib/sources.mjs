@@ -19,58 +19,55 @@ export function parseSyncArguments(argumentsList, { allowCheck = false } = {}) {
   return { check };
 }
 
-async function resolvePhysicalSkillRoot(repositoryRoot, plugin) {
+async function resolvePhysicalSkillRoot(repositoryRoot, plugin, skill) {
   const canonicalRepositoryRoot = await realpath(repositoryRoot);
   const normalizedRepositoryRoot = path.resolve(repositoryRoot);
   if (canonicalRepositoryRoot !== normalizedRepositoryRoot) {
     throw new Error('Distribution repository root must be canonical and must not traverse symlinks.');
   }
 
-  const segments = plugin.skillSourcePath.split('/');
+  const segments = skill.sourcePath.split('/');
   let currentPath = canonicalRepositoryRoot;
   for (const segment of segments) {
     currentPath = path.join(currentPath, segment);
     const stats = await lstat(currentPath).catch((error) => {
-      throw new Error(`Canonical skill source for ${plugin.name} does not exist: ${error.message}`);
+      throw new Error(`Canonical skill source for ${plugin.name}/${skill.id} does not exist: ${error.message}`);
     });
     if (stats.isSymbolicLink() || !stats.isDirectory()) {
-      throw new Error(`Canonical skill source for ${plugin.name} must be a physical directory.`);
+      throw new Error(`Canonical skill source for ${plugin.name}/${skill.id} must be a physical directory.`);
     }
   }
 
   const canonicalSkillRoot = await realpath(currentPath);
   const relativePath = path.relative(canonicalRepositoryRoot, canonicalSkillRoot);
   if (
-    relativePath !== plugin.skillSourcePath.split('/').join(path.sep) ||
+    relativePath !== skill.sourcePath.split('/').join(path.sep) ||
     relativePath.startsWith('..') ||
     path.isAbsolute(relativePath)
   ) {
-    throw new Error(`Canonical skill source for ${plugin.name} escapes its configured path.`);
+    throw new Error(`Canonical skill source for ${plugin.name}/${skill.id} escapes its configured path.`);
   }
 
   return canonicalSkillRoot;
 }
 
-async function inspectOneSkillSource(repositoryRoot, plugin, lock, options) {
-  if (lock.source.skillPath !== plugin.skillSourcePath) {
-    throw new Error(`Skill path mismatch between configuration and lock for ${plugin.name}.`);
+async function inspectOneSkillSource(repositoryRoot, plugin, skill, lockedSkill, options) {
+  if (lockedSkill.source.path !== skill.sourcePath) {
+    throw new Error(`Skill path mismatch between configuration and lock for ${plugin.name}/${skill.id}.`);
   }
 
-  const skillRoot = await resolvePhysicalSkillRoot(repositoryRoot, plugin);
+  const skillRoot = await resolvePhysicalSkillRoot(repositoryRoot, plugin, skill);
   const inspection = await inspectSkillTree(skillRoot);
 
-  if (options.requireLocked && lock.lockState !== 'locked') {
-    throw new Error(`Source lock for ${plugin.name} is not locked.`);
-  }
-  if (options.verifyHash && inspection.hash !== lock.source.skillHash) {
+  if (options.verifyHash && inspection.hash !== lockedSkill.source.treeHash) {
     throw new Error(
-      `Skill hash mismatch for ${plugin.name}: expected ${lock.source.skillHash}, received ${inspection.hash}.`
+      `Skill hash mismatch for ${plugin.name}/${skill.id}: expected ${lockedSkill.source.treeHash}, received ${inspection.hash}.`
     );
   }
 
   return {
     inspection,
-    name: plugin.name,
+    ...skill,
     skillRoot
   };
 }
@@ -90,18 +87,29 @@ export async function inspectCanonicalSkills(
     if (!lock) {
       throw new Error(`Missing source lock for ${plugin.name}.`);
     }
-    const snapshot = await inspectOneSkillSource(repositoryRoot, plugin, lock, {
-      requireLocked,
-      verifyHash
-    });
-    const duplicateName = canonicalPaths.get(snapshot.skillRoot);
-    if (duplicateName !== undefined) {
-      throw new Error(
-        `Canonical skill sources for ${duplicateName} and ${plugin.name} resolve to the same path.`
-      );
+    if (requireLocked && lock.lockState !== 'locked') {
+      throw new Error(`Source lock for ${plugin.name} is not locked.`);
     }
-    canonicalPaths.set(snapshot.skillRoot, plugin.name);
-    snapshots.set(plugin.name, snapshot);
+    const lockedSkills = new Map(lock.skills.map((skill) => [skill.id, skill]));
+    const skillSnapshots = [];
+    for (const skill of plugin.skills) {
+      const lockedSkill = lockedSkills.get(skill.id);
+      if (!lockedSkill) {
+        throw new Error(`Missing source lock for ${plugin.name}/${skill.id}.`);
+      }
+      const snapshot = await inspectOneSkillSource(repositoryRoot, plugin, skill, lockedSkill, {
+        verifyHash
+      });
+      const duplicateName = canonicalPaths.get(snapshot.skillRoot);
+      if (duplicateName !== undefined) {
+        throw new Error(
+          `Canonical skill sources for ${duplicateName} and ${plugin.name}/${skill.id} resolve to the same path.`
+        );
+      }
+      canonicalPaths.set(snapshot.skillRoot, `${plugin.name}/${skill.id}`);
+      skillSnapshots.push(snapshot);
+    }
+    snapshots.set(plugin.name, { name: plugin.name, skills: skillSnapshots });
   }
 
   return snapshots;
@@ -120,11 +128,15 @@ export async function verifyCanonicalSkillSnapshots(
 
   for (const [name, original] of snapshots) {
     const current = verified.get(name);
-    if (
-      current.inspection.hash !== original.inspection.hash ||
-      current.skillRoot !== original.skillRoot
-    ) {
-      throw new Error(`Canonical skill source changed during generation: ${name}.`);
+    for (const [index, originalSkill] of original.skills.entries()) {
+      const currentSkill = current.skills[index];
+      if (
+        currentSkill?.id !== originalSkill.id ||
+        currentSkill.inspection.hash !== originalSkill.inspection.hash ||
+        currentSkill.skillRoot !== originalSkill.skillRoot
+      ) {
+        throw new Error(`Canonical skill source changed during generation: ${name}/${originalSkill.id}.`);
+      }
     }
   }
 }

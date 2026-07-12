@@ -20,13 +20,31 @@ export function provenanceDocument(plugin, lock) {
       version: lock.mcp.version
     },
     name: plugin.name,
+    payload: {
+      documents: [
+        '.claude-plugin/plugin.json',
+        '.codex-plugin/plugin.json',
+        '.cursor-plugin/plugin.json',
+        '.mcp.json',
+        'gemini-extension.json',
+        'provenance.json'
+      ],
+      skillRoots: lock.skills.map((skill) => `skills/${skill.directory}`)
+    },
     pluginVersion: lock.pluginVersion,
-    schemaVersion: 1,
-    source: {
-      repository: lock.source.repository,
-      skillHash: lock.source.skillHash,
-      skillPath: lock.source.skillPath
-    }
+    schemaVersion: 2,
+    skills: lock.skills.map((skill) => ({
+      directory: skill.directory,
+      id: skill.id,
+      name: skill.name,
+      order: skill.order,
+      owner: skill.owner,
+      source: {
+        path: skill.source.path,
+        repository: skill.source.repository,
+        treeHash: skill.source.treeHash
+      }
+    }))
   };
 
   if (plugin.variants.length > 0) {

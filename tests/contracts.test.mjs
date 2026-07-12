@@ -47,14 +47,16 @@ test('release validation rejects every unresolved source lock', () => {
   const unresolved = structuredClone(sourcesLock);
   for (const lock of unresolved.sources) {
     lock.lockState = 'unresolved';
-    lock.source.skillHash = null;
+    for (const skill of lock.skills) {
+      skill.source.treeHash = null;
+    }
     lock.unresolvedReason = 'Hash pending.';
   }
   const errors = validateSourcesLock(unresolved, pluginsConfig, { release: true });
   assert.equal(errors.filter((error) => error.includes('is not release-ready')).length, 3);
-  assert.match(errors.join('\n'), /primevue.*source\.skillHash/);
-  assert.match(errors.join('\n'), /primeng.*source\.skillHash/);
-  assert.match(errors.join('\n'), /primereact.*source\.skillHash/);
+  assert.match(errors.join('\n'), /primevue.*source\.treeHash/);
+  assert.match(errors.join('\n'), /primeng.*source\.treeHash/);
+  assert.match(errors.join('\n'), /primereact.*source\.treeHash/);
 });
 
 test('exact SemVer accepts releases and prereleases but rejects moving selectors', () => {
@@ -107,7 +109,7 @@ test('relative path validation rejects traversal and platform escapes', () => {
 
 test('product config rejects unsafe paths, unknown fields, and reordered hosts', () => {
   const unsafe = structuredClone(pluginsConfig);
-  unsafe.plugins[0].skillSourcePath = '../primevue';
+  unsafe.plugins[0].skills[0].sourcePath = '../primevue';
   unsafe.plugins[0].hosts = ['codex', 'claude', 'gemini'];
   unsafe.plugins[0].token = 'not-allowed';
 
@@ -140,7 +142,7 @@ test('Claude marketplace description is authored and bounded', () => {
 
 test('lock states cannot disguise incomplete or complete source locks', () => {
   const lockedButIncomplete = structuredClone(sourcesLock);
-  lockedButIncomplete.sources[1].source.skillHash = null;
+  lockedButIncomplete.sources[1].skills[0].source.treeHash = null;
   assert.match(validateSourcesLock(lockedButIncomplete, pluginsConfig).join('\n'), /locked but missing/);
 
   const unresolvedButComplete = structuredClone(sourcesLock);
@@ -156,9 +158,9 @@ test('source locks reject non-exact versions, malformed provenance, and unsafe r
   const invalid = structuredClone(sourcesLock);
   invalid.sources[0].pluginVersion = '^0.1.0';
   invalid.sources[0].mcp.version = 'rc';
-  invalid.sources[0].source.commit = 'F'.repeat(40);
-  invalid.sources[0].source.skillHash = `sha256:${'G'.repeat(64)}`;
-  invalid.sources[0].source.repository = 'https://user:pass@github.com/primefaces/primeui-plugins';
+  invalid.sources[0].skills[0].source.commit = 'F'.repeat(40);
+  invalid.sources[0].skills[0].source.treeHash = `sha256:${'G'.repeat(64)}`;
+  invalid.sources[0].skills[0].source.repository = 'https://user:pass@github.com/primefaces/primeui-plugins';
 
   const errors = validateSourcesLock(invalid, pluginsConfig).join('\n');
   assert.match(errors, /pluginVersion must be an exact SemVer/);
@@ -171,13 +173,13 @@ test('source locks reject non-exact versions, malformed provenance, and unsafe r
 test('cross-file contract rejects MCP and skill path drift', () => {
   const drifted = structuredClone(sourcesLock);
   drifted.sources[0].mcp.package = '@primeng/mcp';
-  drifted.sources[0].source.skillPath = 'skills/other';
+  drifted.sources[0].skills[0].source.path = 'skills/other';
 
   const errors = validateSourcesLock(drifted, pluginsConfig).join('\n');
   assert.match(errors, /mcp\.package must equal @primevue\/mcp/);
   assert.match(errors, /mcp\.package must match config\/plugins\.json/);
-  assert.match(errors, /source\.skillPath must equal skills\/primevue/);
-  assert.match(errors, /source\.skillPath must match config\/plugins\.json/);
+  assert.match(errors, /source\.path must be owned by skills\/primevue/);
+  assert.match(errors, /skills must match config\/plugins\.json/);
 });
 
 test('package contract blocks dependencies and publication settings', () => {
@@ -240,7 +242,7 @@ test('schemas use ordered per-library definitions and resolve every local refere
   );
 });
 
-test('schema library definitions pin the same package, repository, and path mappings as code', () => {
+test('schema library definitions pin package mappings and define closed ordered skill records', () => {
   assert.equal(
     pluginsSchema.$defs.marketplace.properties.repository.const,
     'https://github.com/primefaces/primeui-plugins'
@@ -254,8 +256,7 @@ test('schema library definitions pin the same package, repository, and path mapp
       name: 'primevue',
       pluginDefinition: 'primevuePlugin',
       pluginPath: 'plugins/primevue',
-      repository: 'https://github.com/primefaces/primeui-plugins',
-      skillPath: 'skills/primevue'
+      repository: 'https://github.com/primefaces/primeui-plugins'
     },
     {
       lockDefinition: 'primengLock',
@@ -263,8 +264,7 @@ test('schema library definitions pin the same package, repository, and path mapp
       name: 'primeng',
       pluginDefinition: 'primengPlugin',
       pluginPath: 'plugins/primeng',
-      repository: 'https://github.com/primefaces/primeui-plugins',
-      skillPath: 'skills/primeng'
+      repository: 'https://github.com/primefaces/primeui-plugins'
     },
     {
       lockDefinition: 'primereactLock',
@@ -272,8 +272,7 @@ test('schema library definitions pin the same package, repository, and path mapp
       name: 'primereact',
       pluginDefinition: 'primereactPlugin',
       pluginPath: 'plugins/primereact',
-      repository: 'https://github.com/primefaces/primeui-plugins',
-      skillPath: 'skills/primereact'
+      repository: 'https://github.com/primefaces/primeui-plugins'
     }
   ];
 
@@ -283,12 +282,44 @@ test('schema library definitions pin the same package, repository, and path mapp
     assert.equal(pluginProperties.name.const, expectation.name);
     assert.equal(pluginProperties.mcp.properties.package.const, expectation.mcpPackage);
     assert.equal(pluginProperties.outputs.properties.plugin.const, expectation.pluginPath);
-    assert.equal(pluginProperties.skillSourcePath.const, expectation.skillPath);
     assert.equal(lockProperties.name.const, expectation.name);
     assert.equal(lockProperties.mcp.properties.package.const, expectation.mcpPackage);
-    assert.equal(lockProperties.source.properties.repository.const, expectation.repository);
-    assert.equal(lockProperties.source.properties.skillPath.const, expectation.skillPath);
   }
+  assert.equal(pluginsSchema.$defs.plugin.properties.skills.minItems, 1);
+  assert.equal(pluginsSchema.$defs.skill.additionalProperties, false);
+  assert.equal(sourcesLockSchema.$defs.lock.properties.skills.minItems, 1);
+  assert.equal(sourcesLockSchema.$defs.skillLock.additionalProperties, false);
+});
+
+test('ordered skill sets reject empty sets, unsafe paths, collisions, bad order, and foreign ownership', () => {
+  const empty = structuredClone(pluginsConfig);
+  empty.plugins[0].skills = [];
+  assert.match(validatePluginsConfig(empty).join('\n'), /non-empty ordered array/);
+
+  const invalid = structuredClone(pluginsConfig);
+  const original = invalid.plugins[0].skills[0];
+  invalid.plugins[0].skills.push({
+    ...structuredClone(original),
+    directory: 'primevue--router',
+    id: 'primevue-router-2',
+    name: 'primevue--router',
+    order: 3,
+    owner: 'primeng',
+    sourcePath: '/tmp/primevue'
+  });
+  invalid.plugins[0].skills.push({
+    ...structuredClone(original),
+    directory: 'primevue-router',
+    id: 'primevue-router-3',
+    name: 'primevue-router',
+    order: 2,
+    sourcePath: '../primevue'
+  });
+  const errors = validatePluginsConfig(invalid).join('\n');
+  assert.match(errors, /order must equal its declared array index/);
+  assert.match(errors, /owner must equal selected library primevue/);
+  assert.match(errors, /safe normalized relative POSIX path/);
+  assert.match(errors, /collide after host normalization/);
 });
 
 test('secret detection covers high-confidence provider token formats', () => {

@@ -4,7 +4,12 @@ import path from 'node:path';
 import { readDistributionConfiguration } from './generator.mjs';
 import { smokeInstalledMcp } from './mcp-smoke.mjs';
 import { runCommand } from './process.mjs';
-import { libraryNames, usageContracts } from './smoke-contracts.mjs';
+import {
+  assertPhysicalSkillInventory,
+  configuredSkillContracts,
+  libraryNames,
+  usageContracts
+} from './smoke-contracts.mjs';
 const exactSemverPattern = /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?$/;
 
 function fail(message) {
@@ -177,28 +182,17 @@ export async function assertInstalledPayload({ configRoot, contract, installPath
   const skillsRoot = path.join(canonicalInstallPath, 'skills');
   const manifestPath = path.join(canonicalInstallPath, '.claude-plugin', 'plugin.json');
   const mcpPath = path.join(canonicalInstallPath, '.mcp.json');
-  const skillPath = path.join(skillsRoot, library, 'SKILL.md');
-  for (const requiredPath of [manifestPath, mcpPath, skillPath]) {
+  for (const requiredPath of [manifestPath, mcpPath, skillsRoot]) {
     assert(await pathExists(requiredPath), `${library}: installed payload is missing ${requiredPath}.`);
   }
 
-  const [manifest, mcp, skill] = await Promise.all([
+  const [manifest, mcp] = await Promise.all([
     readJson(manifestPath),
-    readJson(mcpPath),
-    readFile(skillPath, 'utf8')
+    readJson(mcpPath)
   ]);
   assert(manifest.name === library, `${library}: installed manifest name does not match.`);
   assert(manifest.version === contract.pluginVersion, `${library}: installed plugin version does not match.`);
-  assert(new RegExp(`^name: ${library}$`, 'm').test(skill), `${library}: installed skill name does not match.`);
-
-  const skillEntries = await readdir(skillsRoot, { withFileTypes: true });
-  assert(
-    skillEntries.length === 1 &&
-      skillEntries[0].name === library &&
-      skillEntries[0].isDirectory() &&
-      !skillEntries[0].isSymbolicLink(),
-    `${library}: installed payload must contain exactly one physical matching skill directory.`
-  );
+  await assertPhysicalSkillInventory(skillsRoot, contract.skills, `${library}: installed Claude payload`);
 
   const serverNames = Object.keys(mcp.mcpServers ?? {});
   assert(
@@ -223,7 +217,7 @@ export async function assertInstalledPayload({ configRoot, contract, installPath
     );
   }
 
-  return { mcp, mcpPath, skillPath };
+  return { mcp, mcpPath, skillsRoot };
 }
 
 async function installedPlugin(claudeVersion, scenario, cwd, library) {
@@ -285,7 +279,8 @@ export async function runClaudeInstallScenario({
     mcpPackage: lock?.mcp.package,
     mcpVersion: lock?.mcp.version,
     pluginVersion: lock?.pluginVersion,
-    serverName: pluginConfig?.mcp.serverName
+    serverName: pluginConfig?.mcp.serverName,
+    skills: configuredSkillContracts(pluginConfig, lock)
   };
   assert(lock !== undefined && pluginConfig !== undefined, `${library}: release contract is missing.`);
   assert(contract.serverName === library, `${library}: Claude MCP server name must match the plugin.`);
@@ -334,7 +329,10 @@ export async function runClaudeInstallScenario({
       const details = await runClaude(claudeVersion, scenario, ['plugin', 'details', pluginId], {
         cwd: repositoryRoot
       });
-      assert(/Skills \(1\)/.test(details.stdout), `${library}: Claude details did not discover one skill.`);
+      assert(
+        new RegExp(`Skills \\(${contract.skills.length}\\)`).test(details.stdout),
+        `${library}: Claude details did not discover ${contract.skills.length} skills.`
+      );
       assert(
         new RegExp(`MCP servers \\(1\\).*${library}`, 's').test(details.stdout),
         `${library}: Claude details did not discover the matching MCP server.`

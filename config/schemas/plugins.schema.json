@@ -191,8 +191,12 @@
         "outputs": {
           "$ref": "#/$defs/outputs"
         },
-        "skillSourcePath": {
-          "$ref": "#/$defs/relativePath"
+        "skills": {
+          "items": {
+            "$ref": "#/$defs/skill"
+          },
+          "minItems": 1,
+          "type": "array"
         },
         "variants": {
           "$ref": "#/$defs/variants"
@@ -207,7 +211,7 @@
         "mcp",
         "name",
         "outputs",
-        "skillSourcePath",
+        "skills",
         "variants"
       ],
       "type": "object"
@@ -244,9 +248,6 @@
                   "const": "plugins/primeng"
                 }
               }
-            },
-            "skillSourcePath": {
-              "const": "skills/primeng"
             },
             "variants": {
               "const": []
@@ -287,9 +288,6 @@
                   "const": "plugins/primereact"
                 }
               }
-            },
-            "skillSourcePath": {
-              "const": "skills/primereact"
             },
             "variants": {
               "const": [
@@ -336,9 +334,6 @@
                 }
               }
             },
-            "skillSourcePath": {
-              "const": "skills/primevue"
-            },
             "variants": {
               "const": []
             }
@@ -369,6 +364,47 @@
       "minLength": 1,
       "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.?(?:/|$))[A-Za-z0-9._@/-]+$",
       "type": "string"
+    },
+    "skill": {
+      "additionalProperties": false,
+      "properties": {
+        "directory": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "type": "string"
+        },
+        "id": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "type": "string"
+        },
+        "name": {
+          "pattern": "^[a-z][a-z0-9-]*$",
+          "type": "string"
+        },
+        "order": {
+          "minimum": 0,
+          "type": "integer"
+        },
+        "owner": {
+          "enum": [
+            "primevue",
+            "primeng",
+            "primereact"
+          ],
+          "type": "string"
+        },
+        "sourcePath": {
+          "$ref": "#/$defs/relativePath"
+        }
+      },
+      "required": [
+        "directory",
+        "id",
+        "name",
+        "order",
+        "owner",
+        "sourcePath"
+      ],
+      "type": "object"
     },
     "variants": {
       "items": {
@@ -413,7 +449,7 @@
       "type": "array"
     },
     "schemaVersion": {
-      "const": 1
+      "const": 2
     }
   },
   "required": [

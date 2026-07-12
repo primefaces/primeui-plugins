@@ -3,6 +3,7 @@ import { mkdtemp, mkdir, rm, writeFile } from 'node:fs/promises';
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import { inspectSkillTree } from '../scripts/lib/skill-tree.mjs';
 import {
   assertInstalledCodexPayload,
   codexScenarioEnvironment,
@@ -132,11 +133,13 @@ test('installed Codex payload inspection enforces manifest pointers, pin, and ca
     path.join(installPath, 'skills', 'primevue', 'SKILL.md'),
     '---\nname: primevue\ndescription: Test\n---\n'
   );
+  const treeHash = (await inspectSkillTree(path.join(installPath, 'skills', 'primevue'))).hash;
 
   const contract = {
     mcpPackage: '@primevue/mcp',
     mcpVersion: '5.0.0-rc.2',
-    pluginVersion: '0.1.0-alpha.0'
+    pluginVersion: '0.1.0-alpha.0',
+    skills: [{ directory: 'primevue', id: 'primevue', name: 'primevue', order: 0, owner: 'primevue', treeHash }]
   };
   await assert.doesNotReject(
     assertInstalledCodexPayload({ codexHome, contract, installPath, library: 'primevue' })

@@ -1,6 +1,6 @@
 {
   "$schema": "./schemas/sources-lock.schema.json",
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "sources": [
     {
       "lockState": "locked",
@@ -10,11 +10,20 @@
       },
       "name": "primevue",
       "pluginVersion": "0.1.0-alpha.0",
-      "source": {
-        "repository": "https://github.com/primefaces/primeui-plugins",
-        "skillHash": "sha256:811563bcafbd8d42d1a9e22bd20116a2c3028124d61c21f53afb18ea0ead1cb4",
-        "skillPath": "skills/primevue"
-      }
+      "skills": [
+        {
+          "directory": "primevue",
+          "id": "primevue",
+          "name": "primevue",
+          "order": 0,
+          "owner": "primevue",
+          "source": {
+            "path": "skills/primevue",
+            "repository": "https://github.com/primefaces/primeui-plugins",
+            "treeHash": "sha256:811563bcafbd8d42d1a9e22bd20116a2c3028124d61c21f53afb18ea0ead1cb4"
+          }
+        }
+      ]
     },
     {
       "lockState": "locked",
@@ -24,11 +33,20 @@
       },
       "name": "primeng",
       "pluginVersion": "0.1.0-alpha.0",
-      "source": {
-        "repository": "https://github.com/primefaces/primeui-plugins",
-        "skillHash": "sha256:ea8da20b90b1754e41cb2a13b9cec3a31b0fac9add287da6c6ddd976d4298275",
-        "skillPath": "skills/primeng"
-      }
+      "skills": [
+        {
+          "directory": "primeng",
+          "id": "primeng",
+          "name": "primeng",
+          "order": 0,
+          "owner": "primeng",
+          "source": {
+            "path": "skills/primeng",
+            "repository": "https://github.com/primefaces/primeui-plugins",
+            "treeHash": "sha256:ea8da20b90b1754e41cb2a13b9cec3a31b0fac9add287da6c6ddd976d4298275"
+          }
+        }
+      ]
     },
     {
       "lockState": "locked",
@@ -38,11 +56,20 @@
       },
       "name": "primereact",
       "pluginVersion": "0.1.0-alpha.0",
-      "source": {
-        "repository": "https://github.com/primefaces/primeui-plugins",
-        "skillHash": "sha256:bfae83742ebfcfd2d9002138d3f019a90626191e4b142581a0877e4a11bbca7d",
-        "skillPath": "skills/primereact"
-      }
+      "skills": [
+        {
+          "directory": "primereact",
+          "id": "primereact",
+          "name": "primereact",
+          "order": 0,
+          "owner": "primereact",
+          "source": {
+            "path": "skills/primereact",
+            "repository": "https://github.com/primefaces/primeui-plugins",
+            "treeHash": "sha256:bfae83742ebfcfd2d9002138d3f019a90626191e4b142581a0877e4a11bbca7d"
+          }
+        }
+      ]
     }
   ]
 }

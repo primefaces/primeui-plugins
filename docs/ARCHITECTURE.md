@@ -19,18 +19,18 @@ primeui-plugins/
 │       ├── gemini-extension.json
 │       ├── .mcp.json
 │       ├── provenance.json
-│       └── skills/<library>/
+│       └── skills/<declared-skill-directory>/
 ├── scripts/                                # generator, validators, and smoke tooling
 └── tests/                                  # deterministic contract coverage
 ```
 
-The root marketplace paths are required discovery locations for their respective clients. Each `plugins/<library>` directory is self-contained because installed clients may copy or cache only that directory. The same physical skill tree and provenance record are shared by Claude, Codex, Cursor, and Gemini inside that universal payload.
+The root marketplace paths are required discovery locations for their respective clients. Each `plugins/<library>` directory is self-contained because installed clients may copy or cache only that directory. The same ordered physical skill set and provenance record are shared by Claude, Codex, Cursor, and Gemini inside that universal payload. Every payload still contains exactly one selected-library MCP server.
 
 ## Authored inputs
 
-- `config/plugins.json` owns marketplace identity, install-surface metadata, supported hosts, MCP package identity, and generated plugin paths.
-- `config/sources.lock.json` owns exact plugin versions, exact MCP package versions, and canonical skill hashes.
-- `skills/<library>/` is the only editable skill source.
+- `config/plugins.json` owns marketplace identity, install-surface metadata, supported hosts, MCP package identity, generated plugin paths, and each library's ordered skill identities, directories, canonical roots, order, and ownership.
+- `config/sources.lock.json` owns exact plugin versions, exact MCP package versions, ordered skill metadata, and one deterministic tree hash per canonical skill.
+- Declared paths below `skills/<library>/` are the only editable skill sources.
 - Schemas, tests, and release rules define the accepted public contract.
 
 ## Generated outputs
@@ -38,6 +38,8 @@ The root marketplace paths are required discovery locations for their respective
 The generator exclusively owns `.agents/plugins/`, `.claude-plugin/`, `.cursor-plugin/`, and `plugins/`. Generated manifests, skill copies, MCP configuration, and provenance must never be edited directly.
 
 `npm run sync` builds a complete staged tree, validates it, and atomically replaces only those roots. `npm run sync:check` compares a temporary generated tree with the committed output without modifying the repository.
+
+The ordered-set model is the compatibility boundary for the previous single-skill layout. A library may currently declare one entry, but generation always treats it as a set. Moving to several entries replaces the entire generated `skills/` root transactionally, removes the old single-skill copy, and rolls back the prior root on failure. No fallback or duplicate compatibility copy is retained.
 
 ## Gemini distribution
 

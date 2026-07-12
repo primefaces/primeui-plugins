@@ -4,13 +4,35 @@
     "version": "11.0.0-rc.2"
   },
   "name": "primereact",
-  "pluginVersion": "0.1.0-alpha.0",
-  "schemaVersion": 1,
-  "source": {
-    "repository": "https://github.com/primefaces/primeui-plugins",
-    "skillHash": "sha256:bfae83742ebfcfd2d9002138d3f019a90626191e4b142581a0877e4a11bbca7d",
-    "skillPath": "skills/primereact"
+  "payload": {
+    "documents": [
+      ".claude-plugin/plugin.json",
+      ".codex-plugin/plugin.json",
+      ".cursor-plugin/plugin.json",
+      ".mcp.json",
+      "gemini-extension.json",
+      "provenance.json"
+    ],
+    "skillRoots": [
+      "skills/primereact"
+    ]
   },
+  "pluginVersion": "0.1.0-alpha.0",
+  "schemaVersion": 2,
+  "skills": [
+    {
+      "directory": "primereact",
+      "id": "primereact",
+      "name": "primereact",
+      "order": 0,
+      "owner": "primereact",
+      "source": {
+        "path": "skills/primereact",
+        "repository": "https://github.com/primefaces/primeui-plugins",
+        "treeHash": "sha256:bfae83742ebfcfd2d9002138d3f019a90626191e4b142581a0877e4a11bbca7d"
+      }
+    }
+  ],
   "variants": [
     "styled",
     "tailwind",

@@ -66,11 +66,13 @@ export async function exportGeminiDistributions({ destinationRoot, libraries, re
         stableStringify(provenanceDocument(plugin, lock)),
         { flag: 'wx' }
       );
-      await copySkillTree(
-        snapshot.skillRoot,
-        path.join(extensionRoot, 'skills', plugin.name),
-        snapshot.inspection
-      );
+      for (const skill of snapshot.skills) {
+        await copySkillTree(
+          skill.skillRoot,
+          path.join(extensionRoot, 'skills', skill.directory),
+          skill.inspection
+        );
+      }
     }
   } catch (error) {
     await rm(destinationRoot, { force: true, recursive: true });

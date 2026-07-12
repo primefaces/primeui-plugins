@@ -4,11 +4,33 @@
     "version": "22.0.0-rc.2"
   },
   "name": "primeng",
+  "payload": {
+    "documents": [
+      ".claude-plugin/plugin.json",
+      ".codex-plugin/plugin.json",
+      ".cursor-plugin/plugin.json",
+      ".mcp.json",
+      "gemini-extension.json",
+      "provenance.json"
+    ],
+    "skillRoots": [
+      "skills/primeng"
+    ]
+  },
   "pluginVersion": "0.1.0-alpha.0",
-  "schemaVersion": 1,
-  "source": {
-    "repository": "https://github.com/primefaces/primeui-plugins",
-    "skillHash": "sha256:ea8da20b90b1754e41cb2a13b9cec3a31b0fac9add287da6c6ddd976d4298275",
-    "skillPath": "skills/primeng"
-  }
+  "schemaVersion": 2,
+  "skills": [
+    {
+      "directory": "primeng",
+      "id": "primeng",
+      "name": "primeng",
+      "order": 0,
+      "owner": "primeng",
+      "source": {
+        "path": "skills/primeng",
+        "repository": "https://github.com/primefaces/primeui-plugins",
+        "treeHash": "sha256:ea8da20b90b1754e41cb2a13b9cec3a31b0fac9add287da6c6ddd976d4298275"
+      }
+    }
+  ]
 }

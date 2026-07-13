@@ -123,6 +123,8 @@ Generated outputs include marketplace catalogs, client manifests, copied physica
 
 All four clients share one generated payload under `plugins/<library>`. See [Repository architecture](docs/ARCHITECTURE.md) for the complete authored and generated ownership model.
 
+The [public prompt library and behavioral evaluations](evaluations/README.md) provide provider-neutral release-critical prompts and deterministic no-model routing, MCP-call, validation, mode-isolation, and payload-integrity acceptance for every library.
+
 ## Validation
 
 The repository uses Node.js built-ins only. Do not install dependencies.
@@ -133,6 +135,7 @@ npm run validate:claude
 npm run validate:codex
 npm run validate:cursor -- --source all
 npm run validate:gemini -- --source all
+node scripts/evaluate-contracts.mjs
 npm test
 npm run format:check
 npm run check:boundaries

@@ -5,6 +5,7 @@ import { repositoryRoot } from './lib/repository.mjs';
 const checks = [
   ['configuration validation', ['scripts/validate-config.mjs']],
   ['tests', ['--test']],
+  ['behavioral evaluations', ['scripts/evaluate-contracts.mjs']],
   ['formatting', ['scripts/check-format.mjs']],
   ['repository boundaries', ['scripts/check-boundaries.mjs']],
   ['skill commands', ['scripts/check-skill-commands.mjs']],

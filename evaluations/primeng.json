@@ -1,0 +1,696 @@
+{
+  "$schema": "./schema.json",
+  "library": "primeng",
+  "mcp": {
+    "package": "@primeng/mcp",
+    "server": "primeng",
+    "tools": [
+      "list",
+      "search",
+      "get_component",
+      "get_guide",
+      "get_example",
+      "get_setup",
+      "validate_usage",
+      "version"
+    ]
+  },
+  "scenarios": [
+    {
+      "allowedMcpCalls": [
+        "get_setup",
+        "get_guide"
+      ],
+      "budgetClass": "setup",
+      "coverage": [
+        "setup",
+        "standalone-setup"
+      ],
+      "environment": "angular-standalone",
+      "expectedSkill": "primeng-setup-installation",
+      "expectedValidation": {
+        "calls": 0,
+        "outcome": "not-run",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_component",
+        "get_example",
+        "validate_usage",
+        "version"
+      ],
+      "id": "primeng-standalone-setup",
+      "library": "primeng",
+      "maxCallCount": 2,
+      "prompt": "Configure PrimeNG in this standalone Angular application using only the current ApplicationConfig, app.config.ts, and providePrimeNG setup path returned for the project.",
+      "requiredEvidence": [
+        "angular-standalone-environment",
+        "setup-candidate",
+        "routed-guide",
+        "public-citation"
+      ],
+      "route": "setup",
+      "trace": [
+        {
+          "name": "get_setup",
+          "result": "supported",
+          "server": "primeng"
+        },
+        {
+          "name": "get_guide",
+          "result": "source-backed",
+          "server": "primeng"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_setup"
+      ],
+      "budgetClass": "setup",
+      "coverage": [
+        "unsupported-ngmodule"
+      ],
+      "environment": "ngmodule",
+      "expectedSkill": "primeng-setup-installation",
+      "expectedValidation": {
+        "calls": 0,
+        "outcome": "unsupported",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_component",
+        "get_guide",
+        "get_example",
+        "validate_usage",
+        "version"
+      ],
+      "id": "primeng-unsupported-ngmodule",
+      "library": "primeng",
+      "maxCallCount": 1,
+      "prompt": "Check whether current routed PrimeNG setup supports an NgModule application and report an explicit unsupported result without synthesizing legacy module guidance or a URL.",
+      "requiredEvidence": [
+        "structured-unsupported-result",
+        "no-invented-route",
+        "no-invented-url"
+      ],
+      "route": "setup",
+      "trace": [
+        {
+          "name": "get_setup",
+          "result": "unsupported",
+          "server": "primeng"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_component",
+        "validate_usage"
+      ],
+      "budgetClass": "known-component",
+      "coverage": [
+        "known-component"
+      ],
+      "expectedSkill": "primeng-component-implementation",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_guide",
+        "get_example",
+        "get_setup",
+        "version"
+      ],
+      "id": "primeng-known-button",
+      "library": "primeng",
+      "maxCallCount": 2,
+      "prompt": "Add a PrimeNG Button to the existing Angular template using only current component and Angular API metadata, then validate the complete final usage.",
+      "requiredEvidence": [
+        "component-metadata",
+        "angular-api-metadata",
+        "final-validation"
+      ],
+      "route": "component",
+      "trace": [
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primeng"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_component",
+        "get_example",
+        "validate_usage"
+      ],
+      "budgetClass": "source-backed-behavior",
+      "coverage": [
+        "source-backed-behavior"
+      ],
+      "expectedSkill": "primeng-component-implementation",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_guide",
+        "get_setup",
+        "version"
+      ],
+      "id": "primeng-dialog-source-behavior",
+      "library": "primeng",
+      "maxCallCount": 3,
+      "prompt": "Implement the requested PrimeNG Dialog behavior from current component metadata and an advertised example section without translating a workflow from another Prime library.",
+      "requiredEvidence": [
+        "component-sections",
+        "exact-example-section",
+        "angular-api-metadata",
+        "final-validation"
+      ],
+      "route": "component",
+      "trace": [
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "get_example",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primeng"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "search",
+        "get_component",
+        "get_example",
+        "validate_usage"
+      ],
+      "budgetClass": "discovery",
+      "coverage": [
+        "discovery"
+      ],
+      "expectedSkill": "primeng-component-implementation",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "get_guide",
+        "get_setup",
+        "version"
+      ],
+      "id": "primeng-discover-date-input",
+      "library": "primeng",
+      "maxCallCount": 4,
+      "prompt": "Find the current PrimeNG component for entering a date, select a PrimeNG-only result, implement it from returned Angular evidence, and validate the final usage.",
+      "requiredEvidence": [
+        "search-result",
+        "component-metadata",
+        "example-if-advertised",
+        "final-validation"
+      ],
+      "route": "component",
+      "trace": [
+        {
+          "name": "search",
+          "result": "primeng-result",
+          "server": "primeng"
+        },
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "get_example",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primeng"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_component",
+        "get_example",
+        "validate_usage"
+      ],
+      "budgetClass": "forms",
+      "coverage": [
+        "forms"
+      ],
+      "expectedSkill": "primeng-component-implementation",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_guide",
+        "get_setup",
+        "version"
+      ],
+      "id": "primeng-template-form",
+      "library": "primeng",
+      "maxCallCount": 3,
+      "prompt": "Build the requested PrimeNG form field in the existing Angular form strategy using only current template, directive, input, output, component, and example evidence.",
+      "requiredEvidence": [
+        "angular-form-strategy",
+        "component-metadata",
+        "template-example",
+        "final-validation"
+      ],
+      "route": "component",
+      "trace": [
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "get_example",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primeng"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_component",
+        "get_example",
+        "validate_usage"
+      ],
+      "budgetClass": "data-table",
+      "coverage": [
+        "data-table"
+      ],
+      "expectedSkill": "primeng-component-implementation",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_guide",
+        "get_setup",
+        "version"
+      ],
+      "id": "primeng-data-table",
+      "library": "primeng",
+      "maxCallCount": 3,
+      "prompt": "Implement the requested PrimeNG Table pagination, filtering, sorting, or selection behavior only from current Table metadata and an advertised example section.",
+      "requiredEvidence": [
+        "table-metadata",
+        "angular-api-metadata",
+        "exact-example-section",
+        "final-validation"
+      ],
+      "route": "component",
+      "trace": [
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "get_example",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primeng"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_guide",
+        "get_component",
+        "validate_usage"
+      ],
+      "budgetClass": "theming",
+      "coverage": [
+        "theming"
+      ],
+      "expectedSkill": "primeng-theming-customization",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_example",
+        "get_setup",
+        "version"
+      ],
+      "id": "primeng-theme-customization",
+      "library": "primeng",
+      "maxCallCount": 3,
+      "prompt": "Customize this PrimeNG component within the existing provider, preset, token, and pass-through strategy using only returned theming and component contracts.",
+      "requiredEvidence": [
+        "project-theme-strategy",
+        "theming-guide",
+        "component-contract",
+        "final-validation"
+      ],
+      "route": "theming",
+      "trace": [
+        {
+          "name": "get_guide",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primeng"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_guide",
+        "get_component",
+        "validate_usage"
+      ],
+      "budgetClass": "accessibility",
+      "coverage": [
+        "accessibility-icons"
+      ],
+      "expectedSkill": "primeng-accessibility-icons",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_example",
+        "get_setup",
+        "version"
+      ],
+      "id": "primeng-icon-only-control",
+      "library": "primeng",
+      "maxCallCount": 3,
+      "prompt": "Make this PrimeNG icon-only control accessible using current accessibility, icon, Angular API, and component evidence, then validate the supported usage.",
+      "requiredEvidence": [
+        "accessibility-guide",
+        "icon-contract",
+        "component-metadata",
+        "manual-a11y-checks"
+      ],
+      "route": "accessibility",
+      "trace": [
+        {
+          "name": "get_guide",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primeng"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_guide",
+        "get_component",
+        "validate_usage"
+      ],
+      "budgetClass": "migration",
+      "coverage": [
+        "migration"
+      ],
+      "expectedSkill": "primeng-migration",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_example",
+        "get_setup",
+        "version"
+      ],
+      "id": "primeng-current-migration",
+      "library": "primeng",
+      "maxCallCount": 3,
+      "prompt": "Migrate the affected PrimeNG usage using the installed and target package evidence plus only matching current Angular and PrimeNG migration and component contracts.",
+      "requiredEvidence": [
+        "installed-and-target-versions",
+        "migration-guide",
+        "component-metadata",
+        "final-validation"
+      ],
+      "route": "migration",
+      "trace": [
+        {
+          "name": "get_guide",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primeng"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "validate_usage"
+      ],
+      "budgetClass": "audit",
+      "coverage": [
+        "audit"
+      ],
+      "expectedSkill": "primeng-audit-troubleshooting",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_component",
+        "get_guide",
+        "get_example",
+        "get_setup",
+        "version"
+      ],
+      "id": "primeng-api-audit",
+      "library": "primeng",
+      "maxCallCount": 1,
+      "prompt": "Audit the narrow PrimeNG template usage for source-confirmable API problems and keep compiler, browser, state, data, and accessibility checks separate.",
+      "requiredEvidence": [
+        "narrow-complete-usage",
+        "validation-result",
+        "separate-runtime-boundaries"
+      ],
+      "route": "audit",
+      "trace": [
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primeng"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "validate_usage",
+        "get_component"
+      ],
+      "budgetClass": "invalid-api-repair",
+      "coverage": [
+        "invalid-api-repair"
+      ],
+      "expectedSkill": "primeng-audit-troubleshooting",
+      "expectedValidation": {
+        "calls": 2,
+        "outcome": "issue-then-pass",
+        "repeatOnlyAfterIssue": true
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_guide",
+        "get_example",
+        "get_setup",
+        "version"
+      ],
+      "id": "primeng-invalid-api-repair",
+      "library": "primeng",
+      "maxCallCount": 3,
+      "prompt": "Repair the invalid PrimeNG input, output, directive, or component API only after validation reports it, then revalidate the minimally corrected usage once.",
+      "requiredEvidence": [
+        "reported-validation-issue",
+        "angular-api-metadata",
+        "minimal-repair",
+        "final-validation"
+      ],
+      "route": "audit",
+      "trace": [
+        {
+          "name": "validate_usage",
+          "result": "issue",
+          "server": "primeng"
+        },
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primeng"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primeng"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [],
+      "budgetClass": "doctor",
+      "coverage": [
+        "missing-mcp"
+      ],
+      "doctorExpectation": {
+        "command": "primeui doctor --json --tool <tool> --library primeng",
+        "required": true
+      },
+      "expectedSkill": "primeng-audit-troubleshooting",
+      "expectedValidation": {
+        "calls": 0,
+        "outcome": "not-run",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_component",
+        "get_guide",
+        "get_example",
+        "get_setup",
+        "validate_usage",
+        "version"
+      ],
+      "id": "primeng-missing-mcp",
+      "library": "primeng",
+      "maxCallCount": 0,
+      "prompt": "Diagnose why the selected PrimeNG MCP is missing before retrying Angular work, without guessing configuration or using a stale recovery command.",
+      "requiredEvidence": [
+        "doctor-json",
+        "failing-checks",
+        "suggestions"
+      ],
+      "route": "audit",
+      "trace": []
+    },
+    {
+      "allowedMcpCalls": [],
+      "budgetClass": "doctor",
+      "coverage": [
+        "duplicate-mcp-plugin"
+      ],
+      "doctorExpectation": {
+        "command": "primeui doctor --json --tool <tool> --library primeng",
+        "required": true
+      },
+      "expectedSkill": "primeng-audit-troubleshooting",
+      "expectedValidation": {
+        "calls": 0,
+        "outcome": "not-run",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_component",
+        "get_guide",
+        "get_example",
+        "get_setup",
+        "validate_usage",
+        "version"
+      ],
+      "id": "primeng-duplicate-mcp-plugin",
+      "library": "primeng",
+      "maxCallCount": 0,
+      "prompt": "Check whether PrimeNG MCP is registered both directly and through the installed plugin, and report the exact doctor checks before changing configuration.",
+      "requiredEvidence": [
+        "doctor-json",
+        "duplicate-registration-check",
+        "selected-library-identity"
+      ],
+      "route": "audit",
+      "trace": []
+    }
+  ],
+  "schemaVersion": 1
+}

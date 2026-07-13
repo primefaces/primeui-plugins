@@ -1,0 +1,648 @@
+{
+  "$schema": "./schema.json",
+  "library": "primevue",
+  "mcp": {
+    "package": "@primevue/mcp",
+    "server": "primevue",
+    "tools": [
+      "list",
+      "search",
+      "get_component",
+      "get_guide",
+      "get_example",
+      "get_setup",
+      "validate_usage",
+      "version"
+    ]
+  },
+  "scenarios": [
+    {
+      "allowedMcpCalls": [
+        "get_setup",
+        "get_guide"
+      ],
+      "budgetClass": "setup",
+      "coverage": [
+        "setup"
+      ],
+      "environment": "vite",
+      "expectedSkill": "primevue-setup-installation",
+      "expectedValidation": {
+        "calls": 0,
+        "outcome": "not-run",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_component",
+        "get_example",
+        "validate_usage",
+        "version"
+      ],
+      "id": "primevue-vite-setup",
+      "library": "primevue",
+      "maxCallCount": 2,
+      "prompt": "Configure PrimeVue in this existing Vite application using only the current routed setup for the detected project, and cite the returned sources.",
+      "requiredEvidence": [
+        "project-environment",
+        "setup-candidate",
+        "public-citation"
+      ],
+      "route": "setup",
+      "trace": [
+        {
+          "name": "get_setup",
+          "result": "supported",
+          "server": "primevue"
+        },
+        {
+          "name": "get_guide",
+          "result": "source-backed",
+          "server": "primevue"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_component",
+        "validate_usage"
+      ],
+      "budgetClass": "known-component",
+      "coverage": [
+        "known-component"
+      ],
+      "expectedSkill": "primevue-component-implementation",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_guide",
+        "get_example",
+        "get_setup",
+        "version"
+      ],
+      "id": "primevue-known-button",
+      "library": "primevue",
+      "maxCallCount": 2,
+      "prompt": "Add a PrimeVue Button to the existing Vue component, preserving local conventions and using only current component metadata before validating the final usage.",
+      "requiredEvidence": [
+        "component-metadata",
+        "final-validation"
+      ],
+      "route": "component",
+      "trace": [
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primevue"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_component",
+        "get_example",
+        "validate_usage"
+      ],
+      "budgetClass": "source-backed-behavior",
+      "coverage": [
+        "source-backed-behavior"
+      ],
+      "expectedSkill": "primevue-component-implementation",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_guide",
+        "get_setup",
+        "version"
+      ],
+      "id": "primevue-dialog-source-behavior",
+      "library": "primevue",
+      "maxCallCount": 3,
+      "prompt": "Implement the requested PrimeVue Dialog behavior from the current component sections and an advertised source example, then validate the finished component usage.",
+      "requiredEvidence": [
+        "component-sections",
+        "exact-example-section",
+        "final-validation"
+      ],
+      "route": "component",
+      "trace": [
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "get_example",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primevue"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "search",
+        "get_component",
+        "get_example",
+        "validate_usage"
+      ],
+      "budgetClass": "discovery",
+      "coverage": [
+        "discovery"
+      ],
+      "expectedSkill": "primevue-component-implementation",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "get_guide",
+        "get_setup",
+        "version"
+      ],
+      "id": "primevue-discover-date-input",
+      "library": "primevue",
+      "maxCallCount": 4,
+      "prompt": "Find the current PrimeVue component for entering a date, select a PrimeVue-only result, implement it from returned evidence, and validate the final usage.",
+      "requiredEvidence": [
+        "search-result",
+        "component-metadata",
+        "example-if-advertised",
+        "final-validation"
+      ],
+      "route": "component",
+      "trace": [
+        {
+          "name": "search",
+          "result": "primevue-result",
+          "server": "primevue"
+        },
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "get_example",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primevue"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_component",
+        "get_example",
+        "validate_usage"
+      ],
+      "budgetClass": "forms",
+      "coverage": [
+        "forms"
+      ],
+      "expectedSkill": "primevue-component-implementation",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_guide",
+        "get_setup",
+        "version"
+      ],
+      "id": "primevue-form-input",
+      "library": "primevue",
+      "maxCallCount": 3,
+      "prompt": "Build the requested PrimeVue form input using only current component and advertised example evidence, while preserving the existing Vue form strategy.",
+      "requiredEvidence": [
+        "component-metadata",
+        "form-example",
+        "final-validation"
+      ],
+      "route": "component",
+      "trace": [
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "get_example",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primevue"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_component",
+        "get_example",
+        "validate_usage"
+      ],
+      "budgetClass": "data-table",
+      "coverage": [
+        "data-table"
+      ],
+      "expectedSkill": "primevue-component-implementation",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_guide",
+        "get_setup",
+        "version"
+      ],
+      "id": "primevue-data-table",
+      "library": "primevue",
+      "maxCallCount": 3,
+      "prompt": "Implement the requested PrimeVue data table behavior from current DataTable metadata and a returned example section without inventing props, events, or slots.",
+      "requiredEvidence": [
+        "datatable-metadata",
+        "exact-example-section",
+        "final-validation"
+      ],
+      "route": "component",
+      "trace": [
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "get_example",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primevue"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_guide",
+        "get_component",
+        "validate_usage"
+      ],
+      "budgetClass": "theming",
+      "coverage": [
+        "theming"
+      ],
+      "expectedSkill": "primevue-theming-customization",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_example",
+        "get_setup",
+        "version"
+      ],
+      "id": "primevue-theme-customization",
+      "library": "primevue",
+      "maxCallCount": 3,
+      "prompt": "Customize this PrimeVue component within the project's existing preset, token, and pass-through strategy using only returned theming and component contracts.",
+      "requiredEvidence": [
+        "project-theme-strategy",
+        "theming-guide",
+        "component-contract",
+        "final-validation"
+      ],
+      "route": "theming",
+      "trace": [
+        {
+          "name": "get_guide",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primevue"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_guide",
+        "get_component",
+        "validate_usage"
+      ],
+      "budgetClass": "accessibility",
+      "coverage": [
+        "accessibility-icons"
+      ],
+      "expectedSkill": "primevue-accessibility-icons",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_example",
+        "get_setup",
+        "version"
+      ],
+      "id": "primevue-icon-only-control",
+      "library": "primevue",
+      "maxCallCount": 3,
+      "prompt": "Make this PrimeVue icon-only control accessible using current accessibility, icon, and component evidence, then validate its supported component API usage.",
+      "requiredEvidence": [
+        "accessibility-guide",
+        "icon-contract",
+        "component-metadata",
+        "manual-a11y-checks"
+      ],
+      "route": "accessibility",
+      "trace": [
+        {
+          "name": "get_guide",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primevue"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "get_guide",
+        "get_component",
+        "validate_usage"
+      ],
+      "budgetClass": "migration",
+      "coverage": [
+        "migration"
+      ],
+      "expectedSkill": "primevue-migration",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_example",
+        "get_setup",
+        "version"
+      ],
+      "id": "primevue-current-migration",
+      "library": "primevue",
+      "maxCallCount": 3,
+      "prompt": "Migrate the affected PrimeVue usage from the installed version to the requested target using project package evidence and only a matching current migration guide and component contract.",
+      "requiredEvidence": [
+        "installed-and-target-versions",
+        "migration-guide",
+        "component-metadata",
+        "final-validation"
+      ],
+      "route": "migration",
+      "trace": [
+        {
+          "name": "get_guide",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primevue"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "validate_usage"
+      ],
+      "budgetClass": "audit",
+      "coverage": [
+        "audit"
+      ],
+      "expectedSkill": "primevue-audit-troubleshooting",
+      "expectedValidation": {
+        "calls": 1,
+        "outcome": "pass",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_component",
+        "get_guide",
+        "get_example",
+        "get_setup",
+        "version"
+      ],
+      "id": "primevue-api-audit",
+      "library": "primevue",
+      "maxCallCount": 1,
+      "prompt": "Audit the narrow PrimeVue component usage for source-confirmable API problems and distinguish MCP validation from browser, state, data, and accessibility checks.",
+      "requiredEvidence": [
+        "narrow-complete-usage",
+        "validation-result",
+        "separate-runtime-boundaries"
+      ],
+      "route": "audit",
+      "trace": [
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primevue"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [
+        "validate_usage",
+        "get_component"
+      ],
+      "budgetClass": "invalid-api-repair",
+      "coverage": [
+        "invalid-api-repair"
+      ],
+      "expectedSkill": "primevue-audit-troubleshooting",
+      "expectedValidation": {
+        "calls": 2,
+        "outcome": "issue-then-pass",
+        "repeatOnlyAfterIssue": true
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_guide",
+        "get_example",
+        "get_setup",
+        "version"
+      ],
+      "id": "primevue-invalid-api-repair",
+      "library": "primevue",
+      "maxCallCount": 3,
+      "prompt": "Repair the invalid PrimeVue API in this complete failing usage only after validation reports the issue, using current component metadata and revalidating the corrected code once.",
+      "requiredEvidence": [
+        "reported-validation-issue",
+        "component-metadata",
+        "minimal-repair",
+        "final-validation"
+      ],
+      "route": "audit",
+      "trace": [
+        {
+          "name": "validate_usage",
+          "result": "issue",
+          "server": "primevue"
+        },
+        {
+          "name": "get_component",
+          "result": "source-backed",
+          "server": "primevue"
+        },
+        {
+          "name": "validate_usage",
+          "result": "pass",
+          "server": "primevue"
+        }
+      ]
+    },
+    {
+      "allowedMcpCalls": [],
+      "budgetClass": "doctor",
+      "coverage": [
+        "missing-mcp"
+      ],
+      "doctorExpectation": {
+        "command": "primeui doctor --json --tool <tool> --library primevue",
+        "required": true
+      },
+      "expectedSkill": "primevue-audit-troubleshooting",
+      "expectedValidation": {
+        "calls": 0,
+        "outcome": "not-run",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_component",
+        "get_guide",
+        "get_example",
+        "get_setup",
+        "validate_usage",
+        "version"
+      ],
+      "id": "primevue-missing-mcp",
+      "library": "primevue",
+      "maxCallCount": 0,
+      "prompt": "Diagnose why the selected PrimeVue MCP is missing before retrying component work, without guessing configuration or using a stale recovery command.",
+      "requiredEvidence": [
+        "doctor-json",
+        "failing-checks",
+        "suggestions"
+      ],
+      "route": "audit",
+      "trace": []
+    },
+    {
+      "allowedMcpCalls": [],
+      "budgetClass": "doctor",
+      "coverage": [
+        "duplicate-mcp-plugin"
+      ],
+      "doctorExpectation": {
+        "command": "primeui doctor --json --tool <tool> --library primevue",
+        "required": true
+      },
+      "expectedSkill": "primevue-audit-troubleshooting",
+      "expectedValidation": {
+        "calls": 0,
+        "outcome": "not-run",
+        "repeatOnlyAfterIssue": false
+      },
+      "forbiddenMcpCalls": [
+        "list",
+        "search",
+        "get_component",
+        "get_guide",
+        "get_example",
+        "get_setup",
+        "validate_usage",
+        "version"
+      ],
+      "id": "primevue-duplicate-mcp-plugin",
+      "library": "primevue",
+      "maxCallCount": 0,
+      "prompt": "Check whether PrimeVue MCP is registered both directly and through the installed plugin, and report the exact doctor checks before changing any configuration.",
+      "requiredEvidence": [
+        "doctor-json",
+        "duplicate-registration-check",
+        "selected-library-identity"
+      ],
+      "route": "audit",
+      "trace": []
+    }
+  ],
+  "schemaVersion": 1
+}

@@ -11,6 +11,7 @@ npm test
 npm run format:check
 npm run check:boundaries
 npm run check:security
+node scripts/evaluate-contracts.mjs
 npm run check
 npm run sync:check
 npm run check:clean
@@ -34,6 +35,12 @@ Deterministic synthetic generator fixtures exercise seven-skill shapes across al
 Claude validation covers marketplace installation and lifecycle. Codex validation covers marketplace snapshots, plugin cache behavior, and MCP discovery. Cursor validation covers direct payload and marketplace resolution without modifying a real Cursor profile. Gemini validation covers the universal plugin root, the minimal exported distribution, and a persistent public checkout through extension validation, install, enable/disable, update, uninstall, native skill discovery, and MCP discovery.
 
 Authenticated model-session behavior and installed desktop UI acceptance remain manual gates because automated validation does not import user credentials or mutate real profiles.
+
+## Behavioral evaluations
+
+The [public prompt library](../evaluations/README.md) is also the provider-neutral evaluation fixture set. `node scripts/evaluate-contracts.mjs` performs the default acceptance without a model, network, credentials, profiles, or external state. Negative tests prove rejection of malformed fixtures, unknown or foreign skills, missing workflow coverage, forbidden or over-budget calls, wrong validation and doctor behavior, cross-library or cross-mode leakage, stale generated hashes and provenance, and the wrong selected-library MCP or tool inventory.
+
+Authenticated adapters are not part of normal gates. If one is added later, it must require explicit opt-in and report skipped state without credentials; it must not mutate profiles or commit credentials or model output.
 
 ## Gemini export
 

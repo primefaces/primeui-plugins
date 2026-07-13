@@ -16,6 +16,7 @@ const allowedTopLevel = new Set([
   'RELEASE.md',
   'config',
   'docs',
+  'evaluations',
   'package.json',
   'plugins',
   'scripts',

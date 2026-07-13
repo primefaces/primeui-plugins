@@ -7,6 +7,7 @@
   "name": "primeui-plugin-distribution",
   "private": true,
   "scripts": {
+    "build:public": "node scripts/build-public.mjs",
     "check": "node scripts/check.mjs",
     "check:boundaries": "node scripts/check-boundaries.mjs",
     "check:clean": "node scripts/check-clean.mjs",

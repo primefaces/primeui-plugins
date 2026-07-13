@@ -1,0 +1,86 @@
+name: Promote Dev to Public Main
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: primeui-plugins-main-promotion
+  cancel-in-progress: false
+
+jobs:
+  repository:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    outputs:
+      source-sha: ${{ steps.source.outputs.sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: dev
+      - id: source
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run validate:release
+      - run: npm run check:clean
+      - run: npm run sync:check
+      - run: npm run build:public -- --out "$RUNNER_TEMP/primeui-public"
+
+  clients:
+    needs: repository
+    uses: primefaces/primeui-plugins/.github/workflows/public-smoke.yml@dev
+    with:
+      source-sha: ${{ needs.repository.outputs.source-sha }}
+
+  promote:
+    needs:
+      - repository
+      - clients
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    env:
+      PUBLIC_ROOT: ${{ runner.temp }}/primeui-public
+      SOURCE_SHA: ${{ needs.repository.outputs.source-sha }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ env.SOURCE_SHA }}
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm run build:public -- --out "$PUBLIC_ROOT"
+      - name: Confirm dev has not advanced
+        run: |
+          git fetch origin dev
+          test "$(git rev-parse origin/dev)" = "$SOURCE_SHA"
+      - name: Replace main with the public distribution
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin main
+          git switch --force-create main origin/main
+          git rm -r --ignore-unmatch .
+          cp -a "$PUBLIC_ROOT"/. .
+          git add --all
+          git diff --cached --check
+          test ! -e package.json
+          test ! -e config
+          test ! -e docs
+          test ! -e evaluations
+          test ! -e scripts
+          test ! -e skills
+          test ! -e tests
+          if git diff --cached --quiet; then
+            echo "Public main is already current."
+            exit 0
+          fi
+          git commit -m "chore(release): promote dev distribution" -m "Source: $SOURCE_SHA"
+          git push origin main

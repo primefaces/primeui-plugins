@@ -19,6 +19,7 @@ const allowedTopLevel = new Set([
   'evaluations',
   'package.json',
   'plugins',
+  'public',
   'scripts',
   'skills',
   'tests'

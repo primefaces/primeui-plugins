@@ -597,6 +597,7 @@ export function validatePackageManifest(packageManifest) {
   }
 
   const requiredScripts = [
+    'build:public',
     'check',
     'check:boundaries',
     'check:clean',

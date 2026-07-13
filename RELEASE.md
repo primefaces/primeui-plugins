@@ -58,6 +58,8 @@ Claude, Codex, Cursor, and Gemini reuse each existing `plugins/<library>` root. 
 7. Export Gemini distribution roots and verify byte-identical repeated output.
 8. Run clean Claude, Codex, Cursor payload, and Gemini installation smokes.
 9. Confirm the public PrimeUI License notice and manifest metadata before Marketplace submission.
-10. Tag only after review approval. Do not publish this package to npm.
+10. Build the exact public tree with `npm run build:public -- --out <outside-path>` and inspect its inventory.
+11. Run **Promote Dev to Public Main** from GitHub. The workflow validates a fixed `dev` commit and replaces `main` from the public allowlist without merging development history.
+12. Tag or create a GitHub Release only after review approval and an explicit release-version decision. Do not publish this package to npm.
 
 Cursor Marketplace submission is a separate external release step. The publisher must host the plugins in the public repository, confirm that the PrimeUI License is acceptable under the current Cursor Publisher Terms, submit the repository at `cursor.com/marketplace/publish`, satisfy Cursor's manual code and publisher review, and request re-indexing for updates. Submission, approval, and authenticated client acceptance are not automated repository gates.

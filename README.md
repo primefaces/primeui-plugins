@@ -2,6 +2,12 @@
 
 Official AI assistant integrations for PrimeVue, PrimeNG, and PrimeReact.
 
+## Branch Model
+
+`dev` is the authored development branch. It contains canonical skills, configuration, generation code, validation, evaluations, documentation, and generated payloads.
+
+`main` is a generated public distribution branch. It contains only the root marketplace catalogs, self-contained `plugins/<library>/` payloads, the promotion workflow, and a concise installation README. Never merge `dev` into `main`; use **Promote Dev to Public Main** so release validation and the exact public allowlist are enforced.
+
 The `primeui` marketplace provides one independently installable plugin per library. Installing a library plugin adds its ordered workflow skill set and connects the matching MCP server without loading guidance or tools from the other libraries.
 
 ## Plugins

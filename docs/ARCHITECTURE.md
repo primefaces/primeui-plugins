@@ -2,6 +2,14 @@
 
 This repository is the single authored source for PrimeUI workflow skills and the generated plugin payloads that distribute them. PrimeVue, PrimeNG, and PrimeReact remain independently installable.
 
+## Branch ownership
+
+- `dev` owns all authored inputs, generated outputs, tests, validation, and release automation.
+- `main` is generated from an explicit allowlist and is never a merge target for development commits.
+- `.github/workflows/promote-main.yml` checks out one fixed `dev` commit, runs the complete repository and client gates, builds the public tree outside the checkout, verifies that `dev` did not advance, and replaces `main` only when the output changed.
+
+The public tree contains `README.md`, the Claude/Codex/Cursor marketplace catalogs, the three self-contained `plugins/<library>/` roots, and the promotion workflow required for the next release. Development-only paths such as `config/`, canonical `skills/`, `scripts/`, `tests/`, `evaluations/`, and package metadata must never appear on `main`.
+
 ## Ownership
 
 ```text

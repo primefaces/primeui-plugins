@@ -233,12 +233,60 @@
       },
       "skills": [
         {
-          "directory": "primereact",
-          "id": "primereact",
-          "name": "primereact",
+          "directory": "primereact-router",
+          "id": "primereact-router",
+          "name": "primereact-router",
           "order": 0,
           "owner": "primereact",
-          "sourcePath": "skills/primereact"
+          "sourcePath": "skills/primereact/primereact-router"
+        },
+        {
+          "directory": "primereact-component-implementation",
+          "id": "primereact-component-implementation",
+          "name": "primereact-component-implementation",
+          "order": 1,
+          "owner": "primereact",
+          "sourcePath": "skills/primereact/primereact-component-implementation"
+        },
+        {
+          "directory": "primereact-setup-installation",
+          "id": "primereact-setup-installation",
+          "name": "primereact-setup-installation",
+          "order": 2,
+          "owner": "primereact",
+          "sourcePath": "skills/primereact/primereact-setup-installation"
+        },
+        {
+          "directory": "primereact-theming-customization",
+          "id": "primereact-theming-customization",
+          "name": "primereact-theming-customization",
+          "order": 3,
+          "owner": "primereact",
+          "sourcePath": "skills/primereact/primereact-theming-customization"
+        },
+        {
+          "directory": "primereact-accessibility-icons",
+          "id": "primereact-accessibility-icons",
+          "name": "primereact-accessibility-icons",
+          "order": 4,
+          "owner": "primereact",
+          "sourcePath": "skills/primereact/primereact-accessibility-icons"
+        },
+        {
+          "directory": "primereact-migration",
+          "id": "primereact-migration",
+          "name": "primereact-migration",
+          "order": 5,
+          "owner": "primereact",
+          "sourcePath": "skills/primereact/primereact-migration"
+        },
+        {
+          "directory": "primereact-audit-troubleshooting",
+          "id": "primereact-audit-troubleshooting",
+          "name": "primereact-audit-troubleshooting",
+          "order": 6,
+          "owner": "primereact",
+          "sourcePath": "skills/primereact/primereact-audit-troubleshooting"
         }
       ],
       "variants": [

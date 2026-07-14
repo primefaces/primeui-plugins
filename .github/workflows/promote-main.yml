@@ -46,7 +46,6 @@ jobs:
     permissions:
       contents: write
     env:
-      PUBLIC_ROOT: ${{ runner.temp }}/primeui-public
       SOURCE_SHA: ${{ needs.repository.outputs.source-sha }}
     steps:
       - uses: actions/checkout@v4
@@ -56,7 +55,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - run: npm run build:public -- --out "$PUBLIC_ROOT"
+      - run: npm run build:public -- --out "$RUNNER_TEMP/primeui-public"
       - name: Confirm dev has not advanced
         run: |
           git fetch origin dev
@@ -68,7 +67,7 @@ jobs:
           git fetch origin main
           git switch --force-create main origin/main
           git rm -r --ignore-unmatch .
-          cp -a "$PUBLIC_ROOT"/. .
+          cp -a "$RUNNER_TEMP/primeui-public"/. .
           git add --all
           git diff --cached --check
           test ! -e package.json

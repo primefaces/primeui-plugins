@@ -6,9 +6,9 @@ Choose one plugin for the UI library used by your project. Each plugin installs 
 
 | Plugin | MCP package | Clients |
 | --- | --- | --- |
-| `primevue` | `@primevue/mcp` | Claude Code, Codex, Cursor, Gemini CLI |
-| `primeng` | `@primeng/mcp` | Claude Code, Codex, Cursor, Gemini CLI |
-| `primereact` | `@primereact/mcp` | Claude Code, Codex, Cursor, Gemini CLI |
+| `primevue` | `@primevue/mcp` | Claude Code, Codex, GitHub Copilot, Cursor, Gemini CLI |
+| `primeng` | `@primeng/mcp` | Claude Code, Codex, GitHub Copilot, Cursor, Gemini CLI |
+| `primereact` | `@primereact/mcp` | Claude Code, Codex, GitHub Copilot, Cursor, Gemini CLI |
 
 ## Claude Code
 
@@ -37,6 +37,20 @@ Replace `primevue` with `primeng` or `primereact` when needed. Use the `/plugins
 codex plugin marketplace upgrade primeui
 codex plugin remove primevue@primeui
 codex plugin add primevue@primeui
+```
+
+## GitHub Copilot
+
+```bash
+copilot plugin marketplace add primefaces/primeui-plugins
+copilot plugin install primevue@primeui
+```
+
+VS Code automatically discovers plugins installed by the Copilot CLI. Replace `primevue` with `primeng` or `primereact` when needed.
+
+```bash
+copilot plugin update primevue
+copilot plugin uninstall primevue
 ```
 
 ## Cursor

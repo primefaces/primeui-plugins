@@ -1,0 +1,12 @@
+{
+  "author": {
+    "name": "PrimeFaces",
+    "url": "https://primefaces.org"
+  },
+  "description": "PrimeNG workflow guidance backed by the exact PrimeNG MCP package.",
+  "mcpServers": "./.mcp.json",
+  "name": "primeng",
+  "repository": "https://github.com/primefaces/primeui-plugins",
+  "skills": "./skills/",
+  "version": "0.1.0-alpha.0"
+}

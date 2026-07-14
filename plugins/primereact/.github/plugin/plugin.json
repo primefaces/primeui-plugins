@@ -1,0 +1,12 @@
+{
+  "author": {
+    "name": "PrimeFaces",
+    "url": "https://primefaces.org"
+  },
+  "description": "PrimeReact workflow and variant guidance backed by the exact PrimeReact MCP package.",
+  "mcpServers": "./.mcp.json",
+  "name": "primereact",
+  "repository": "https://github.com/primefaces/primeui-plugins",
+  "skills": "./skills/",
+  "version": "0.1.0-alpha.0"
+}

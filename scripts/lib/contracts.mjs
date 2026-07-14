@@ -1,7 +1,7 @@
 import path from 'node:path';
 
 export const libraryOrder = ['primevue', 'primeng', 'primereact'];
-export const supportedHosts = ['claude', 'codex', 'cursor', 'gemini'];
+export const supportedHosts = ['claude', 'codex', 'copilot', 'cursor', 'gemini'];
 
 export const libraryContracts = {
   primevue: {

@@ -43,7 +43,7 @@ Each provenance record lists all generated documents plus every ordered skill ro
 
 The generator owns only `.claude-plugin/`, `.agents/plugins/`, `.cursor-plugin/`, and `plugins/`. It validates a complete same-filesystem staging tree before swapping those roots with rollback protection. Freshness checking uses temporary output outside the repository and never replaces committed files.
 
-Claude, Codex, Cursor, and Gemini reuse each existing `plugins/<library>` root. Their manifests point to the same physical `skills/` set, while Claude, Codex, and Cursor share `.mcp.json` and Gemini embeds the same exact MCP server configuration in `gemini-extension.json`. No host-specific canonical skill copy is permitted. Replacement owns the complete generated root, so migration from the old single-skill layout removes its generated copy atomically and never retains fallback duplicates.
+Claude, Codex, GitHub Copilot, Cursor, and Gemini reuse each existing `plugins/<library>` root. Their manifests point to the same physical `skills/` set, while Claude, Codex, GitHub Copilot, and Cursor share `.mcp.json` and Gemini embeds the same exact MCP server configuration in `gemini-extension.json`. No host-specific canonical skill copy is permitted. Replacement owns the complete generated root, so migration from the old single-skill layout removes its generated copy atomically and never retains fallback duplicates.
 
 `npm run export:gemini -- --out <path>` creates minimal extension roots for future dedicated Gemini distribution repositories. The export destination must be outside this repository and must not already exist. Exported repositories are release artifacts; canonical skills remain authored only here.
 
@@ -56,7 +56,7 @@ Claude, Codex, Cursor, and Gemini reuse each existing `plugins/<library>` root. 
 5. Generate twice and require a clean diff.
 6. Run schema, security, path-safety, provenance, host-manifest, and isolation checks.
 7. Export Gemini distribution roots and verify byte-identical repeated output.
-8. Run clean Claude, Codex, Cursor payload, and Gemini installation smokes.
+8. Run clean Claude, Codex, Copilot payload, Cursor payload, and Gemini installation smokes.
 9. Confirm the public PrimeUI License notice and manifest metadata before Marketplace submission.
 10. Build the exact public tree with `npm run build:public -- --out <outside-path>` and inspect its inventory.
 11. Run **Promote Dev to Public Main** from GitHub. The workflow validates a fixed `dev` commit and replaces `main` from the public allowlist without merging development history.

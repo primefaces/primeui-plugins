@@ -8,7 +8,7 @@ This repository is the single authored source for PrimeUI workflow skills and th
 - `main` is generated from an explicit allowlist and is never a merge target for development commits.
 - `.github/workflows/promote-main.yml` checks out one fixed `dev` commit, runs the complete repository and client gates, builds the public tree outside the checkout, verifies that `dev` did not advance, and replaces `main` only when the output changed.
 
-The public tree contains `README.md`, the Claude/Codex/Cursor marketplace catalogs, the three self-contained `plugins/<library>/` roots, and the promotion workflow required for the next release. Development-only paths such as `config/`, canonical `skills/`, `scripts/`, `tests/`, `evaluations/`, and package metadata must never appear on `main`.
+The public tree contains `README.md`, the Claude/Codex/Copilot/Cursor marketplace catalogs, the three self-contained `plugins/<library>/` roots, and the promotion workflow required for the next release. Development-only paths such as `config/`, canonical `skills/`, `scripts/`, `tests/`, `evaluations/`, and package metadata must never appear on `main`.
 
 ## Ownership
 
@@ -16,6 +16,7 @@ The public tree contains `README.md`, the Claude/Codex/Cursor marketplace catalo
 primeui-plugins/
 ├── .agents/plugins/marketplace.json       # generated Codex catalog
 ├── .claude-plugin/marketplace.json         # generated Claude catalog
+├── .github/plugin/marketplace.json         # generated GitHub Copilot catalog
 ├── .cursor-plugin/marketplace.json         # generated Cursor catalog
 ├── config/                                 # authored product and release contracts
 ├── skills/                                 # authored canonical skill trees
@@ -23,6 +24,7 @@ primeui-plugins/
 │   └── <library>/
 │       ├── .claude-plugin/plugin.json
 │       ├── .codex-plugin/plugin.json
+│       ├── .github/plugin/plugin.json
 │       ├── .cursor-plugin/plugin.json
 │       ├── gemini-extension.json
 │       ├── .mcp.json
@@ -32,7 +34,7 @@ primeui-plugins/
 └── tests/                                  # deterministic contract coverage
 ```
 
-The root marketplace paths are required discovery locations for their respective clients. Each `plugins/<library>` directory is self-contained because installed clients may copy or cache only that directory. The same ordered physical skill set and provenance record are shared by Claude, Codex, Cursor, and Gemini inside that universal payload. Gemini's current runtime listing is set-exact but order-neutral because the host does not expose declared skill order; generated provenance remains authoritative for order and independent hashes. Every payload still contains exactly one selected-library MCP server.
+The root marketplace paths are required discovery locations for their respective clients. Each `plugins/<library>` directory is self-contained because installed clients may copy or cache only that directory. The same ordered physical skill set and provenance record are shared by Claude, Codex, GitHub Copilot, Cursor, and Gemini inside that universal payload. Gemini's current runtime listing is set-exact but order-neutral because the host does not expose declared skill order; generated provenance remains authoritative for order and independent hashes. Every payload still contains exactly one selected-library MCP server.
 
 ## Authored inputs
 
@@ -43,7 +45,7 @@ The root marketplace paths are required discovery locations for their respective
 
 ## Generated outputs
 
-The generator exclusively owns `.agents/plugins/`, `.claude-plugin/`, `.cursor-plugin/`, and `plugins/`. Generated manifests, skill copies, MCP configuration, and provenance must never be edited directly.
+The generator exclusively owns `.agents/plugins/`, `.claude-plugin/`, `.github/plugin/`, `.cursor-plugin/`, and `plugins/`. Generated manifests, skill copies, MCP configuration, and provenance must never be edited directly.
 
 `npm run sync` builds a complete staged tree, validates it, and atomically replaces only those roots. `npm run sync:check` compares a temporary generated tree with the committed output without modifying the repository.
 

@@ -8,6 +8,7 @@ import { inspectSkillTree } from './skill-tree.mjs';
 export const generatedRoots = [
   '.agents/plugins',
   '.claude-plugin',
+  '.github/plugin',
   '.cursor-plugin',
   'plugins'
 ];

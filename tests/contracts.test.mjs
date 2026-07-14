@@ -32,9 +32,9 @@ test('authored configuration is valid for development', () => {
   assert.deepEqual(validatePackageManifest(packageManifest), []);
 });
 
-test('all library plugins declare the exact supported host order including Cursor', () => {
+test('all library plugins declare the exact supported host order including Copilot and Cursor', () => {
   for (const plugin of pluginsConfig.plugins) {
-    assert.deepEqual(plugin.hosts, ['claude', 'codex', 'cursor', 'gemini']);
+    assert.deepEqual(plugin.hosts, ['claude', 'codex', 'copilot', 'cursor', 'gemini']);
   }
 });
 

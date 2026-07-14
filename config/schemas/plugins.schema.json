@@ -156,14 +156,17 @@
         },
         "hosts": {
           "items": false,
-          "maxItems": 4,
-          "minItems": 4,
+          "maxItems": 5,
+          "minItems": 5,
           "prefixItems": [
             {
               "const": "claude"
             },
             {
               "const": "codex"
+            },
+            {
+              "const": "copilot"
             },
             {
               "const": "cursor"

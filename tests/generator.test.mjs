@@ -199,7 +199,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
     repositoryRoot: fixture.distributionRoot
   });
   assert.equal(first.stale, true);
-  const expectedGeneratedFiles = 21 + fixture.pluginsConfig.plugins
+  const expectedGeneratedFiles = 25 + fixture.pluginsConfig.plugins
     .flatMap((plugin) => plugin.skills)
     .length * 2;
   assert.equal(first.added.length, expectedGeneratedFiles);
@@ -315,6 +315,22 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
   assert.equal(cursorManifest.skills, './skills/');
   assert.equal(cursorManifest.mcpServers, './.mcp.json');
 
+  const copilotMarketplace = JSON.parse(
+    await readFile(path.join(fixture.distributionRoot, '.github', 'plugin', 'marketplace.json'), 'utf8')
+  );
+  assert.deepEqual(
+    copilotMarketplace.plugins.map((plugin) => plugin.source),
+    ['./plugins/primevue', './plugins/primeng', './plugins/primereact']
+  );
+  const copilotManifest = JSON.parse(
+    await readFile(
+      path.join(fixture.distributionRoot, 'plugins', 'primevue', '.github', 'plugin', 'plugin.json'),
+      'utf8'
+    )
+  );
+  assert.equal(copilotManifest.skills, './skills/');
+  assert.equal(copilotManifest.mcpServers, './.mcp.json');
+
   await appendFile(sourceSkillPath, 'dirty\n');
   const beforeRejectedGeneration = await listSnapshotFiles(fixture.distributionRoot);
   await assert.rejects(
@@ -327,7 +343,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
   assertSnapshotsEqual(beforeRejectedGeneration, await listSnapshotFiles(fixture.distributionRoot));
 });
 
-test('synthetic seven-skill libraries generate exact ordered discovery for all four hosts', async (context) => {
+test('synthetic seven-skill libraries generate exact ordered discovery for all five hosts', async (context) => {
   const fixture = await createGeneratorFixture(context, { sevenSkills: true });
   const first = await syncDistribution({ check: false, repositoryRoot: fixture.distributionRoot });
   assert.equal(first.stale, true);

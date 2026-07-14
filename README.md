@@ -14,9 +14,9 @@ The `primeui` marketplace provides one independently installable plugin per libr
 
 | Plugin | MCP package | Supported clients |
 | --- | --- | --- |
-| `primevue` | `@primevue/mcp` | Claude Code, Codex, Cursor, Gemini CLI |
-| `primeng` | `@primeng/mcp` | Claude Code, Codex, Cursor, Gemini CLI |
-| `primereact` | `@primereact/mcp` | Claude Code, Codex, Cursor, Gemini CLI |
+| `primevue` | `@primevue/mcp` | Claude Code, Codex, GitHub Copilot, Cursor, Gemini CLI |
+| `primeng` | `@primeng/mcp` | Claude Code, Codex, GitHub Copilot, Cursor, Gemini CLI |
+| `primereact` | `@primereact/mcp` | Claude Code, Codex, GitHub Copilot, Cursor, Gemini CLI |
 
 Each plugin combines:
 
@@ -73,6 +73,22 @@ To remove the marketplace completely, remove its installed plugins first, then r
 
 For local development, pass the repository root to `codex plugin marketplace add`. Local marketplaces are live paths and do not support the Git-only `marketplace upgrade` command; remove and reinstall the selected plugin after changing generated payloads.
 
+## GitHub Copilot
+
+Install a library plugin through GitHub Copilot CLI. VS Code automatically discovers plugins installed by the Copilot CLI:
+
+```bash
+copilot plugin marketplace add primefaces/primeui-plugins
+copilot plugin install primevue@primeui
+```
+
+Use `primeng@primeui` or `primereact@primeui` for the other libraries. Update or remove the selected plugin with:
+
+```bash
+copilot plugin update primevue
+copilot plugin uninstall primevue
+```
+
 ## Cursor
 
 Cursor plugins bundle skills and MCP servers into one installation. After the PrimeUI plugins complete Cursor Marketplace review, find the selected PrimeVue, PrimeNG, or PrimeReact plugin in the Marketplace or open Cursor's supported `/add-plugin` flow. Cursor's public documentation does not define arguments for `/add-plugin`, so this repository does not publish a repository URL or path form for that command.
@@ -127,7 +143,7 @@ Authored inputs include:
 
 Generated outputs include marketplace catalogs, client manifests, copied physical skill trees, MCP launch configurations, Gemini extensions, and provenance records. Generated payloads are never edited manually.
 
-All four clients share one generated payload under `plugins/<library>`. See [Repository architecture](docs/ARCHITECTURE.md) for the complete authored and generated ownership model.
+All five clients share one generated payload under `plugins/<library>`. See [Repository architecture](docs/ARCHITECTURE.md) for the complete authored and generated ownership model.
 
 The [public prompt library and behavioral evaluations](evaluations/README.md) provide provider-neutral release-critical prompts and deterministic no-model routing, MCP-call, validation, mode-isolation, and payload-integrity acceptance for every library.
 
@@ -160,7 +176,7 @@ npm run sync
 npm run sync:check
 ```
 
-`lock:sources` records deterministic hashes for the canonical trees under `skills/`. `sync` refuses to change the source lock, builds and validates a staged payload, and replaces only the generator-owned roots. Claude, Codex, Cursor, and Gemini reuse the same generated skill and provenance in each `plugins/<library>` root. `sync:check` generates outside the repository, reports added, removed, and changed files, and does not modify committed output.
+`lock:sources` records deterministic hashes for the canonical trees under `skills/`. `sync` refuses to change the source lock, builds and validates a staged payload, and replaces only the generator-owned roots. Claude, Codex, GitHub Copilot, Cursor, and Gemini reuse the same generated skill and provenance in each `plugins/<library>` root. `sync:check` generates outside the repository, reports added, removed, and changed files, and does not modify committed output.
 
 Normal `npm run check` validates canonical skill trees, committed payload structure, hashes, provenance, MCP pins, security, links, and library isolation without requiring framework checkouts.
 
@@ -171,6 +187,8 @@ Distribution output follows the official client contracts:
 - [Claude Code plugin reference](https://code.claude.com/docs/en/plugins-reference)
 - [Claude Code marketplace reference](https://code.claude.com/docs/en/plugin-marketplaces)
 - [Codex plugin documentation](https://learn.chatgpt.com/docs/build-plugins)
+- [VS Code agent plugin documentation](https://code.visualstudio.com/docs/agent-customization/agent-plugins)
+- [GitHub Copilot CLI plugin documentation](https://docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/plugins-finding-installing)
 - [Cursor plugin documentation](https://cursor.com/docs/plugins)
 - [Cursor plugin reference](https://cursor.com/docs/reference/plugins)
 - [Cursor Marketplace Publisher Terms](https://cursor.com/marketplace-publisher-terms)

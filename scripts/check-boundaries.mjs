@@ -33,8 +33,12 @@ for (const relativePath of files) {
   if (relativePath.startsWith('.agents/') && !relativePath.startsWith('.agents/plugins/')) {
     errors.push(`${relativePath}: only .agents/plugins is generator-owned.`);
   }
-  if (relativePath.startsWith('.github/') && !relativePath.startsWith('.github/workflows/')) {
-    errors.push(`${relativePath}: only .github/workflows is allowed under .github.`);
+  if (
+    relativePath.startsWith('.github/') &&
+    !relativePath.startsWith('.github/plugin/') &&
+    !relativePath.startsWith('.github/workflows/')
+  ) {
+    errors.push(`${relativePath}: only .github/plugin and .github/workflows are allowed under .github.`);
   }
 }
 

@@ -22,6 +22,7 @@
       "hosts": [
         "claude",
         "codex",
+        "copilot",
         "cursor",
         "gemini"
       ],
@@ -114,6 +115,7 @@
       "hosts": [
         "claude",
         "codex",
+        "copilot",
         "cursor",
         "gemini"
       ],
@@ -206,6 +208,7 @@
       "hosts": [
         "claude",
         "codex",
+        "copilot",
         "cursor",
         "gemini"
       ],

@@ -66,6 +66,16 @@ test('committed generated payload has exact structure, provenance, pins, and iso
     assert.equal(cursorManifest.name, lock.name);
     assert.equal(cursorManifest.skills, './skills/');
     assert.equal(cursorManifest.mcpServers, './.mcp.json');
+
+    const copilotManifest = JSON.parse(
+      await readFile(
+        path.join(repositoryRoot, 'plugins', lock.name, '.github', 'plugin', 'plugin.json'),
+        'utf8'
+      )
+    );
+    assert.equal(copilotManifest.name, lock.name);
+    assert.equal(copilotManifest.skills, './skills/');
+    assert.equal(copilotManifest.mcpServers, './.mcp.json');
   }
 });
 

@@ -4,7 +4,7 @@ Both configuration files are authored inputs. Unknown properties are rejected so
 
 ## `plugins.json`
 
-Defines the `primeui` marketplace, its public description, publisher identity, default Codex availability policy, and the exact three logical plugin entries. Each entry records its display metadata, authored install-surface copy, supported hosts (Claude Code, Codex, Cursor, and Gemini CLI), ordered canonical skill set, MCP package/binary/server identity, universal plugin output root, and variant capabilities.
+Defines the `primeui` marketplace, its public description, publisher identity, default Codex availability policy, and the exact three logical plugin entries. Each entry records its display metadata, authored install-surface copy, supported hosts (Claude Code, Codex, GitHub Copilot, Cursor, and Gemini CLI), ordered canonical skill set, MCP package/binary/server identity, universal plugin output root, and variant capabilities.
 
 Every skill entry explicitly owns an immutable identity, frontmatter name, generated directory, canonical repository-local source path, zero-based order, and selected-library owner. Sets must be non-empty. Paths, identities, directories, ownership, order, and host-normalized names are validated before filesystem access. A source must remain below `skills/<selected-library>` and cannot be shared by another skill or library.
 

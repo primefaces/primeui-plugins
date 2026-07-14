@@ -8,6 +8,7 @@
     "documents": [
       ".claude-plugin/plugin.json",
       ".codex-plugin/plugin.json",
+      ".github/plugin/plugin.json",
       ".cursor-plugin/plugin.json",
       ".mcp.json",
       "gemini-extension.json",

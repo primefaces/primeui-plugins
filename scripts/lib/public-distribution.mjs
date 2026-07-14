@@ -6,6 +6,7 @@ export const publicDistributionEntries = Object.freeze([
   Object.freeze({ source: 'public/README.md', destination: 'README.md' }),
   Object.freeze({ source: '.agents/plugins', destination: '.agents/plugins' }),
   Object.freeze({ source: '.claude-plugin', destination: '.claude-plugin' }),
+  Object.freeze({ source: '.github/plugin', destination: '.github/plugin' }),
   Object.freeze({ source: '.cursor-plugin', destination: '.cursor-plugin' }),
   Object.freeze({
     source: '.github/workflows/promote-main.yml',

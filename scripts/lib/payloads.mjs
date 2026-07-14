@@ -24,6 +24,7 @@ export function provenanceDocument(plugin, lock) {
       documents: [
         '.claude-plugin/plugin.json',
         '.codex-plugin/plugin.json',
+        '.github/plugin/plugin.json',
         '.cursor-plugin/plugin.json',
         '.mcp.json',
         'gemini-extension.json',
@@ -105,6 +106,25 @@ export function buildPayloadDocuments(pluginsConfig, lockConfig) {
     }))
   });
 
+  documents.set('.github/plugin/marketplace.json', {
+    description: pluginsConfig.marketplace.description,
+    name: pluginsConfig.marketplace.name,
+    owner: {
+      name: publisher.name,
+      url: publisher.url
+    },
+    plugins: pluginsConfig.plugins.map((plugin) => {
+      const lock = locks.get(plugin.name);
+      return {
+        category: plugin.category,
+        description: plugin.description,
+        name: plugin.name,
+        source: `./plugins/${plugin.name}`,
+        version: lock.pluginVersion
+      };
+    })
+  });
+
   documents.set('.cursor-plugin/marketplace.json', {
     metadata: {
       description: pluginsConfig.marketplace.description
@@ -153,6 +173,19 @@ export function buildPayloadDocuments(pluginsConfig, lockConfig) {
         shortDescription: plugin.installSurface.shortDescription,
         websiteURL: publisher.url
       },
+      mcpServers: './.mcp.json',
+      name: plugin.name,
+      repository: pluginsConfig.marketplace.repository,
+      skills: './skills/',
+      version: lock.pluginVersion
+    });
+
+    documents.set(`${pluginRoot}/.github/plugin/plugin.json`, {
+      author: {
+        name: publisher.name,
+        url: publisher.url
+      },
+      description: plugin.description,
       mcpServers: './.mcp.json',
       name: plugin.name,
       repository: pluginsConfig.marketplace.repository,

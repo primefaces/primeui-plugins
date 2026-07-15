@@ -6,6 +6,7 @@ import { smokeInstalledMcp } from './mcp-smoke.mjs';
 import { runCommand } from './process.mjs';
 import {
   assertPhysicalSkillInventory,
+  configuredMcpContract,
   configuredSkillContracts,
   libraryNames,
   usageContracts
@@ -202,8 +203,8 @@ export async function assertInstalledPayload({ configRoot, contract, installPath
   assert(mcp.mcpServers[library].command === 'npx', `${library}: installed MCP command must be npx.`);
   assert(
     JSON.stringify(mcp.mcpServers[library].args) ===
-      JSON.stringify(['-y', `${contract.mcpPackage}@${contract.mcpVersion}`]),
-    `${library}: installed MCP package pin does not match.`
+      JSON.stringify(['-y', contract.mcpPackageSpec]),
+    `${library}: installed MCP package range does not match.`
   );
 
   for (const foreignLibrary of libraryNames.filter((name) => name !== library)) {
@@ -276,8 +277,7 @@ export async function runClaudeInstallScenario({
   const pluginConfig = pluginsConfig.plugins.find((candidate) => candidate.name === library);
   const contract = {
     ...usageContracts[library],
-    mcpPackage: lock?.mcp.package,
-    mcpVersion: lock?.mcp.version,
+    ...configuredMcpContract(pluginConfig),
     pluginVersion: lock?.pluginVersion,
     serverName: pluginConfig?.mcp.serverName,
     skills: configuredSkillContracts(pluginConfig, lock)

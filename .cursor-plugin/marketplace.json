@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "description": "PrimeUI workflow plugins for PrimeVue, PrimeNG, and PrimeReact with exact-version MCP tooling."
+    "description": "PrimeUI workflow plugins for PrimeVue, PrimeNG, and PrimeReact with compatible major-line MCP tooling."
   },
   "name": "primeui",
   "owner": {

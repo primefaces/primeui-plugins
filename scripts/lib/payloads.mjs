@@ -1,12 +1,14 @@
+import { mcpPackageSpec } from './contracts.mjs';
+
 function lockByName(lockConfig) {
   return new Map(lockConfig.sources.map((lock) => [lock.name, lock]));
 }
 
-export function mcpConfiguration(plugin, lock) {
+export function mcpConfiguration(plugin) {
   return {
     mcpServers: {
       [plugin.mcp.serverName]: {
-        args: ['-y', `${lock.mcp.package}@${lock.mcp.version}`],
+        args: ['-y', mcpPackageSpec(plugin.mcp)],
         command: 'npx'
       }
     }
@@ -16,8 +18,8 @@ export function mcpConfiguration(plugin, lock) {
 export function provenanceDocument(plugin, lock) {
   const provenance = {
     mcp: {
-      package: lock.mcp.package,
-      version: lock.mcp.version
+      package: plugin.mcp.package,
+      versionRange: plugin.mcp.versionRange
     },
     name: plugin.name,
     payload: {
@@ -33,7 +35,7 @@ export function provenanceDocument(plugin, lock) {
       skillRoots: lock.skills.map((skill) => `skills/${skill.directory}`)
     },
     pluginVersion: lock.pluginVersion,
-    schemaVersion: 2,
+    schemaVersion: 3,
     skills: lock.skills.map((skill) => ({
       directory: skill.directory,
       id: skill.id,
@@ -57,7 +59,7 @@ export function provenanceDocument(plugin, lock) {
 export function geminiExtensionDocument(plugin, lock) {
   return {
     description: plugin.description,
-    mcpServers: mcpConfiguration(plugin, lock).mcpServers,
+    mcpServers: mcpConfiguration(plugin).mcpServers,
     name: plugin.name,
     version: lock.pluginVersion
   };
@@ -143,7 +145,7 @@ export function buildPayloadDocuments(pluginsConfig, lockConfig) {
   for (const plugin of pluginsConfig.plugins) {
     const lock = locks.get(plugin.name);
     const pluginRoot = plugin.outputs.plugin;
-    const mcp = mcpConfiguration(plugin, lock);
+    const mcp = mcpConfiguration(plugin);
     const provenance = provenanceDocument(plugin, lock);
 
     documents.set(`${pluginRoot}/.claude-plugin/plugin.json`, {

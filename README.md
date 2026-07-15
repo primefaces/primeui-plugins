@@ -21,7 +21,7 @@ The `primeui` marketplace provides one independently installable plugin per libr
 Each plugin combines:
 
 - A library-specific ordered skill set for progressive workflow disclosure.
-- An exact-version MCP configuration for current component documentation, API metadata, examples, guides, and usage validation.
+- A bounded compatible major-line MCP range for current component documentation, API metadata, examples, guides, and usage validation.
 - Client-specific manifests generated from the same locked source inputs.
 
 PrimeVue, PrimeNG, and PrimeReact each ship an ordered seven-skill focused set: a library router, component implementation, setup and installation, theming and customization, accessibility and icons, migration, and audit and troubleshooting. Each router selects one smallest workflow; current component/API/example truth remains in the matching MCP package. PrimeNG setup guidance is limited to the current routed standalone `ApplicationConfig`/`app.config.ts`/`providePrimeNG` path; undocumented NgModule setup is explicitly unsupported. PrimeReact selects a source-backed mode before retrieval and keeps styled, Tailwind, primitive, headless, and advertised standalone-hook evidence isolated.
@@ -41,7 +41,7 @@ Use `primeng@primeui` or `primereact@primeui` instead for the other libraries. C
 claude plugin list --json
 ```
 
-Each plugin installs its own library skill set and exact-version MCP server. Updates remain library-specific:
+Each plugin installs its own library skill set and compatible major-line MCP server. Updates remain library-specific:
 
 ```bash
 claude plugin marketplace update primeui
@@ -59,7 +59,7 @@ codex plugin add primevue@primeui
 codex plugin list
 ```
 
-Use `primeng@primeui` or `primereact@primeui` instead for the other libraries. Codex installs the selected plugin into its versioned plugin cache with one ordered library skill set and one exact-version MCP server. Use the interactive `/plugins` browser or the ChatGPT desktop Plugins screen to enable or disable a plugin. The CLI's generic `--enable` and `--disable` options control Codex feature flags, not plugin state.
+Use `primeng@primeui` or `primereact@primeui` instead for the other libraries. Codex installs the selected plugin into its versioned plugin cache with one ordered library skill set and one compatible major-line MCP server. Use the interactive `/plugins` browser or the ChatGPT desktop Plugins screen to enable or disable a plugin. The CLI's generic `--enable` and `--disable` options control Codex feature flags, not plugin state.
 
 Refresh a Git-backed marketplace, remove the installed plugin, and reinstall it to pick up a new plugin version:
 
@@ -113,7 +113,7 @@ gemini extensions install <persistent-checkout>/plugins/primevue --consent
 gemini extensions list --output-format json
 ```
 
-Use `primeng` or `primereact` in the path for the other libraries. Gemini CLI 0.29.3 requires extension management to be enabled with `experimental.extensionManagement` in its settings. The extension uses native discovery for every declared `skills/<skill-name>/SKILL.md` and embeds the exact matching MCP server; it does not generate `GEMINI.md`.
+Use `primeng` or `primereact` in the path for the other libraries. Gemini CLI 0.29.3 requires extension management to be enabled with `experimental.extensionManagement` in its settings. The extension uses native discovery for every declared `skills/<skill-name>/SKILL.md` and embeds the same compatible MCP range as the other hosts; it does not generate `GEMINI.md`.
 
 The installed extension retains its local source path. After refreshing that persistent checkout, update a versioned payload with:
 
@@ -136,9 +136,9 @@ This repository owns the canonical skills and the generated client payloads. Fra
 
 Authored inputs include:
 
-- `config/plugins.json`: marketplace identity, plugin metadata, MCP identities, client support, output declarations, and ordered skill identity/ownership/source contracts.
+- `config/plugins.json`: marketplace identity, plugin metadata, MCP package identities and compatible version ranges, client support, output declarations, and ordered skill identity/ownership/source contracts.
 - Declared paths below `skills/<library>/`: canonical PrimeVue, PrimeNG, and PrimeReact workflow skills.
-- `config/sources.lock.json`: ordered per-skill tree hashes, plugin versions, and exact MCP versions.
+- `config/sources.lock.json`: ordered per-skill tree hashes, plugin versions, and lock state; it does not select MCP releases.
 - JSON Schemas, validation tooling, tests, and release rules.
 
 Generated outputs include marketplace catalogs, client manifests, copied physical skill trees, MCP launch configurations, Gemini extensions, and provenance records. Generated payloads are never edited manually.
@@ -166,7 +166,7 @@ npm run check
 npm run check:clean
 ```
 
-`npm run validate:release` requires every source lock to contain a complete canonical skill hash and exact release versions. See [Testing](docs/TESTING.md) for client-matrix behavior, isolation guarantees, CI, and Gemini distribution export.
+`npm run validate:release` requires every source lock to contain complete canonical skill hashes and exact plugin versions, while MCP compatibility remains authored in `config/plugins.json`. See [Testing](docs/TESTING.md) for client-matrix behavior, isolation guarantees, CI, and Gemini distribution export.
 
 ## Source locking and generation
 
@@ -178,7 +178,7 @@ npm run sync:check
 
 `lock:sources` records deterministic hashes for the canonical trees under `skills/`. `sync` refuses to change the source lock, builds and validates a staged payload, and replaces only the generator-owned roots. Claude, Codex, GitHub Copilot, Cursor, and Gemini reuse the same generated skill and provenance in each `plugins/<library>` root. `sync:check` generates outside the repository, reports added, removed, and changed files, and does not modify committed output.
 
-Normal `npm run check` validates canonical skill trees, committed payload structure, hashes, provenance, MCP pins, security, links, and library isolation without requiring framework checkouts.
+Normal `npm run check` validates canonical skill trees, committed payload structure, hashes, provenance, MCP ranges, product-version literal policy, security, links, and library isolation without requiring framework checkouts.
 
 ## Client contracts
 

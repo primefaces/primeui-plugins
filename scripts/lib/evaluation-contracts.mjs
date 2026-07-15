@@ -1,6 +1,6 @@
 import { readFile } from 'node:fs/promises';
 import path from 'node:path';
-import { libraryContracts, libraryOrder } from './contracts.mjs';
+import { libraryContracts, libraryOrder, mcpPackageSpec } from './contracts.mjs';
 import { repositoryRoot } from './repository.mjs';
 import { inspectSkillTree } from './skill-tree.mjs';
 
@@ -198,7 +198,7 @@ export async function validateEvaluationRepository(root = repositoryRoot, overri
     if (!exactKeys(fixture, requiredTop, [], `${library} fixture`, errors)) continue;
     if (fixture.$schema !== './schema.json' || fixture.schemaVersion !== 1 || fixture.library !== library) errors.push(`${library}: invalid schema reference, schemaVersion, or library identity.`);
     if (!exactKeys(fixture.mcp, ['package', 'server', 'tools'], [], `${library}.mcp`, errors)) continue;
-    if (fixture.mcp.package !== libraryContracts[library].mcpPackage || fixture.mcp.server !== libraryContracts[library].serverName || JSON.stringify(fixture.mcp.tools) !== JSON.stringify(mcpTools)) errors.push(`${library}: fixture MCP identity/tool inventory is stale.`);
+    if (fixture.mcp.package !== plugin.mcp.package || fixture.mcp.server !== libraryContracts[library].serverName || JSON.stringify(fixture.mcp.tools) !== JSON.stringify(mcpTools)) errors.push(`${library}: fixture MCP identity/tool inventory is stale.`);
     if (!Array.isArray(fixture.scenarios) || fixture.scenarios.length < 10) errors.push(`${library}: at least 10 scenarios are required.`);
 
     const skillIds = plugin.skills.map((skill) => skill.id);
@@ -219,10 +219,10 @@ export async function validateEvaluationRepository(root = repositoryRoot, overri
     }
     for (const tag of libraryCoverage[library]) if (!covered.has(tag)) errors.push(`${library}: missing release-critical coverage ${tag}.`);
 
-    if (JSON.stringify(provenance.skills.map(({ id }) => id)) !== JSON.stringify(skillIds) || provenance.name !== library || provenance.schemaVersion !== 2) errors.push(`${library}: generated provenance skill inventory is stale or foreign.`);
-    if (provenance.mcp.package !== locked.mcp.package || provenance.mcp.version !== locked.mcp.version) errors.push(`${library}: generated provenance MCP pin is stale.`);
+    if (JSON.stringify(provenance.skills.map(({ id }) => id)) !== JSON.stringify(skillIds) || provenance.name !== library || provenance.schemaVersion !== 3) errors.push(`${library}: generated provenance skill inventory is stale or foreign.`);
+    if (provenance.mcp.package !== plugin.mcp.package || provenance.mcp.versionRange !== plugin.mcp.versionRange) errors.push(`${library}: generated provenance MCP range is stale.`);
     const servers = Object.entries(mcpManifest.mcpServers ?? {});
-    if (servers.length !== 1 || servers[0][0] !== library || servers[0][1].command !== 'npx' || JSON.stringify(servers[0][1].args) !== JSON.stringify(['-y', `${locked.mcp.package}@${locked.mcp.version}`])) errors.push(`${library}: generated payload must expose one exact selected-library MCP server.`);
+    if (servers.length !== 1 || servers[0][0] !== library || servers[0][1].command !== 'npx' || JSON.stringify(servers[0][1].args) !== JSON.stringify(['-y', mcpPackageSpec(plugin.mcp)])) errors.push(`${library}: generated payload must expose one compatible selected-library MCP server.`);
 
     for (const [index, skill] of plugin.skills.entries()) {
       const lockedSkill = locked.skills[index];

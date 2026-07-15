@@ -7,6 +7,7 @@ import { smokeInstalledMcp } from './mcp-smoke.mjs';
 import { hasProcessTreeInspection, runCommand } from './process.mjs';
 import {
   assertPhysicalSkillInventory,
+  configuredMcpContract,
   configuredSkillContracts,
   libraryNames,
   usageContracts
@@ -311,8 +312,8 @@ async function assertOneExtension(scenario, contract, library, expectedActive) {
   assert(
     extension.mcpServers[library].command === 'npx' &&
       JSON.stringify(extension.mcpServers[library].args) ===
-        JSON.stringify(['-y', `${contract.mcpPackage}@${contract.mcpVersion}`]),
-    `${library}: Gemini must discover the exact installed extension MCP pin.`
+        JSON.stringify(['-y', contract.mcpPackageSpec]),
+    `${library}: Gemini must discover the installed extension MCP range.`
   );
   return extension;
 }
@@ -328,7 +329,7 @@ async function assertMcpDiscovery(scenario, contract, library, expectedPresent) 
   if (expectedPresent) {
     assert(
       output.includes(`${library} (from ${library})`) &&
-        output.includes(`npx -y ${contract.mcpPackage}@${contract.mcpVersion}`) &&
+        output.includes(`npx -y ${contract.mcpPackageSpec}`) &&
         /Connected/.test(output),
       `${library}: Gemini MCP discovery did not connect the exact installed server:\n${output}`
     );
@@ -391,8 +392,8 @@ export async function assertInstalledGeminiPayload({
   assert(provenance.name === library, `${library}: installed Gemini provenance name does not match.`);
   assert(
     provenance.mcp?.package === contract.mcpPackage &&
-      provenance.mcp?.version === contract.mcpVersion,
-    `${library}: installed Gemini provenance MCP pin does not match.`
+      provenance.mcp?.versionRange === contract.mcpVersionRange,
+    `${library}: installed Gemini provenance MCP range does not match.`
   );
   await assertPhysicalSkillInventory(skillsRoot, contract.skills, `${library}: installed Gemini payload`);
   assert(
@@ -407,8 +408,8 @@ export async function assertInstalledGeminiPayload({
   assert(manifest.mcpServers[library].command === 'npx', `${library}: Gemini MCP command must be npx.`);
   assert(
     JSON.stringify(manifest.mcpServers[library].args) ===
-      JSON.stringify(['-y', `${contract.mcpPackage}@${contract.mcpVersion}`]),
-    `${library}: installed Gemini MCP package pin does not match.`
+      JSON.stringify(['-y', contract.mcpPackageSpec]),
+    `${library}: installed Gemini MCP package range does not match.`
   );
 
   for (const foreignLibrary of libraryNames.filter((name) => name !== library)) {
@@ -526,8 +527,7 @@ export async function runGeminiInstallScenario({
   assert(lock !== undefined && plugin !== undefined, `${library}: release contract is missing.`);
   const contract = {
     ...usageContracts[library],
-    mcpPackage: lock.mcp.package,
-    mcpVersion: lock.mcp.version,
+    ...configuredMcpContract(plugin),
     pluginVersion: lock.pluginVersion,
     serverName: plugin.mcp.serverName,
     skills: configuredSkillContracts(plugin, lock),

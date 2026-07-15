@@ -9,6 +9,7 @@ const checks = [
   ['formatting', ['scripts/check-format.mjs']],
   ['repository boundaries', ['scripts/check-boundaries.mjs']],
   ['skill commands', ['scripts/check-skill-commands.mjs']],
+  ['MCP product-version literals', ['scripts/check-version-literals.mjs']],
   ['security', ['scripts/check-security.mjs']]
 ];
 

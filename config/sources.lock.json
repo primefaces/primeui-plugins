@@ -1,13 +1,9 @@
 {
   "$schema": "./schemas/sources-lock.schema.json",
-  "schemaVersion": 3,
+  "schemaVersion": 4,
   "sources": [
     {
       "lockState": "locked",
-      "mcp": {
-        "package": "@primevue/mcp",
-        "version": "5.0.0-rc.2"
-      },
       "name": "primevue",
       "pluginVersion": "0.1.0-alpha.0",
       "skills": [
@@ -99,10 +95,6 @@
     },
     {
       "lockState": "locked",
-      "mcp": {
-        "package": "@primeng/mcp",
-        "version": "22.0.0-rc.2"
-      },
       "name": "primeng",
       "pluginVersion": "0.1.0-alpha.0",
       "skills": [
@@ -194,10 +186,6 @@
     },
     {
       "lockState": "locked",
-      "mcp": {
-        "package": "@primereact/mcp",
-        "version": "11.0.0-rc.2"
-      },
       "name": "primereact",
       "pluginVersion": "0.1.0-alpha.0",
       "skills": [

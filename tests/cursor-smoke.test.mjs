@@ -11,6 +11,7 @@ import {
   validateCursorPluginManifest
 } from '../scripts/lib/cursor-smoke.mjs';
 import { inspectSkillTree } from '../scripts/lib/skill-tree.mjs';
+import { configuredPluginFixture, installedPayloadContract } from './helpers/plugin-contract-fixtures.mjs';
 
 test('Cursor smoke arguments use direct-payload and marketplace selectors', () => {
   assert.deepEqual(parseCursorSmokeArguments([]), {
@@ -97,7 +98,7 @@ test('Cursor manifest validation follows the closed current official schema subs
   );
 });
 
-test('Cursor payload inspection enforces exact manifest pointers, skill hash, MCP pin, and isolation', async (context) => {
+test('Cursor payload inspection enforces exact manifest pointers, skill hash, MCP range, and isolation', async (context) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'primeui-cursor-payload-test-'));
   context.after(() => rm(root, { force: true, recursive: true }));
   await mkdir(path.join(root, '.cursor-plugin'), { recursive: true });
@@ -118,11 +119,7 @@ test('Cursor payload inspection enforces exact manifest pointers, skill hash, MC
   );
   await writeFile(
     path.join(root, '.mcp.json'),
-    JSON.stringify({
-      mcpServers: {
-        primevue: { args: ['-y', '@primevue/mcp@5.0.0-rc.2'], command: 'npx' }
-      }
-    })
+    JSON.stringify(configuredPluginFixture().mcpDocument)
   );
   await writeFile(
     path.join(root, 'skills', 'primevue', 'SKILL.md'),
@@ -133,10 +130,11 @@ test('Cursor payload inspection enforces exact manifest pointers, skill hash, MC
     directory: 'primevue', id: 'primevue', name: 'primevue', order: 0, owner: 'primevue',
     source: { path: 'skills/primevue', repository: 'https://github.com/primefaces/primeui-plugins', treeHash: skillHash }
   }];
+  const configured = configuredPluginFixture();
   await writeFile(
     path.join(root, 'provenance.json'),
     JSON.stringify({
-      mcp: { package: '@primevue/mcp', version: '5.0.0-rc.2' },
+      mcp: configured.provenanceMcp,
       name: 'primevue',
       pluginVersion: '0.1.0-alpha.0',
       skills: lockedSkills
@@ -146,13 +144,12 @@ test('Cursor payload inspection enforces exact manifest pointers, skill hash, MC
   const contract = {
     description: 'PrimeVue workflow guidance.',
     displayName: 'PrimeVue',
-    mcpPackage: '@primevue/mcp',
-    mcpVersion: '5.0.0-rc.2',
-    pluginVersion: '0.1.0-alpha.0',
+    ...installedPayloadContract({
+      lockedSkills,
+      skills: [{ directory: 'primevue', id: 'primevue', name: 'primevue', order: 0, owner: 'primevue', treeHash: skillHash }]
+    }),
     publisherName: 'PrimeFaces',
     repository: 'https://github.com/primefaces/primeui-plugins',
-    skills: [{ directory: 'primevue', id: 'primevue', name: 'primevue', order: 0, owner: 'primevue', treeHash: skillHash }],
-    lockedSkills
   };
   await assert.doesNotReject(
     assertCursorPayload({ contract, installPath: root, library: 'primevue' })

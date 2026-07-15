@@ -1,3 +1,8 @@
+import { readFile, readdir } from 'node:fs/promises';
+import path from 'node:path';
+import { mcpPackageSpec } from './contracts.mjs';
+import { inspectSkillTree } from './skill-tree.mjs';
+
 export const expectedMcpTools = [
   'get_component',
   'get_example',
@@ -10,6 +15,14 @@ export const expectedMcpTools = [
 ];
 
 export const libraryNames = ['primevue', 'primeng', 'primereact'];
+
+export function configuredMcpContract(plugin) {
+  return {
+    mcpPackage: plugin.mcp.package,
+    mcpPackageSpec: mcpPackageSpec(plugin.mcp),
+    mcpVersionRange: plugin.mcp.versionRange
+  };
+}
 
 export function configuredSkillContracts(plugin, lock) {
   const lockedSkills = new Map(lock.skills.map((skill) => [skill.id, skill]));
@@ -73,6 +86,3 @@ export const usageContracts = {
     invalidCode: '<Button label="Save" madeUp />'
   }
 };
-import { readFile, readdir } from 'node:fs/promises';
-import path from 'node:path';
-import { inspectSkillTree } from './skill-tree.mjs';

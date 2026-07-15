@@ -8,7 +8,8 @@ Every library must have one complete lock containing:
 - a non-empty ordered skill inventory with explicit identity, frontmatter name, generated directory, canonical relative source path, zero-based order, and selected-library ownership
 - one deterministic `sha256:<64 lowercase hex>` tree hash per canonical skill, produced by the repository generator
 - an independent exact plugin SemVer
-- the exact published MCP package and SemVer
+
+MCP release selection is not stored in the source lock. Package identity and the compatible major-line range are authored only in `config/plugins.json`.
 
 Known values may be retained while a lock is `unresolved`, but at least one tree hash must remain `null` and `unresolvedReason` must explain why. A complete lock still marked unresolved is invalid. Release validation rejects every unresolved lock and names its missing field.
 
@@ -32,24 +33,24 @@ The repository generator must produce rather than hand-author:
 
 - Claude, Codex, and Cursor marketplace catalogs
 - library-local Claude, Codex, and Cursor manifests
-- exact-version MCP launch configurations
+- bounded compatible major-line MCP launch configurations authored by `config/plugins.json`
 - copied ordered physical skill sets
 - provenance records
 - Gemini extension payloads
 
-Identical configuration and canonical skill inputs must produce byte-identical JSON and files. Generation must reject symlinks, stale output, path escape, unpinned MCP versions, secrets, and incomplete locks.
+Identical configuration and canonical skill inputs must produce byte-identical JSON and files. Generation must reject symlinks, stale output, path escape, malformed or unbounded MCP ranges, secrets, and incomplete locks.
 
 Each provenance record lists all generated documents plus every ordered skill root. The tree hash for each skill root closes over its exact file inventory and bytes; generated validation rejects any emitted file outside those documents and hashed roots.
 
 The generator owns only `.claude-plugin/`, `.agents/plugins/`, `.cursor-plugin/`, and `plugins/`. It validates a complete same-filesystem staging tree before swapping those roots with rollback protection. Freshness checking uses temporary output outside the repository and never replaces committed files.
 
-Claude, Codex, GitHub Copilot, Cursor, and Gemini reuse each existing `plugins/<library>` root. Their manifests point to the same physical `skills/` set, while Claude, Codex, GitHub Copilot, and Cursor share `.mcp.json` and Gemini embeds the same exact MCP server configuration in `gemini-extension.json`. No host-specific canonical skill copy is permitted. Replacement owns the complete generated root, so migration from the old single-skill layout removes its generated copy atomically and never retains fallback duplicates.
+Claude, Codex, GitHub Copilot, Cursor, and Gemini reuse each existing `plugins/<library>` root. Their manifests point to the same physical `skills/` set, while Claude, Codex, GitHub Copilot, and Cursor share `.mcp.json` and Gemini embeds the same bounded MCP range in `gemini-extension.json`. No host-specific range or canonical skill copy is permitted. Replacement owns the complete generated root, so migration from the old single-skill layout removes its generated copy atomically and never retains fallback duplicates.
 
 `npm run export:gemini -- --out <path>` creates minimal extension roots for future dedicated Gemini distribution repositories. The export destination must be outside this repository and must not already exist. Exported repositories are release artifacts; canonical skills remain authored only here.
 
 ## Release sequence
 
-1. Verify that every exact MCP package version is published and starts cleanly.
+1. Verify that each authored MCP range resolves to the intended exact release and record that resolved release as immutable evidence.
 2. Review the canonical skill changes in this repository.
 3. Complete `config/sources.lock.json` with deterministic skill hashes.
 4. Require `npm run validate:release` to pass.

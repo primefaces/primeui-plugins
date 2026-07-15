@@ -52,5 +52,5 @@ test('evaluator rejects a wrong selected-library MCP server', async () => {
     primereact: await readJson('plugins/primereact/.mcp.json')
   };
   mcpManifests.primevue.mcpServers = { primeng: mcpManifests.primevue.mcpServers.primevue };
-  assert.match((await validateEvaluationRepository(repositoryRoot, { mcpManifests })).join('\n'), /one exact selected-library MCP server/);
+  assert.match((await validateEvaluationRepository(repositoryRoot, { mcpManifests })).join('\n'), /one compatible selected-library MCP server/);
 });

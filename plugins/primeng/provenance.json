@@ -1,7 +1,7 @@
 {
   "mcp": {
     "package": "@primeng/mcp",
-    "version": "22.0.0-rc.2"
+    "versionRange": ">=22.0.0-rc.3 <23.0.0"
   },
   "name": "primeng",
   "payload": {
@@ -25,7 +25,7 @@
     ]
   },
   "pluginVersion": "0.1.0-alpha.0",
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "skills": [
     {
       "directory": "primeng-router",

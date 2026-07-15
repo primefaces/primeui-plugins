@@ -28,7 +28,7 @@ async function main() {
         source
       });
       console.log(
-        `${source}/${library}: schema, path, selected-only skill/MCP isolation, exact pin, temporary staging/refresh/remove/reinstall cleanup, and MCP smoke passed (${result.toolNames.join(', ')}).`
+        `${source}/${library}: schema, path, selected-only skill/MCP isolation, compatible range, temporary staging/refresh/remove/reinstall cleanup, and MCP smoke passed (${result.toolNames.join(', ')}).`
       );
       if (result.temporaryRoot) {
         console.log(`Scenario temp root: ${result.temporaryRoot}`);

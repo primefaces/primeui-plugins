@@ -3,6 +3,7 @@ import { appendFile, cp, mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
+import { mcpPackageSpec } from '../scripts/lib/contracts.mjs';
 import {
   generatedRoots,
   validateGeneratedPayload
@@ -29,16 +30,17 @@ async function copyGeneratedPayload(context) {
   return root;
 }
 
-test('committed generated payload has exact structure, provenance, pins, and isolation', async () => {
+test('committed generated payload has exact structure, provenance, ranges, and isolation', async () => {
   assert.deepEqual(await validateGeneratedPayload(repositoryRoot, pluginsConfig, lockConfig), []);
 
   for (const lock of lockConfig.sources) {
+    const plugin = pluginsConfig.plugins.find((candidate) => candidate.name === lock.name);
     const mcp = JSON.parse(
       await readFile(path.join(repositoryRoot, 'plugins', lock.name, '.mcp.json'), 'utf8')
     );
     assert.deepEqual(Object.keys(mcp.mcpServers), [lock.name]);
     assert.deepEqual(mcp.mcpServers[lock.name], {
-      args: ['-y', `${lock.mcp.package}@${lock.mcp.version}`],
+      args: ['-y', mcpPackageSpec(plugin.mcp)],
       command: 'npx'
     });
 
@@ -54,8 +56,11 @@ test('committed generated payload has exact structure, provenance, pins, and iso
       provenance.skills.every((skill) => skill.source.repository === 'https://github.com/primefaces/primeui-plugins'),
       true
     );
-    assert.equal(provenance.mcp.package, lock.mcp.package);
-    assert.equal(provenance.mcp.version, lock.mcp.version);
+    assert.equal(provenance.schemaVersion, 3);
+    assert.deepEqual(provenance.mcp, {
+      package: plugin.mcp.package,
+      versionRange: plugin.mcp.versionRange
+    });
 
     const cursorManifest = JSON.parse(
       await readFile(

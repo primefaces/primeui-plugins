@@ -19,6 +19,7 @@ import { smokeInstalledMcp } from './mcp-smoke.mjs';
 import { hasProcessTreeInspection } from './process.mjs';
 import {
   assertPhysicalSkillInventory,
+  configuredMcpContract,
   configuredSkillContracts,
   libraryNames,
   usageContracts
@@ -325,8 +326,8 @@ export async function assertCursorPayload({ contract, installPath, library }) {
   assert(mcp.mcpServers[library].command === 'npx', `${library}: Cursor MCP command must be npx.`);
   assert(
     JSON.stringify(mcp.mcpServers[library].args) ===
-      JSON.stringify(['-y', `${contract.mcpPackage}@${contract.mcpVersion}`]),
-    `${library}: Cursor MCP package pin does not match.`
+      JSON.stringify(['-y', contract.mcpPackageSpec]),
+    `${library}: Cursor MCP package range does not match.`
   );
 
   const provenance = await readJson(
@@ -337,8 +338,8 @@ export async function assertCursorPayload({ contract, installPath, library }) {
   assert(provenance.pluginVersion === contract.pluginVersion, `${library}: Cursor provenance version does not match.`);
   assert(
     provenance.mcp?.package === contract.mcpPackage &&
-      provenance.mcp?.version === contract.mcpVersion,
-    `${library}: Cursor provenance MCP pin does not match.`
+      provenance.mcp?.versionRange === contract.mcpVersionRange,
+    `${library}: Cursor provenance MCP range does not match.`
   );
   assert(
     JSON.stringify(provenance.skills) === JSON.stringify(contract.lockedSkills),
@@ -465,8 +466,7 @@ export async function runCursorPayloadScenario({
     ...usageContracts[library],
     description: plugin.description,
     displayName: plugin.displayName,
-    mcpPackage: lock.mcp.package,
-    mcpVersion: lock.mcp.version,
+    ...configuredMcpContract(plugin),
     pluginVersion: lock.pluginVersion,
     publisherName: pluginsConfig.marketplace.publisher.name,
     repository: pluginsConfig.marketplace.repository,

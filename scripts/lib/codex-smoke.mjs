@@ -6,6 +6,7 @@ import { smokeInstalledMcp } from './mcp-smoke.mjs';
 import { runCommand } from './process.mjs';
 import {
   assertPhysicalSkillInventory,
+  configuredMcpContract,
   configuredSkillContracts,
   libraryNames,
   usageContracts
@@ -257,8 +258,8 @@ export async function assertInstalledCodexPayload({ codexHome, contract, install
   assert(mcp.mcpServers[library].command === 'npx', `${library}: installed MCP command must be npx.`);
   assert(
     JSON.stringify(mcp.mcpServers[library].args) ===
-      JSON.stringify(['-y', `${contract.mcpPackage}@${contract.mcpVersion}`]),
-    `${library}: installed MCP package pin does not match.`
+      JSON.stringify(['-y', contract.mcpPackageSpec]),
+    `${library}: installed MCP package range does not match.`
   );
 
   for (const foreignLibrary of libraryNames.filter((name) => name !== library)) {
@@ -374,8 +375,8 @@ async function assertDiscoveredMcp(scenario, cwd, contract, library) {
   assert(server.transport.command === 'npx', `${library}: discovered MCP command must be npx.`);
   assert(
     JSON.stringify(server.transport.args) ===
-      JSON.stringify(['-y', `${contract.mcpPackage}@${contract.mcpVersion}`]),
-    `${library}: Codex-discovered MCP package pin does not match.`
+      JSON.stringify(['-y', contract.mcpPackageSpec]),
+    `${library}: Codex-discovered MCP package range does not match.`
   );
 }
 
@@ -447,8 +448,7 @@ export async function runCodexInstallScenario({ keepTemp = false, library, repos
         plugin.name,
         {
           ...usageContracts[plugin.name],
-          mcpPackage: lock.mcp.package,
-          mcpVersion: lock.mcp.version,
+          ...configuredMcpContract(plugin),
           pluginVersion: lock.pluginVersion,
           serverName: plugin.mcp.serverName,
           skills: configuredSkillContracts(plugin, lock)

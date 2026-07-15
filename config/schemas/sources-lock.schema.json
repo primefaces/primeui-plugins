@@ -14,9 +14,6 @@
           ],
           "type": "string"
         },
-        "mcp": {
-          "$ref": "#/$defs/mcp"
-        },
         "name": {
           "enum": [
             "primevue",
@@ -42,27 +39,9 @@
       },
       "required": [
         "lockState",
-        "mcp",
         "name",
         "pluginVersion",
         "skills"
-      ],
-      "type": "object"
-    },
-    "mcp": {
-      "additionalProperties": false,
-      "properties": {
-        "package": {
-          "pattern": "^@[a-z0-9-]+/[a-z0-9-]+$",
-          "type": "string"
-        },
-        "version": {
-          "$ref": "#/$defs/exactSemver"
-        }
-      },
-      "required": [
-        "package",
-        "version"
       ],
       "type": "object"
     },
@@ -73,13 +52,6 @@
         },
         {
           "properties": {
-            "mcp": {
-              "properties": {
-                "package": {
-                  "const": "@primeng/mcp"
-                }
-              }
-            },
             "name": {
               "const": "primeng"
             }
@@ -94,13 +66,6 @@
         },
         {
           "properties": {
-            "mcp": {
-              "properties": {
-                "package": {
-                  "const": "@primereact/mcp"
-                }
-              }
-            },
             "name": {
               "const": "primereact"
             }
@@ -115,13 +80,6 @@
         },
         {
           "properties": {
-            "mcp": {
-              "properties": {
-                "package": {
-                  "const": "@primevue/mcp"
-                }
-              }
-            },
             "name": {
               "const": "primevue"
             }
@@ -216,7 +174,7 @@
       "const": "./schemas/sources-lock.schema.json"
     },
     "schemaVersion": {
-      "const": 3
+      "const": 4
     },
     "sources": {
       "items": false,

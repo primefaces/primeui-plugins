@@ -4,7 +4,10 @@ import path from 'node:path';
 import test from 'node:test';
 import {
   isExactSemver,
+  isSupportedMcpVersionRange,
+  parseSupportedMcpVersionRange,
   isSafeRelativePath,
+  satisfiesMcpVersionRange,
   stableStringify,
   validatePackageManifest,
   validatePluginsConfig,
@@ -60,7 +63,7 @@ test('release validation rejects every unresolved source lock', () => {
 });
 
 test('exact SemVer accepts releases and prereleases but rejects moving selectors', () => {
-  for (const value of ['0.1.0', '5.0.0-rc.2', '1.2.3-alpha.0+build.7']) {
+  for (const value of ['0.1.0', '1.2.3-rc.4', '1.2.3-alpha.0+build.7']) {
     assert.equal(isExactSemver(value), true, value);
   }
 
@@ -80,6 +83,43 @@ test('exact SemVer accepts releases and prereleases but rejects moving selectors
     ' 1.2.3'
   ]) {
     assert.equal(isExactSemver(value), false, value);
+  }
+});
+
+test('authored MCP ranges admit the minimum RC and final while excluding prior and next-major releases', () => {
+  for (const plugin of pluginsConfig.plugins) {
+    const range = parseSupportedMcpVersionRange(plugin.mcp.versionRange);
+    assert.notEqual(range, undefined, plugin.name);
+    const major = range.lower.major.toString();
+    const minor = range.lower.minor.toString();
+    const patch = range.lower.patch.toString();
+    const prerelease = range.lower.prerelease.join('.');
+    const priorRc = `${major}.${minor}.${patch}-rc.${Number(range.lower.prerelease.at(-1)) - 1}`;
+    const minimum = `${major}.${minor}.${patch}-${prerelease}`;
+    const final = `${major}.${minor}.${patch}`;
+    const nextMajor = `${range.upper.major}.0.0`;
+
+    assert.equal(satisfiesMcpVersionRange(minimum, plugin.mcp.versionRange), true, plugin.name);
+    assert.equal(satisfiesMcpVersionRange(final, plugin.mcp.versionRange), true, plugin.name);
+    assert.equal(satisfiesMcpVersionRange(priorRc, plugin.mcp.versionRange), false, plugin.name);
+    assert.equal(satisfiesMcpVersionRange(nextMajor, plugin.mcp.versionRange), false, plugin.name);
+  }
+});
+
+test('MCP ranges reject malformed, unbounded, non-adjacent, and unsafe numeric selectors', () => {
+  for (const value of [
+    '>=1.2.3',
+    '>=1.2.3 <=2.0.0',
+    '>=1.2.3 <3.0.0',
+    '>=1.2.3  <2.0.0',
+    '>=1.2.3 <2.1.0',
+    '^1.2.3',
+    '~1.2.3',
+    '1.x',
+    '>=1.2.3 <2.0.0 || >=3.0.0 <4.0.0',
+    '>=9007199254740993.0.0 <9007199254740994.0.0'
+  ]) {
+    assert.equal(isSupportedMcpVersionRange(value), false, value);
   }
 });
 
@@ -111,12 +151,14 @@ test('product config rejects unsafe paths, unknown fields, and reordered hosts',
   const unsafe = structuredClone(pluginsConfig);
   unsafe.plugins[0].skills[0].sourcePath = '../primevue';
   unsafe.plugins[0].hosts = ['codex', 'claude', 'gemini'];
+  unsafe.plugins[0].mcp.package = unsafe.plugins[1].mcp.package;
   unsafe.plugins[0].token = 'not-allowed';
 
   const errors = validatePluginsConfig(unsafe).join('\n');
   assert.match(errors, /forbidden secret-bearing field/);
   assert.match(errors, /token is not allowed/);
   assert.match(errors, /hosts must equal/);
+  assert.match(errors, /mcp\.package must equal @primevue\/mcp/);
   assert.match(errors, /safe normalized relative POSIX path/);
 });
 
@@ -154,30 +196,29 @@ test('lock states cannot disguise incomplete or complete source locks', () => {
   );
 });
 
-test('source locks reject non-exact versions, malformed provenance, and unsafe repositories', () => {
+test('source locks reject non-exact plugin versions, malformed provenance, and unsafe repositories', () => {
   const invalid = structuredClone(sourcesLock);
   invalid.sources[0].pluginVersion = '^0.1.0';
-  invalid.sources[0].mcp.version = 'rc';
+  invalid.sources[0].mcp = { package: '@fictional/mcp', version: '1.2.3-rc.4' };
   invalid.sources[0].skills[0].source.commit = 'F'.repeat(40);
   invalid.sources[0].skills[0].source.treeHash = `sha256:${'G'.repeat(64)}`;
   invalid.sources[0].skills[0].source.repository = 'https://user:pass@github.com/primefaces/primeui-plugins';
 
   const errors = validateSourcesLock(invalid, pluginsConfig).join('\n');
   assert.match(errors, /pluginVersion must be an exact SemVer/);
-  assert.match(errors, /mcp\.version must be an exact SemVer/);
+  assert.match(errors, /mcp is not allowed/);
   assert.match(errors, /source\.commit is not allowed/);
   assert.match(errors, /sha256:<64 lowercase hex>/);
   assert.match(errors, /without credentials/);
 });
 
-test('cross-file contract rejects MCP and skill path drift', () => {
+test('source lock cannot reintroduce MCP selection and skill paths cannot drift', () => {
   const drifted = structuredClone(sourcesLock);
-  drifted.sources[0].mcp.package = '@primeng/mcp';
+  drifted.sources[0].mcp = { package: pluginsConfig.plugins[1].mcp.package, version: '1.2.3-rc.4' };
   drifted.sources[0].skills[0].source.path = 'skills/other';
 
   const errors = validateSourcesLock(drifted, pluginsConfig).join('\n');
-  assert.match(errors, /mcp\.package must equal @primevue\/mcp/);
-  assert.match(errors, /mcp\.package must match config\/plugins\.json/);
+  assert.match(errors, /mcp is not allowed/);
   assert.match(errors, /source\.path must be owned by skills\/primevue/);
   assert.match(errors, /skills must match config\/plugins\.json/);
 });
@@ -242,7 +283,7 @@ test('schemas use ordered per-library definitions and resolve every local refere
   );
 });
 
-test('schema library definitions pin package mappings and define closed ordered skill records', () => {
+test('schema library definitions preserve identities and define closed ordered skill records', () => {
   assert.equal(
     pluginsSchema.$defs.marketplace.properties.repository.const,
     'https://github.com/primefaces/primeui-plugins'
@@ -252,7 +293,6 @@ test('schema library definitions pin package mappings and define closed ordered 
   const expectations = [
     {
       lockDefinition: 'primevueLock',
-      mcpPackage: '@primevue/mcp',
       name: 'primevue',
       pluginDefinition: 'primevuePlugin',
       pluginPath: 'plugins/primevue',
@@ -260,7 +300,6 @@ test('schema library definitions pin package mappings and define closed ordered 
     },
     {
       lockDefinition: 'primengLock',
-      mcpPackage: '@primeng/mcp',
       name: 'primeng',
       pluginDefinition: 'primengPlugin',
       pluginPath: 'plugins/primeng',
@@ -268,7 +307,6 @@ test('schema library definitions pin package mappings and define closed ordered 
     },
     {
       lockDefinition: 'primereactLock',
-      mcpPackage: '@primereact/mcp',
       name: 'primereact',
       pluginDefinition: 'primereactPlugin',
       pluginPath: 'plugins/primereact',
@@ -280,11 +318,11 @@ test('schema library definitions pin package mappings and define closed ordered 
     const pluginProperties = pluginsSchema.$defs[expectation.pluginDefinition].allOf[1].properties;
     const lockProperties = sourcesLockSchema.$defs[expectation.lockDefinition].allOf[1].properties;
     assert.equal(pluginProperties.name.const, expectation.name);
-    assert.equal(pluginProperties.mcp.properties.package.const, expectation.mcpPackage);
     assert.equal(pluginProperties.outputs.properties.plugin.const, expectation.pluginPath);
     assert.equal(lockProperties.name.const, expectation.name);
-    assert.equal(lockProperties.mcp.properties.package.const, expectation.mcpPackage);
   }
+  assert.equal(pluginsSchema.$defs.mcp.required.includes('versionRange'), true);
+  assert.equal(Object.hasOwn(sourcesLockSchema.$defs.lock.properties, 'mcp'), false);
   assert.equal(pluginsSchema.$defs.plugin.properties.skills.minItems, 1);
   assert.equal(pluginsSchema.$defs.skill.additionalProperties, false);
   assert.equal(sourcesLockSchema.$defs.lock.properties.skills.minItems, 1);

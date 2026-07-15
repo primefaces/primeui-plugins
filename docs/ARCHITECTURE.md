@@ -38,8 +38,8 @@ The root marketplace paths are required discovery locations for their respective
 
 ## Authored inputs
 
-- `config/plugins.json` owns marketplace identity, install-surface metadata, supported hosts, MCP package identity, generated plugin paths, and each library's ordered skill identities, directories, canonical roots, order, and ownership.
-- `config/sources.lock.json` owns exact plugin versions, exact MCP package versions, ordered skill metadata, and one deterministic tree hash per canonical skill.
+- `config/plugins.json` owns marketplace identity, install-surface metadata, supported hosts, MCP package identity and compatible version range, generated plugin paths, and each library's ordered skill identities, directories, canonical roots, order, and ownership.
+- `config/sources.lock.json` owns exact plugin versions, lock state, ordered skill metadata, and one deterministic tree hash per canonical skill. It cannot select an MCP package or release.
 - Declared paths below `skills/<library>/` are the only editable skill sources.
 - Schemas, tests, and release rules define the accepted public contract.
 

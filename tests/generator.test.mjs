@@ -16,7 +16,7 @@ import {
 import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
-import { stableStringify } from '../scripts/lib/contracts.mjs';
+import { mcpPackageSpec, stableStringify } from '../scripts/lib/contracts.mjs';
 import { syncDistribution } from '../scripts/lib/generator.mjs';
 import { repositoryRoot } from '../scripts/lib/repository.mjs';
 import { inspectSkillTree } from '../scripts/lib/skill-tree.mjs';
@@ -288,15 +288,19 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
   await assert.rejects(access(stalePath));
 
   const mcp = JSON.parse(await readFile(changedPath, 'utf8'));
+  const primevuePlugin = fixture.pluginsConfig.plugins.find((plugin) => plugin.name === 'primevue');
   assert.deepEqual(mcp.mcpServers.primevue, {
-    args: ['-y', '@primevue/mcp@5.0.0-rc.2'],
+    args: ['-y', mcpPackageSpec(primevuePlugin.mcp)],
     command: 'npx'
   });
   const provenance = JSON.parse(
     await readFile(path.join(fixture.distributionRoot, 'plugins', 'primevue', 'provenance.json'), 'utf8')
   );
   assert.equal(provenance.name, 'primevue');
-  assert.equal(provenance.mcp.package, '@primevue/mcp');
+  assert.deepEqual(provenance.mcp, {
+    package: primevuePlugin.mcp.package,
+    versionRange: primevuePlugin.mcp.versionRange
+  });
   assert.equal(provenance.pluginVersion, '0.1.0-alpha.0');
 
   const cursorMarketplace = JSON.parse(
@@ -368,7 +372,7 @@ test('synthetic seven-skill libraries generate exact ordered discovery for all f
     for (const servers of [mcp.mcpServers, gemini.mcpServers]) {
       assert.deepEqual(Object.keys(servers), [plugin.name]);
       assert.deepEqual(servers[plugin.name], {
-        args: ['-y', `${lock.mcp.package}@${lock.mcp.version}`],
+        args: ['-y', mcpPackageSpec(plugin.mcp)],
         command: 'npx'
       });
     }

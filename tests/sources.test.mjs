@@ -42,7 +42,6 @@ function fixtureConfiguration(skillPath, skillHash) {
       sources: [
         {
           lockState: 'locked',
-          mcp: { package: '@primevue/mcp', version: '5.0.0-rc.2' },
           name: 'primevue',
           pluginVersion: '0.1.0-alpha.0',
           skills: [{

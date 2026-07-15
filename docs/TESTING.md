@@ -28,7 +28,7 @@ npm run validate:cursor -- --source all
 npm run validate:gemini -- --source all
 ```
 
-Every scenario uses isolated temporary client state, npm caches, and configuration. Credential-bearing environment values are removed. The validators prove exact ordered selected-library payload and provenance inventory, foreign-skill exclusion, one exact MCP pin, the expected eight-tool surface, Button documentation, valid usage, invalid-property rejection, and PrimeReact styled/Tailwind routing. Gemini runtime discovery is validated as an exact unique selected-library set without claiming runtime enumeration order; its installed provenance and physical skill hashes remain order-strict.
+Every scenario uses isolated temporary client state, npm caches, and configuration. Credential-bearing environment values are removed. The validators prove exact ordered selected-library payload and provenance inventory, foreign-skill exclusion, one authored bounded MCP range passed as one `npx` argument, the expected eight-tool surface, Button documentation, valid usage, invalid-property rejection, and PrimeReact styled/Tailwind routing. Gemini runtime discovery is validated as an exact unique selected-library set without claiming runtime enumeration order; its installed provenance and physical skill hashes remain order-strict.
 
 Deterministic synthetic generator fixtures exercise seven-skill shapes across all three libraries. Canonical PrimeVue, PrimeNG, and PrimeReact suites cover known components, source-backed behavior, discovery, setup, theming, accessibility/icons, migration, invalid-API repair, missing MCP, and duplicate direct-MCP plus plugin configuration. The PrimeNG suite additionally covers explicit unsupported NgModule setup plus routed Table, forms, templates, directives, inputs, and outputs. The PrimeReact suite additionally proves mode selection before calls, styled/Tailwind/primitive/headless isolation, source-backed standalone hooks, environment-scoped setup, and structured ambiguity for unresolved imports, dynamic cases, and wrappers. These suites prove router selection, allowed and forbidden calls, call ceilings, final-validation policy, and the absence of routine `version` calls without invoking a model. Generator and host suites cover all five discovery surfaces, stable independent tree hashes, one-MCP isolation, stale-copy cleanup, and injected migration rollback.
 
@@ -51,7 +51,7 @@ npm run export:gemini -- --out /tmp/primeui-gemini
 npm run export:gemini -- --out /tmp/primevue-gemini --library primevue
 ```
 
-Each exported library directory contains only `gemini-extension.json`, `provenance.json`, and the exact matching ordered physical skill set. Repeating the export to different empty destinations must produce byte-identical files.
+Each exported library directory contains only `gemini-extension.json`, `provenance.json`, and the exact matching ordered physical skill set. The manifest and provenance derive their MCP package and range from `config/plugins.json`. Repeating the export to different empty destinations must produce byte-identical files.
 
 ## Automation
 

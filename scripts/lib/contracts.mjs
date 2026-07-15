@@ -7,7 +7,6 @@ export const libraryContracts = {
   primevue: {
     binary: 'primevue-mcp',
     displayName: 'PrimeVue',
-    mcpPackage: '@primevue/mcp',
     repository: 'https://github.com/primefaces/primeui-plugins',
     serverName: 'primevue',
     skillRoot: 'skills/primevue',
@@ -16,7 +15,6 @@ export const libraryContracts = {
   primeng: {
     binary: 'primeng-mcp',
     displayName: 'PrimeNG',
-    mcpPackage: '@primeng/mcp',
     repository: 'https://github.com/primefaces/primeui-plugins',
     serverName: 'primeng',
     skillRoot: 'skills/primeng',
@@ -25,7 +23,6 @@ export const libraryContracts = {
   primereact: {
     binary: 'primereact-mcp',
     displayName: 'PrimeReact',
-    mcpPackage: '@primereact/mcp',
     repository: 'https://github.com/primefaces/primeui-plugins',
     serverName: 'primereact',
     skillRoot: 'skills/primereact',
@@ -35,6 +32,9 @@ export const libraryContracts = {
 
 const exactSemverPattern =
   /^(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*)?(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?$/;
+const supportedMcpRangePattern =
+  /^>=(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:-((?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*)(?:\.(?:0|[1-9][0-9]*|[0-9]*[A-Za-z-][0-9A-Za-z-]*))*))? <(0|[1-9][0-9]*)\.0\.0$/;
+const maximumSafeSemverNumber = BigInt(Number.MAX_SAFE_INTEGER);
 const skillHashPattern = /^sha256:[0-9a-f]{64}$/;
 const sensitiveKeyPattern = /^(?:api[_-]?key|access[_-]?token|client[_-]?secret|credentials?|password|private[_-]?key|secret|token)$/i;
 const skillIdentityPattern = /^[a-z][a-z0-9-]*$/;
@@ -174,6 +174,130 @@ export function isExactSemver(value) {
   return typeof value === 'string' && exactSemverPattern.test(value);
 }
 
+function safeSemverNumber(value) {
+  const parsed = BigInt(value);
+  return parsed <= maximumSafeSemverNumber ? parsed : undefined;
+}
+
+function parsePrerelease(value) {
+  if (value === undefined) {
+    return [];
+  }
+  const identifiers = value.split('.');
+  for (const identifier of identifiers) {
+    if (/^[0-9]+$/.test(identifier) && safeSemverNumber(identifier) === undefined) {
+      return undefined;
+    }
+  }
+  return identifiers;
+}
+
+export function parseExactSemver(value) {
+  if (!isExactSemver(value)) {
+    return undefined;
+  }
+  const withoutBuild = value.split('+', 1)[0];
+  const prereleaseSeparator = withoutBuild.indexOf('-');
+  const core = prereleaseSeparator === -1
+    ? withoutBuild
+    : withoutBuild.slice(0, prereleaseSeparator);
+  const prereleaseValue = prereleaseSeparator === -1
+    ? undefined
+    : withoutBuild.slice(prereleaseSeparator + 1);
+  const [majorValue, minorValue, patchValue] = core.split('.');
+  const major = safeSemverNumber(majorValue);
+  const minor = safeSemverNumber(minorValue);
+  const patch = safeSemverNumber(patchValue);
+  const prerelease = parsePrerelease(prereleaseValue);
+  if (major === undefined || minor === undefined || patch === undefined || prerelease === undefined) {
+    return undefined;
+  }
+  return { major, minor, patch, prerelease };
+}
+
+export function parseSupportedMcpVersionRange(value) {
+  if (typeof value !== 'string') {
+    return undefined;
+  }
+  const match = supportedMcpRangePattern.exec(value);
+  if (match === null) {
+    return undefined;
+  }
+  const lowerMajor = safeSemverNumber(match[1]);
+  const lowerMinor = safeSemverNumber(match[2]);
+  const lowerPatch = safeSemverNumber(match[3]);
+  const lowerPrerelease = parsePrerelease(match[4]);
+  const upperMajor = safeSemverNumber(match[5]);
+  if (
+    lowerMajor === undefined ||
+    lowerMinor === undefined ||
+    lowerPatch === undefined ||
+    lowerPrerelease === undefined ||
+    upperMajor === undefined ||
+    upperMajor !== lowerMajor + 1n
+  ) {
+    return undefined;
+  }
+  return {
+    lower: {
+      major: lowerMajor,
+      minor: lowerMinor,
+      patch: lowerPatch,
+      prerelease: lowerPrerelease
+    },
+    upper: { major: upperMajor, minor: 0n, patch: 0n, prerelease: [] }
+  };
+}
+
+export function isSupportedMcpVersionRange(value) {
+  return parseSupportedMcpVersionRange(value) !== undefined;
+}
+
+function compareSemver(left, right) {
+  for (const key of ['major', 'minor', 'patch']) {
+    if (left[key] < right[key]) return -1;
+    if (left[key] > right[key]) return 1;
+  }
+  if (left.prerelease.length === 0 || right.prerelease.length === 0) {
+    return left.prerelease.length === right.prerelease.length
+      ? 0
+      : left.prerelease.length === 0 ? 1 : -1;
+  }
+  const length = Math.max(left.prerelease.length, right.prerelease.length);
+  for (let index = 0; index < length; index += 1) {
+    const leftIdentifier = left.prerelease[index];
+    const rightIdentifier = right.prerelease[index];
+    if (leftIdentifier === undefined || rightIdentifier === undefined) {
+      return leftIdentifier === rightIdentifier ? 0 : leftIdentifier === undefined ? -1 : 1;
+    }
+    const leftNumeric = /^[0-9]+$/.test(leftIdentifier);
+    const rightNumeric = /^[0-9]+$/.test(rightIdentifier);
+    if (leftNumeric && rightNumeric) {
+      const leftNumber = BigInt(leftIdentifier);
+      const rightNumber = BigInt(rightIdentifier);
+      if (leftNumber < rightNumber) return -1;
+      if (leftNumber > rightNumber) return 1;
+    } else if (leftNumeric !== rightNumeric) {
+      return leftNumeric ? -1 : 1;
+    } else if (leftIdentifier !== rightIdentifier) {
+      return leftIdentifier < rightIdentifier ? -1 : 1;
+    }
+  }
+  return 0;
+}
+
+export function satisfiesMcpVersionRange(version, versionRange) {
+  const parsedVersion = parseExactSemver(version);
+  const parsedRange = parseSupportedMcpVersionRange(versionRange);
+  return parsedVersion !== undefined && parsedRange !== undefined &&
+    compareSemver(parsedVersion, parsedRange.lower) >= 0 &&
+    compareSemver(parsedVersion, parsedRange.upper) < 0;
+}
+
+export function mcpPackageSpec(mcp) {
+  return `${mcp.package}@${mcp.versionRange}`;
+}
+
 export function isSafeRelativePath(value) {
   if (
     typeof value !== 'string' ||
@@ -308,8 +432,8 @@ export function validatePluginsConfig(config) {
   if (config.$schema !== './schemas/plugins.schema.json') {
     errors.push('plugins.$schema must equal ./schemas/plugins.schema.json.');
   }
-  if (config.schemaVersion !== 2) {
-    errors.push('plugins.schemaVersion must equal 2.');
+  if (config.schemaVersion !== 3) {
+    errors.push('plugins.schemaVersion must equal 3.');
   }
 
   const marketplace = config.marketplace;
@@ -434,15 +558,19 @@ export function validatePluginsConfig(config) {
       );
     }
 
-    if (validateObject(plugin.mcp, `${location}.mcp`, ['binary', 'package', 'serverName'], errors)) {
+    if (validateObject(plugin.mcp, `${location}.mcp`, ['binary', 'package', 'serverName', 'versionRange'], errors)) {
+      const expectedPackage = `@${plugin.name}/mcp`;
       if (plugin.mcp.binary !== expected.binary) {
         errors.push(`${location}.mcp.binary must equal ${expected.binary}.`);
       }
-      if (plugin.mcp.package !== expected.mcpPackage) {
-        errors.push(`${location}.mcp.package must equal ${expected.mcpPackage}.`);
+      if (plugin.mcp.package !== expectedPackage) {
+        errors.push(`${location}.mcp.package must equal ${expectedPackage}.`);
       }
       if (plugin.mcp.serverName !== expected.serverName) {
         errors.push(`${location}.mcp.serverName must equal ${expected.serverName}.`);
+      }
+      if (!isSupportedMcpVersionRange(plugin.mcp.versionRange)) {
+        errors.push(`${location}.mcp.versionRange must be one inclusive lower bound and one exclusive adjacent next-major upper bound.`);
       }
     }
 
@@ -473,8 +601,8 @@ export function validateSourcesLock(lockConfig, pluginsConfig, { release = false
   if (lockConfig.$schema !== './schemas/sources-lock.schema.json') {
     errors.push('sourcesLock.$schema must equal ./schemas/sources-lock.schema.json.');
   }
-  if (lockConfig.schemaVersion !== 3) {
-    errors.push('sourcesLock.schemaVersion must equal 3.');
+  if (lockConfig.schemaVersion !== 4) {
+    errors.push('sourcesLock.schemaVersion must equal 4.');
   }
   if (!validateKnownLibraryOrder(lockConfig.sources, 'sourcesLock.sources', errors)) {
     return errors;
@@ -486,7 +614,7 @@ export function validateSourcesLock(lockConfig, pluginsConfig, { release = false
       !validateObject(
         lock,
         location,
-        ['lockState', 'mcp', 'name', 'pluginVersion', 'skills'],
+        ['lockState', 'name', 'pluginVersion', 'skills'],
         errors,
         ['unresolvedReason']
       )
@@ -508,18 +636,6 @@ export function validateSourcesLock(lockConfig, pluginsConfig, { release = false
     }
     if (!isExactSemver(lock.pluginVersion)) {
       errors.push(`${location}.pluginVersion must be an exact SemVer.`);
-    }
-
-    if (validateObject(lock.mcp, `${location}.mcp`, ['package', 'version'], errors)) {
-      if (lock.mcp.package !== expected.mcpPackage) {
-        errors.push(`${location}.mcp.package must equal ${expected.mcpPackage}.`);
-      }
-      if (!isExactSemver(lock.mcp.version)) {
-        errors.push(`${location}.mcp.version must be an exact SemVer.`);
-      }
-      if (plugin && lock.mcp.package !== plugin.mcp.package) {
-        errors.push(`${location}.mcp.package must match config/plugins.json.`);
-      }
     }
 
     validateSkillSet(lock.skills, lock.name, expected, `${location}.skills`, errors, { locked: true });

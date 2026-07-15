@@ -14,6 +14,7 @@ import {
 } from '../scripts/lib/gemini-smoke.mjs';
 import { configuredSkillContracts } from '../scripts/lib/smoke-contracts.mjs';
 import { repositoryRoot } from '../scripts/lib/repository.mjs';
+import { configuredPluginFixture, installedPayloadContract } from './helpers/plugin-contract-fixtures.mjs';
 
 const orderedPrimeVueSkills = [
   'primevue-router',
@@ -157,9 +158,7 @@ test('installed Gemini payload inspection enforces source, skill, MCP, and exten
   await writeFile(
     path.join(installPath, 'gemini-extension.json'),
     JSON.stringify({
-      mcpServers: {
-        primevue: { args: ['-y', '@primevue/mcp@5.0.0-rc.2'], command: 'npx' }
-      },
+      mcpServers: configuredPluginFixture().mcpDocument.mcpServers,
       name: 'primevue',
       version: '0.1.0-alpha.0'
     })
@@ -177,22 +176,20 @@ test('installed Gemini payload inspection enforces source, skill, MCP, and exten
     directory: 'primevue', id: 'primevue', name: 'primevue', order: 0, owner: 'primevue',
     source: { path: 'skills/primevue', repository: 'https://github.com/primefaces/primeui-plugins', treeHash }
   }];
+  const configured = configuredPluginFixture();
   await writeFile(
     path.join(installPath, 'provenance.json'),
     JSON.stringify({
-      mcp: { package: '@primevue/mcp', version: '5.0.0-rc.2' },
+      mcp: configured.provenanceMcp,
       name: 'primevue',
       skills: lockedSkills
     })
   );
 
-  const contract = {
-    mcpPackage: '@primevue/mcp',
-    mcpVersion: '5.0.0-rc.2',
-    pluginVersion: '0.1.0-alpha.0',
+  const contract = installedPayloadContract({
     skills: [{ directory: 'primevue', id: 'primevue', name: 'primevue', order: 0, owner: 'primevue', treeHash }],
     lockedSkills
-  };
+  });
   await assert.doesNotReject(
     assertInstalledGeminiPayload({ contract, geminiHome, installPath, library: 'primevue', sourcePath })
   );
@@ -204,7 +201,7 @@ test('installed Gemini payload inspection enforces source, skill, MCP, and exten
   );
 });
 
-test('installed Gemini payload preserves approved PrimeVue order, independent hashes, and exact MCP pin', async (context) => {
+test('installed Gemini payload preserves approved PrimeVue order, independent hashes, and MCP range', async (context) => {
   const root = await mkdtemp(path.join(os.tmpdir(), 'primeui-gemini-focused-payload-test-'));
   context.after(() => rm(root, { force: true, recursive: true }));
   const geminiHome = path.join(root, 'home', '.gemini');
@@ -224,11 +221,11 @@ test('installed Gemini payload preserves approved PrimeVue order, independent ha
   const plugin = pluginsConfig.plugins.find((candidate) => candidate.name === 'primevue');
   const lock = lockConfig.sources.find((candidate) => candidate.name === 'primevue');
   const contract = {
-    mcpPackage: lock.mcp.package,
-    mcpVersion: lock.mcp.version,
-    pluginVersion: lock.pluginVersion,
-    skills: configuredSkillContracts(plugin, lock),
-    lockedSkills: lock.skills
+    ...installedPayloadContract({
+      lockedSkills: lock.skills,
+      pluginVersion: lock.pluginVersion,
+      skills: configuredSkillContracts(plugin, lock)
+    }),
   };
   const validate = () => assertInstalledGeminiPayload({
     contract,
@@ -262,5 +259,5 @@ test('installed Gemini payload preserves approved PrimeVue order, independent ha
   const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
   manifest.mcpServers.primevue.args = ['-y', '@primevue/mcp@wrong'];
   await writeFile(manifestPath, JSON.stringify(manifest));
-  await assert.rejects(validate(), /MCP package pin does not match/);
+  await assert.rejects(validate(), /MCP package range does not match/);
 });

@@ -5,7 +5,7 @@
       "authentication": "ON_INSTALL",
       "installation": "AVAILABLE"
     },
-    "description": "PrimeUI workflow plugins for PrimeVue, PrimeNG, and PrimeReact with exact-version MCP tooling.",
+    "description": "PrimeUI workflow plugins for PrimeVue, PrimeNG, and PrimeReact with compatible major-line MCP tooling.",
     "displayName": "PrimeUI",
     "name": "primeui",
     "publisher": {
@@ -42,7 +42,8 @@
       "mcp": {
         "binary": "primevue-mcp",
         "package": "@primevue/mcp",
-        "serverName": "primevue"
+        "serverName": "primevue",
+        "versionRange": ">=5.0.0-rc.3 <6.0.0"
       },
       "name": "primevue",
       "outputs": {
@@ -135,7 +136,8 @@
       "mcp": {
         "binary": "primeng-mcp",
         "package": "@primeng/mcp",
-        "serverName": "primeng"
+        "serverName": "primeng",
+        "versionRange": ">=22.0.0-rc.3 <23.0.0"
       },
       "name": "primeng",
       "outputs": {
@@ -228,7 +230,8 @@
       "mcp": {
         "binary": "primereact-mcp",
         "package": "@primereact/mcp",
-        "serverName": "primereact"
+        "serverName": "primereact",
+        "versionRange": ">=11.0.0-rc.3 <12.0.0"
       },
       "name": "primereact",
       "outputs": {
@@ -300,5 +303,5 @@
       ]
     }
   ],
-  "schemaVersion": 2
+  "schemaVersion": 3
 }

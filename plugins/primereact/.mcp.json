@@ -3,7 +3,7 @@
     "primereact": {
       "args": [
         "-y",
-        "@primereact/mcp@11.0.0-rc.2"
+        "@primereact/mcp@>=11.0.0-rc.3 <12.0.0"
       ],
       "command": "npx"
     }

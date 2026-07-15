@@ -4,6 +4,7 @@ import os from 'node:os';
 import path from 'node:path';
 import test from 'node:test';
 import { inspectSkillTree } from '../scripts/lib/skill-tree.mjs';
+import { configuredPluginFixture, installedPayloadContract } from './helpers/plugin-contract-fixtures.mjs';
 import {
   assertInstalledCodexPayload,
   codexScenarioEnvironment,
@@ -99,7 +100,7 @@ test('Codex plugin-list parser requires installed and available arrays', () => {
   assert.throws(() => parseCodexPluginListJson('not-json'), /not valid JSON/);
 });
 
-test('installed Codex payload inspection enforces manifest pointers, pin, and cache isolation', async (context) => {
+test('installed Codex payload inspection enforces manifest pointers, range, and cache isolation', async (context) => {
   const codexHome = await mkdtemp(path.join(os.tmpdir(), 'primeui-codex-payload-test-'));
   context.after(() => rm(codexHome, { force: true, recursive: true }));
   const installPath = path.join(
@@ -123,11 +124,7 @@ test('installed Codex payload inspection enforces manifest pointers, pin, and ca
   );
   await writeFile(
     path.join(installPath, '.mcp.json'),
-    JSON.stringify({
-      mcpServers: {
-        primevue: { args: ['-y', '@primevue/mcp@5.0.0-rc.2'], command: 'npx' }
-      }
-    })
+    JSON.stringify(configuredPluginFixture().mcpDocument)
   );
   await writeFile(
     path.join(installPath, 'skills', 'primevue', 'SKILL.md'),
@@ -135,12 +132,9 @@ test('installed Codex payload inspection enforces manifest pointers, pin, and ca
   );
   const treeHash = (await inspectSkillTree(path.join(installPath, 'skills', 'primevue'))).hash;
 
-  const contract = {
-    mcpPackage: '@primevue/mcp',
-    mcpVersion: '5.0.0-rc.2',
-    pluginVersion: '0.1.0-alpha.0',
+  const contract = installedPayloadContract({
     skills: [{ directory: 'primevue', id: 'primevue', name: 'primevue', order: 0, owner: 'primevue', treeHash }]
-  };
+  });
   await assert.doesNotReject(
     assertInstalledCodexPayload({ codexHome, contract, installPath, library: 'primevue' })
   );

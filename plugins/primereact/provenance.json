@@ -1,7 +1,7 @@
 {
   "mcp": {
     "package": "@primereact/mcp",
-    "version": "11.0.0-rc.2"
+    "versionRange": ">=11.0.0-rc.3 <12.0.0"
   },
   "name": "primereact",
   "payload": {
@@ -20,12 +20,11 @@
       "skills/primereact-setup-installation",
       "skills/primereact-theming-customization",
       "skills/primereact-accessibility-icons",
-      "skills/primereact-migration",
       "skills/primereact-audit-troubleshooting"
     ]
   },
   "pluginVersion": "0.1.0-alpha.0",
-  "schemaVersion": 2,
+  "schemaVersion": 3,
   "skills": [
     {
       "directory": "primereact-router",
@@ -36,7 +35,7 @@
       "source": {
         "path": "skills/primereact/primereact-router",
         "repository": "https://github.com/primefaces/primeui-plugins",
-        "treeHash": "sha256:98b3a827a48dbe4c7beba97b1f9289438ea407ef599d1368d27ae2f8a859006a"
+        "treeHash": "sha256:9096f6feef24698823544b057215f4e3b7105f331470721971a5f82198015cce"
       }
     },
     {
@@ -48,7 +47,7 @@
       "source": {
         "path": "skills/primereact/primereact-component-implementation",
         "repository": "https://github.com/primefaces/primeui-plugins",
-        "treeHash": "sha256:b1d2710c313ba53907ead51a19f1ff8e855e8d18520f189d72476789ab285f87"
+        "treeHash": "sha256:d1f80c7bd0ea7eef2452bef22d2a62a7394f24602bcdf8c98e7083c727cadc62"
       }
     },
     {
@@ -88,22 +87,10 @@
       }
     },
     {
-      "directory": "primereact-migration",
-      "id": "primereact-migration",
-      "name": "primereact-migration",
-      "order": 5,
-      "owner": "primereact",
-      "source": {
-        "path": "skills/primereact/primereact-migration",
-        "repository": "https://github.com/primefaces/primeui-plugins",
-        "treeHash": "sha256:4c689aae75866518401a93d3e45059da296203870ac34b4c4e0d63fcf19b8d8f"
-      }
-    },
-    {
       "directory": "primereact-audit-troubleshooting",
       "id": "primereact-audit-troubleshooting",
       "name": "primereact-audit-troubleshooting",
-      "order": 6,
+      "order": 5,
       "owner": "primereact",
       "source": {
         "path": "skills/primereact/primereact-audit-troubleshooting",

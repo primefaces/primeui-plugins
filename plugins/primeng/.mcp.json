@@ -3,7 +3,7 @@
     "primeng": {
       "args": [
         "-y",
-        "@primeng/mcp@22.0.0-rc.2"
+        "@primeng/mcp@>=22.0.0-rc.3 <23.0.0"
       ],
       "command": "npx"
     }

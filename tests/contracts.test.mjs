@@ -293,6 +293,7 @@ test('schema library definitions preserve identities and define closed ordered s
   const expectations = [
     {
       lockDefinition: 'primevueLock',
+      mcpPackage: '@primevue/mcp',
       name: 'primevue',
       pluginDefinition: 'primevuePlugin',
       pluginPath: 'plugins/primevue',
@@ -300,6 +301,7 @@ test('schema library definitions preserve identities and define closed ordered s
     },
     {
       lockDefinition: 'primengLock',
+      mcpPackage: '@primeng/mcp',
       name: 'primeng',
       pluginDefinition: 'primengPlugin',
       pluginPath: 'plugins/primeng',
@@ -307,6 +309,7 @@ test('schema library definitions preserve identities and define closed ordered s
     },
     {
       lockDefinition: 'primereactLock',
+      mcpPackage: '@primereact/mcp',
       name: 'primereact',
       pluginDefinition: 'primereactPlugin',
       pluginPath: 'plugins/primereact',
@@ -318,6 +321,7 @@ test('schema library definitions preserve identities and define closed ordered s
     const pluginProperties = pluginsSchema.$defs[expectation.pluginDefinition].allOf[1].properties;
     const lockProperties = sourcesLockSchema.$defs[expectation.lockDefinition].allOf[1].properties;
     assert.equal(pluginProperties.name.const, expectation.name);
+    assert.equal(pluginProperties.mcp.properties.package.const, expectation.mcpPackage);
     assert.equal(pluginProperties.outputs.properties.plugin.const, expectation.pluginPath);
     assert.equal(lockProperties.name.const, expectation.name);
   }

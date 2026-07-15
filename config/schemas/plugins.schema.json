@@ -239,6 +239,9 @@
                 "binary": {
                   "const": "primeng-mcp"
                 },
+                "package": {
+                  "const": "@primeng/mcp"
+                },
                 "serverName": {
                   "const": "primeng"
                 }
@@ -275,6 +278,9 @@
               "properties": {
                 "binary": {
                   "const": "primereact-mcp"
+                },
+                "package": {
+                  "const": "@primereact/mcp"
                 },
                 "serverName": {
                   "const": "primereact"
@@ -317,6 +323,9 @@
               "properties": {
                 "binary": {
                   "const": "primevue-mcp"
+                },
+                "package": {
+                  "const": "@primevue/mcp"
                 },
                 "serverName": {
                   "const": "primevue"

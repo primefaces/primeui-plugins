@@ -4,15 +4,15 @@ import path from 'node:path';
 import test from 'node:test';
 import { repositoryRoot } from '../scripts/lib/repository.mjs';
 
-const expectedSkills = ['primereact-router', 'primereact-component-implementation', 'primereact-setup-installation', 'primereact-theming-customization', 'primereact-accessibility-icons', 'primereact-migration', 'primereact-audit-troubleshooting'];
-const routes = { accessibility: 'primereact-accessibility-icons', audit: 'primereact-audit-troubleshooting', component: 'primereact-component-implementation', migration: 'primereact-migration', setup: 'primereact-setup-installation', theming: 'primereact-theming-customization' };
+const expectedSkills = ['primereact-router', 'primereact-component-implementation', 'primereact-setup-installation', 'primereact-theming-customization', 'primereact-accessibility-icons', 'primereact-audit-troubleshooting'];
+const routes = { accessibility: 'primereact-accessibility-icons', audit: 'primereact-audit-troubleshooting', component: 'primereact-component-implementation', setup: 'primereact-setup-installation', theming: 'primereact-theming-customization' };
 const readJson = async (relativePath) => JSON.parse(await readFile(path.join(repositoryRoot, relativePath), 'utf8'));
 const readSkill = async (name) => readFile(path.join(repositoryRoot, 'skills', 'primereact', name, 'SKILL.md'), 'utf8');
 const [config, scenarios] = await Promise.all([readJson('config/plugins.json'), readJson('tests/fixtures/primereact-scenarios.json')]);
 const primereact = config.plugins.find((plugin) => plugin.name === 'primereact');
 const skillContents = new Map(await Promise.all(expectedSkills.map(async (name) => [name, await readSkill(name)])));
 
-test('PrimeReact declares the exact ordered seven-skill identity set', () => {
+test('PrimeReact declares the exact ordered six-skill identity set', () => {
   assert.deepEqual(primereact.skills, expectedSkills.map((name, order) => ({ directory: name, id: name, name, order, owner: 'primereact', sourcePath: `skills/primereact/${name}` })));
 });
 

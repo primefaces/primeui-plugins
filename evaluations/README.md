@@ -12,7 +12,7 @@ Each scenario declares a stable library-prefixed ID, release-critical coverage t
 
 ## Inspect prompts
 
-Open the JSON file for the selected library and use the `prompt` field from any scenario. The library currently contains 13 PrimeVue scenarios, 14 PrimeNG scenarios, and 17 PrimeReact scenarios. PrimeNG includes current standalone setup and explicit unsupported NgModule handling. PrimeReact includes styled, Tailwind, primitive, headless, advertised hooks, and unresolved-mode behavior.
+Open the JSON file for the selected library and use the `prompt` field from any scenario. The library currently contains 13 PrimeVue scenarios, 14 PrimeNG scenarios, and 16 PrimeReact scenarios. PrimeNG includes current standalone setup and explicit unsupported NgModule handling. PrimeReact includes styled, Tailwind, primitive, headless, advertised hooks, and unresolved-mode behavior.
 
 ## Default acceptance
 
@@ -22,7 +22,7 @@ Run the dependency-free, no-model evaluator:
 node scripts/evaluate-contracts.mjs
 ```
 
-It runs offline without network access, credentials, assistant profiles, or model calls. It validates schema shape, release-critical coverage, exact seven-skill routing, allowed and forbidden calls, the 2/3/4/3 component and setup ceilings, final-validation and repair policy, routine-version prohibition, exact doctor commands, library and PrimeReact mode isolation, generated skill hashes and provenance, one selected-library MCP server, its exact package pin, and the eight-tool inventory.
+It runs offline without network access, credentials, assistant profiles, or model calls. It validates schema shape, release-critical coverage, configured focused-skill routing, allowed and forbidden calls, the 2/3/4/3 component and setup ceilings, final-validation and repair policy, routine-version prohibition, exact doctor commands, library and PrimeReact mode isolation, generated skill hashes and provenance, one selected-library MCP server, its exact package pin, and the eight-tool inventory.
 
 `npm test`, `npm run check`, and `npm run check:clean` also exercise the evaluator and its negative cases. The normal gate never invokes an authenticated host session.
 

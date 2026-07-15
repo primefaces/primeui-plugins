@@ -358,32 +358,6 @@
   },
   {
     "allowedCalls": [
-      "get_guide",
-      "get_component",
-      "validate_usage"
-    ],
-    "calls": [
-      "get_guide",
-      "get_component",
-      "validate_usage"
-    ],
-    "crossModeForbidden": true,
-    "forbiddenCalls": [
-      "search",
-      "get_example",
-      "get_setup",
-      "version"
-    ],
-    "id": "styled-migration",
-    "maxCalls": 3,
-    "mode": "styled",
-    "modeSelectedBeforeCalls": true,
-    "route": "migration",
-    "validationCalls": 1,
-    "workflow": "migration"
-  },
-  {
-    "allowedCalls": [
       "validate_usage",
       "get_component"
     ],

@@ -470,64 +470,6 @@
     },
     {
       "allowedMcpCalls": [
-        "get_guide",
-        "get_component",
-        "validate_usage"
-      ],
-      "budgetClass": "migration",
-      "coverage": [
-        "migration"
-      ],
-      "expectedSkill": "primereact-migration",
-      "expectedValidation": {
-        "calls": 1,
-        "outcome": "pass",
-        "repeatOnlyAfterIssue": false
-      },
-      "forbiddenMcpCalls": [
-        "list",
-        "search",
-        "get_example",
-        "get_setup",
-        "version"
-      ],
-      "id": "primereact-styled-migration",
-      "library": "primereact",
-      "maxCallCount": 3,
-      "mode": "styled",
-      "modeExpectation": "selected-before-calls",
-      "prompt": "Migrate the affected styled PrimeReact usage using installed and target package evidence plus only matching same-mode migration and component contracts.",
-      "requiredEvidence": [
-        "installed-and-target-versions",
-        "source-mode",
-        "target-mode",
-        "migration-guide",
-        "final-validation"
-      ],
-      "route": "migration",
-      "trace": [
-        {
-          "mode": "styled",
-          "name": "get_guide",
-          "result": "source-backed",
-          "server": "primereact"
-        },
-        {
-          "mode": "styled",
-          "name": "get_component",
-          "result": "source-backed",
-          "server": "primereact"
-        },
-        {
-          "mode": "styled",
-          "name": "validate_usage",
-          "result": "pass",
-          "server": "primereact"
-        }
-      ]
-    },
-    {
-      "allowedMcpCalls": [
         "validate_usage"
       ],
       "budgetClass": "audit",

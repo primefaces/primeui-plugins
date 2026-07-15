@@ -24,7 +24,7 @@ Each plugin combines:
 - A bounded compatible major-line MCP range for current component documentation, API metadata, examples, guides, and usage validation.
 - Client-specific manifests generated from the same locked source inputs.
 
-PrimeVue, PrimeNG, and PrimeReact each ship an ordered seven-skill focused set: a library router, component implementation, setup and installation, theming and customization, accessibility and icons, migration, and audit and troubleshooting. Each router selects one smallest workflow; current component/API/example truth remains in the matching MCP package. PrimeNG setup guidance is limited to the current routed standalone `ApplicationConfig`/`app.config.ts`/`providePrimeNG` path; undocumented NgModule setup is explicitly unsupported. PrimeReact selects a source-backed mode before retrieval and keeps styled, Tailwind, primitive, headless, and advertised standalone-hook evidence isolated.
+PrimeVue and PrimeNG each ship an ordered seven-skill focused set that includes migration. PrimeReact ships six focused skills: a library router, component implementation, setup and installation, theming and customization, accessibility and icons, and audit and troubleshooting. PrimeReact does not advertise a migration workflow because the current v11 documentation does not provide a supported version migration guide. Each router selects one smallest workflow; current component/API/example truth remains in the matching MCP package. PrimeNG setup guidance is limited to the current routed standalone `ApplicationConfig`/`app.config.ts`/`providePrimeNG` path; undocumented NgModule setup is explicitly unsupported. PrimeReact selects a source-backed mode before retrieval and keeps styled, Tailwind, primitive, headless, and advertised standalone-hook evidence isolated.
 
 ## Claude Code
 
@@ -93,7 +93,7 @@ copilot plugin uninstall primevue
 
 Cursor plugins bundle skills and MCP servers into one installation. After the PrimeUI plugins complete Cursor Marketplace review, find the selected PrimeVue, PrimeNG, or PrimeReact plugin in the Marketplace or open Cursor's supported `/add-plugin` flow. Cursor's public documentation does not define arguments for `/add-plugin`, so this repository does not publish a repository URL or path form for that command.
 
-Cursor can install Marketplace plugins at user or workspace scope. Manage installed plugins and their components from **Customize**. Plugin skills appear in **Agent Decides** under their declared names; every library plugin exposes its focused seven-skill inventory. The selected plugin's MCP server can be enabled or disabled from the same surface. Public Marketplace updates are reviewed by Cursor and require the publisher to request a re-index after changing the repository.
+Cursor can install Marketplace plugins at user or workspace scope. Manage installed plugins and their components from **Customize**. Plugin skills appear in **Agent Decides** under their declared names; every library plugin exposes its configured focused-skill inventory. The selected plugin's MCP server can be enabled or disabled from the same surface. Public Marketplace updates are reviewed by Cursor and require the publisher to request a re-index after changing the repository.
 
 For local development, copy or symlink exactly one generated library root into Cursor's documented local-plugin directory, then restart Cursor or run **Developer: Reload Window**:
 

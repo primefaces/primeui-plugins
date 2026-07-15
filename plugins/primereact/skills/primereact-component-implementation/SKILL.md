@@ -1,6 +1,6 @@
 ---
 name: primereact-component-implementation
-description: Implement and discover PrimeReact components or source-backed hooks with mode-scoped MCP metadata, examples, and final validation. Use for known components, discovery, behavior, composition, props, callbacks, and hooks; not setup, theming, migration, or troubleshooting-only work.
+description: Implement and discover PrimeReact components or source-backed hooks with mode-scoped MCP metadata, examples, and final validation. Use for known components, discovery, behavior, composition, props, callbacks, and hooks; not setup, theming, or troubleshooting-only work.
 ---
 
 # PrimeReact Component Implementation

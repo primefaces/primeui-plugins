@@ -224,7 +224,7 @@
           "Build a PrimeReact component with grounded docs and usage validation.",
           "Choose the right PrimeReact variant and validate this component code."
         ],
-        "longDescription": "Build, customize, migrate, and validate PrimeReact code with variant-aware guidance grounded in the exact PrimeReact MCP package.",
+        "longDescription": "Build, customize, and validate PrimeReact code with variant-aware guidance grounded in the exact PrimeReact MCP package.",
         "shortDescription": "Variant-aware PrimeReact workflows and validation"
       },
       "mcp": {
@@ -279,18 +279,10 @@
           "sourcePath": "skills/primereact/primereact-accessibility-icons"
         },
         {
-          "directory": "primereact-migration",
-          "id": "primereact-migration",
-          "name": "primereact-migration",
-          "order": 5,
-          "owner": "primereact",
-          "sourcePath": "skills/primereact/primereact-migration"
-        },
-        {
           "directory": "primereact-audit-troubleshooting",
           "id": "primereact-audit-troubleshooting",
           "name": "primereact-audit-troubleshooting",
-          "order": 6,
+          "order": 5,
           "owner": "primereact",
           "sourcePath": "skills/primereact/primereact-audit-troubleshooting"
         }

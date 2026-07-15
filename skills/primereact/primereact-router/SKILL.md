@@ -1,6 +1,6 @@
 ---
 name: primereact-router
-description: Route PrimeReact and React-specific PrimeUI work to exactly one focused PrimeReact skill after selecting a source-backed mode. Use first for components, setup, theming, accessibility, icons, migration, audits, or troubleshooting. Never use for PrimeVue or PrimeNG.
+description: Route PrimeReact and React-specific PrimeUI work to exactly one focused PrimeReact skill after selecting a source-backed mode. Use first for components, setup, theming, accessibility, icons, audits, or troubleshooting. Never use for PrimeVue or PrimeNG.
 ---
 
 # PrimeReact Router
@@ -10,7 +10,6 @@ Select exactly one smallest focused skill:
 - `accessibility`: `primereact-accessibility-icons`
 - `audit`: `primereact-audit-troubleshooting`
 - `component`: `primereact-component-implementation`
-- `migration`: `primereact-migration`
 - `setup`: `primereact-setup-installation`
 - `theming`: `primereact-theming-customization`
 

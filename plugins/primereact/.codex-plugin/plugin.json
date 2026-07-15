@@ -17,7 +17,7 @@
     ],
     "developerName": "PrimeFaces",
     "displayName": "PrimeReact",
-    "longDescription": "Build, customize, migrate, and validate PrimeReact code with variant-aware guidance grounded in the exact PrimeReact MCP package.",
+    "longDescription": "Build, customize, and validate PrimeReact code with variant-aware guidance grounded in the exact PrimeReact MCP package.",
     "shortDescription": "Variant-aware PrimeReact workflows and validation",
     "websiteURL": "https://primefaces.org"
   },

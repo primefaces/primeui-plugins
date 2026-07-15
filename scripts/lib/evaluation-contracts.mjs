@@ -24,15 +24,14 @@ const baseCoverage = [
   'data-table',
   'theming',
   'accessibility-icons',
-  'migration',
   'audit',
   'invalid-api-repair',
   'missing-mcp',
   'duplicate-mcp-plugin'
 ];
 const libraryCoverage = {
-  primevue: baseCoverage,
-  primeng: [...baseCoverage, 'standalone-setup', 'unsupported-ngmodule'],
+  primevue: [...baseCoverage, 'migration'],
+  primeng: [...baseCoverage, 'migration', 'standalone-setup', 'unsupported-ngmodule'],
   primereact: [
     ...baseCoverage,
     'styled',
@@ -202,7 +201,7 @@ export async function validateEvaluationRepository(root = repositoryRoot, overri
     if (!Array.isArray(fixture.scenarios) || fixture.scenarios.length < 10) errors.push(`${library}: at least 10 scenarios are required.`);
 
     const skillIds = plugin.skills.map((skill) => skill.id);
-    if (skillIds.length !== 7 || new Set(skillIds).size !== 7) errors.push(`${library}: exact seven-skill inventory required.`);
+    if (skillIds.length === 0 || new Set(skillIds).size !== skillIds.length) errors.push(`${library}: configured skill inventory must be non-empty and unique.`);
     const skills = new Set(skillIds);
     const routerContent = await readFile(path.join(root, plugin.skills[0].sourcePath, 'SKILL.md'), 'utf8');
     const skillContents = new Map(await Promise.all(plugin.skills.map(async (skill) => [

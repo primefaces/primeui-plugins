@@ -1,7 +1,7 @@
 {
   "mcp": {
     "package": "@primevue/mcp",
-    "versionRange": ">=5.0.0-rc.3 <6.0.0"
+    "versionRange": ">=5.0.0 <6.0.0"
   },
   "name": "primevue",
   "payload": {
@@ -24,7 +24,7 @@
       "skills/primevue-audit-troubleshooting"
     ]
   },
-  "pluginVersion": "0.1.0-alpha.0",
+  "pluginVersion": "1.0.0",
   "schemaVersion": 3,
   "skills": [
     {

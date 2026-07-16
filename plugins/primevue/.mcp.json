@@ -3,7 +3,7 @@
     "primevue": {
       "args": [
         "-y",
-        "@primevue/mcp@>=5.0.0-rc.3 <6.0.0"
+        "@primevue/mcp@>=5.0.0 <6.0.0"
       ],
       "command": "npx"
     }

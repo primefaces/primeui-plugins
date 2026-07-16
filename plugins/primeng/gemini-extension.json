@@ -4,11 +4,11 @@
     "primeng": {
       "args": [
         "-y",
-        "@primeng/mcp@>=22.0.0-rc.3 <23.0.0"
+        "@primeng/mcp@>=22.0.0 <23.0.0"
       ],
       "command": "npx"
     }
   },
   "name": "primeng",
-  "version": "0.1.0-alpha.0"
+  "version": "1.0.0"
 }

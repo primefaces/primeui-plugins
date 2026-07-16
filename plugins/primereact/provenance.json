@@ -1,7 +1,7 @@
 {
   "mcp": {
     "package": "@primereact/mcp",
-    "versionRange": ">=11.0.0-rc.3 <12.0.0"
+    "versionRange": ">=11.0.0 <12.0.0"
   },
   "name": "primereact",
   "payload": {
@@ -23,7 +23,7 @@
       "skills/primereact-audit-troubleshooting"
     ]
   },
-  "pluginVersion": "0.1.0-alpha.0",
+  "pluginVersion": "1.0.0",
   "schemaVersion": 3,
   "skills": [
     {

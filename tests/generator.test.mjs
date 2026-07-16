@@ -301,7 +301,7 @@ test('generation is deterministic, atomic before replacement, and cleans stale o
     package: primevuePlugin.mcp.package,
     versionRange: primevuePlugin.mcp.versionRange
   });
-  assert.equal(provenance.pluginVersion, '0.1.0-alpha.0');
+  assert.equal(provenance.pluginVersion, '1.0.0');
 
   const cursorMarketplace = JSON.parse(
     await readFile(path.join(fixture.distributionRoot, '.cursor-plugin', 'marketplace.json'), 'utf8')

@@ -36,7 +36,7 @@ export function configuredPluginFixture(library = 'primevue') {
 export function installedPayloadContract({
   library = 'primevue',
   lockedSkills,
-  pluginVersion = '0.1.0-alpha.0',
+  pluginVersion = '1.0.0',
   skills
 }) {
   const fixture = configuredPluginFixture(library);

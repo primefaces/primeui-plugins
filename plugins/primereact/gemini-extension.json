@@ -4,11 +4,11 @@
     "primereact": {
       "args": [
         "-y",
-        "@primereact/mcp@>=11.0.0-rc.3 <12.0.0"
+        "@primereact/mcp@>=11.0.0 <12.0.0"
       ],
       "command": "npx"
     }
   },
   "name": "primereact",
-  "version": "0.1.0-alpha.0"
+  "version": "1.0.0"
 }

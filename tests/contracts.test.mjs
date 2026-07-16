@@ -86,22 +86,22 @@ test('exact SemVer accepts releases and prereleases but rejects moving selectors
   }
 });
 
-test('authored MCP ranges admit the minimum RC and final while excluding prior and next-major releases', () => {
+test('authored MCP ranges admit final same-major releases while excluding prerelease and next-major releases', () => {
   for (const plugin of pluginsConfig.plugins) {
     const range = parseSupportedMcpVersionRange(plugin.mcp.versionRange);
     assert.notEqual(range, undefined, plugin.name);
     const major = range.lower.major.toString();
     const minor = range.lower.minor.toString();
     const patch = range.lower.patch.toString();
-    const prerelease = range.lower.prerelease.join('.');
-    const priorRc = `${major}.${minor}.${patch}-rc.${Number(range.lower.prerelease.at(-1)) - 1}`;
-    const minimum = `${major}.${minor}.${patch}-${prerelease}`;
-    const final = `${major}.${minor}.${patch}`;
+    const minimum = `${major}.${minor}.${patch}`;
+    const prerelease = `${minimum}-rc.999`;
+    const compatible = `${major}.${minor}.${range.lower.patch + 1n}`;
     const nextMajor = `${range.upper.major}.0.0`;
 
+    assert.deepEqual(range.lower.prerelease, [], plugin.name);
     assert.equal(satisfiesMcpVersionRange(minimum, plugin.mcp.versionRange), true, plugin.name);
-    assert.equal(satisfiesMcpVersionRange(final, plugin.mcp.versionRange), true, plugin.name);
-    assert.equal(satisfiesMcpVersionRange(priorRc, plugin.mcp.versionRange), false, plugin.name);
+    assert.equal(satisfiesMcpVersionRange(compatible, plugin.mcp.versionRange), true, plugin.name);
+    assert.equal(satisfiesMcpVersionRange(prerelease, plugin.mcp.versionRange), false, plugin.name);
     assert.equal(satisfiesMcpVersionRange(nextMajor, plugin.mcp.versionRange), false, plugin.name);
   }
 });

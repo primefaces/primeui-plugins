@@ -85,7 +85,7 @@ test('Cursor manifest validation follows the closed current official schema subs
     name: 'primevue',
     repository: 'https://github.com/primefaces/primeui-plugins',
     skills: './skills/',
-    version: '0.1.0-alpha.0'
+    version: '1.0.0'
   };
   assert.equal(validateCursorPluginManifest(manifest, 'primevue'), manifest);
   assert.throws(
@@ -114,7 +114,7 @@ test('Cursor payload inspection enforces exact manifest pointers, skill hash, MC
       name: 'primevue',
       repository: 'https://github.com/primefaces/primeui-plugins',
       skills: './skills/',
-      version: '0.1.0-alpha.0'
+      version: '1.0.0'
     })
   );
   await writeFile(
@@ -136,7 +136,7 @@ test('Cursor payload inspection enforces exact manifest pointers, skill hash, MC
     JSON.stringify({
       mcp: configured.provenanceMcp,
       name: 'primevue',
-      pluginVersion: '0.1.0-alpha.0',
+      pluginVersion: '1.0.0',
       skills: lockedSkills
     })
   );

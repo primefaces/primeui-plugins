@@ -5,7 +5,7 @@
     {
       "lockState": "locked",
       "name": "primevue",
-      "pluginVersion": "0.1.0-alpha.0",
+      "pluginVersion": "1.0.0",
       "skills": [
         {
           "directory": "primevue-router",
@@ -96,7 +96,7 @@
     {
       "lockState": "locked",
       "name": "primeng",
-      "pluginVersion": "0.1.0-alpha.0",
+      "pluginVersion": "1.0.0",
       "skills": [
         {
           "directory": "primeng-router",
@@ -187,7 +187,7 @@
     {
       "lockState": "locked",
       "name": "primereact",
-      "pluginVersion": "0.1.0-alpha.0",
+      "pluginVersion": "1.0.0",
       "skills": [
         {
           "directory": "primereact-router",

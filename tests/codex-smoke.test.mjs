@@ -109,7 +109,7 @@ test('installed Codex payload inspection enforces manifest pointers, range, and 
     'cache',
     'primeui',
     'primevue',
-    '0.1.0-alpha.0'
+    '1.0.0'
   );
   await mkdir(path.join(installPath, '.codex-plugin'), { recursive: true });
   await mkdir(path.join(installPath, 'skills', 'primevue'), { recursive: true });
@@ -119,7 +119,7 @@ test('installed Codex payload inspection enforces manifest pointers, range, and 
       mcpServers: './.mcp.json',
       name: 'primevue',
       skills: './skills/',
-      version: '0.1.0-alpha.0'
+      version: '1.0.0'
     })
   );
   await writeFile(

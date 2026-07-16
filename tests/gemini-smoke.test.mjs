@@ -160,7 +160,7 @@ test('installed Gemini payload inspection enforces source, skill, MCP, and exten
     JSON.stringify({
       mcpServers: configuredPluginFixture().mcpDocument.mcpServers,
       name: 'primevue',
-      version: '0.1.0-alpha.0'
+      version: '1.0.0'
     })
   );
   await writeFile(

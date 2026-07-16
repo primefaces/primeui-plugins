@@ -4,11 +4,11 @@
     "primevue": {
       "args": [
         "-y",
-        "@primevue/mcp@>=5.0.0-rc.3 <6.0.0"
+        "@primevue/mcp@>=5.0.0 <6.0.0"
       ],
       "command": "npx"
     }
   },
   "name": "primevue",
-  "version": "0.1.0-alpha.0"
+  "version": "1.0.0"
 }

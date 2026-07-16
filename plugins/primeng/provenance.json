@@ -1,7 +1,7 @@
 {
   "mcp": {
     "package": "@primeng/mcp",
-    "versionRange": ">=22.0.0-rc.3 <23.0.0"
+    "versionRange": ">=22.0.0 <23.0.0"
   },
   "name": "primeng",
   "payload": {
@@ -24,7 +24,7 @@
       "skills/primeng-audit-troubleshooting"
     ]
   },
-  "pluginVersion": "0.1.0-alpha.0",
+  "pluginVersion": "1.0.0",
   "schemaVersion": 3,
   "skills": [
     {

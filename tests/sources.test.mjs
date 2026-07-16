@@ -43,7 +43,7 @@ function fixtureConfiguration(skillPath, skillHash) {
         {
           lockState: 'locked',
           name: 'primevue',
-          pluginVersion: '0.1.0-alpha.0',
+          pluginVersion: '1.0.0',
           skills: [{
             directory: skill.directory, id: skill.id, name: skill.name,
             order: skill.order, owner: skill.owner,

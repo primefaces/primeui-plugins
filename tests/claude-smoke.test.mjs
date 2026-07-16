@@ -132,12 +132,12 @@ test('Claude smoke arguments use safe explicit matrix selectors', () => {
 test('installed Claude payload inspection enforces skill and MCP isolation', async (context) => {
   const configRoot = await mkdtemp(path.join(os.tmpdir(), 'primeui-claude-payload-test-'));
   context.after(() => rm(configRoot, { force: true, recursive: true }));
-  const installPath = path.join(configRoot, 'plugins', 'cache', 'primeui', 'primevue', '0.1.0-alpha.0');
+  const installPath = path.join(configRoot, 'plugins', 'cache', 'primeui', 'primevue', '1.0.0');
   await mkdir(path.join(installPath, '.claude-plugin'), { recursive: true });
   await mkdir(path.join(installPath, 'skills', 'primevue'), { recursive: true });
   await writeFile(
     path.join(installPath, '.claude-plugin', 'plugin.json'),
-    JSON.stringify({ name: 'primevue', version: '0.1.0-alpha.0' })
+    JSON.stringify({ name: 'primevue', version: '1.0.0' })
   );
   await writeFile(
     path.join(installPath, '.mcp.json'),
